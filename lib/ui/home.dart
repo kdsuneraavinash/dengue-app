@@ -1,8 +1,7 @@
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/account.dart';
-import 'package:dengue_app/ui/camera.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:dengue_app/ui/upload.dart';
 import 'package:dengue_app/ui/feed.dart';
 import 'package:dengue_app/ui/leaderboard.dart';
 import 'package:dengue_app/ui/taskfeed.dart';
@@ -43,11 +42,9 @@ class HomePageState extends State<HomePage> {
       bottomNavigationBar: _buildBottomNavigationBar(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-            var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-            print(image);
-//          TransitionMaker.slideTransition(
-//              destinationPageCall: () => CameraView())
-//            ..start(context);
+          TransitionMaker.slideTransition(
+              destinationPageCall: () => UploadImage())
+            ..start(context);
         },
         isExtended: true,
         label: Text("Post"),
@@ -58,7 +55,7 @@ class HomePageState extends State<HomePage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text("We Care"),
+      title: Text("VCare"),
       actions: <Widget>[
         IconButton(
           onPressed: () => null,

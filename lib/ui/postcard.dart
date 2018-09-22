@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:flutter/material.dart';

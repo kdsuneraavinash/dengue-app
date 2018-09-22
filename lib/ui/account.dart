@@ -1,4 +1,6 @@
+import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
+import 'package:dengue_app/ui/credits.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,8 +15,9 @@ class UserInfoPage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          Container(
-            color: Colors.black12,
+          Image.network(
+            "https://c2.staticflickr.com/6/5535/11292933694_706f6c01b6_b.jpg",
+            fit: BoxFit.cover,
             height: 200.0,
           ),
           ListTile(
@@ -38,6 +41,31 @@ class UserInfoPage extends StatelessWidget {
             leading: Icon(Icons.location_city),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            FlatButton.icon(
+                onPressed: () {
+                  TransitionMaker.fadeTransition(
+                      destinationPageCall: () => CreditsPage())
+                    ..start(context);
+                },
+                icon: Icon(Icons.developer_board),
+                label: Text("About")),
+            FlatButton.icon(
+                onPressed: () => null,
+                icon: Icon(Icons.exit_to_app),
+                label: Text("Log Out")),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => null,
+        child: Icon(FontAwesomeIcons.edit),
       ),
     );
   }
