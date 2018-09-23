@@ -1,10 +1,54 @@
+import 'dart:async';
+
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/ui/postcard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 class FeedPage extends StatelessWidget {
+  static const platform = const MethodChannel('com.kdsuneraavinash.dengueapp/facebookposts');
+
+  Future<Null> _getBatteryLevel() async {
+
+    var facebookLogin = new FacebookLogin();
+    var result = await facebookLogin.logInWithReadPermissions(['email']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        print(result.accessToken.token);
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print("Cancelled");
+        break;
+      case FacebookLoginStatus.error:
+        print("Error: ${result.errorMessage}");
+        break;
+    }
+
+//    try {
+//      final int result = await platform.invokeMethod('getBatteryLevel');
+//      print('Battery level at $result % .');
+//    } on PlatformException catch (e) {
+//      print("Failed to get battery level: '${e.message}'.");
+//    } on MissingPluginException catch (e) {
+//      print("Plugin Not found: '${e.message}'");
+//    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Material(
+      child: Center(
+        child: RaisedButton(
+          child: Text('Get Battery Level'),
+          onPressed: _getBatteryLevel,
+        ),
+      ),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return ListView(children: <Widget>[
       PostCard(
         post: Post(

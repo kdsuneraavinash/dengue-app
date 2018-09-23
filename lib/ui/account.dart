@@ -1,6 +1,7 @@
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/credits.dart';
+import 'package:dengue_app/ui/login.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -56,7 +57,11 @@ class UserInfoPage extends StatelessWidget {
                 icon: Icon(Icons.developer_board),
                 label: Text("About")),
             FlatButton.icon(
-                onPressed: () => null,
+                onPressed: (){
+                  TransitionMaker.fadeTransition(
+                      destinationPageCall: () => SignUpPage())
+                    ..start(context);
+                },
                 icon: Icon(Icons.exit_to_app),
                 label: Text("Log Out")),
           ],
