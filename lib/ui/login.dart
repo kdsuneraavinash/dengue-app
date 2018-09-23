@@ -1,5 +1,5 @@
 import 'package:dengue_app/bloc/login_bloc.dart';
-import 'package:dengue_app/custom_widgets/errorwidget.dart';
+import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -15,34 +15,42 @@ class SignUpPage extends StatefulWidget {
 class SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-      stream: widget.bLoC.isLoggingIn,
-      initialData: false,
+    return StreamBuilder<LogInProgress>(
+      stream: widget.bLoC.logInState,
+      initialData: LogInProgress.NOT_LOGGED,
       builder: (_, snapshotIsLoggingIn) => Scaffold(
             appBar: AppBar(title: Text("Sign Up")),
             body: Stack(
-              children: snapshotIsLoggingIn.data
+              children: snapshotIsLoggingIn.data == LogInProgress.WAITING
                   ? [_buildPagedView(), _buildOpacityOverlay()]
                   : [_buildPagedView()],
             ),
-            bottomNavigationBar: BottomAppBar(
-              shape: CircularNotchedRectangle(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  FlatButton.icon(
-                      onPressed: snapshotIsLoggingIn.data ? null : () => null,
-                      icon: Icon(Icons.arrow_back),
-                      label: Text("Log In")),
-                ],
-              ),
-            ),
+            bottomNavigationBar: snapshotIsLoggingIn.data ==
+                    LogInProgress.LOGGED
+                ? BottomAppBar(
+                    shape: CircularNotchedRectangle(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        FlatButton.icon(
+                          onPressed: () => widget.bLoC.issueSocialMediaCommand
+                              .add(LogInCommand.LOGOUT),
+                          icon: Icon(Icons.arrow_back),
+                          label: Text("Log Out"),
+                        ),
+                      ],
+                    ),
+                  )
+                : null,
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.endDocked,
-            floatingActionButton: FloatingActionButton(
-              onPressed: snapshotIsLoggingIn.data ? null : () => null,
-              child: Icon(FontAwesomeIcons.check),
-            ),
+            floatingActionButton:
+                snapshotIsLoggingIn.data == LogInProgress.LOGGED
+                    ? FloatingActionButton(
+                        onPressed: () => null,
+                        child: Icon(FontAwesomeIcons.check),
+                      )
+                    : null,
           ),
     );
   }
@@ -54,7 +62,7 @@ class SignUpPageState extends State<SignUpPage> {
       builder: (_, snapshotPageController) => PageView(
             children: <Widget>[
               _buildLoginFromFacebook(),
-              ErrorViewWidget(),
+              _buildAdditionalInfoView(),
             ],
             physics: NeverScrollableScrollPhysics(),
             controller: snapshotPageController.data,
@@ -67,7 +75,7 @@ class SignUpPageState extends State<SignUpPage> {
       children: <Widget>[
         Opacity(
           opacity: 0.3,
-          child: const ModalBarrier(dismissible: false, color: Colors.grey),
+          child: ModalBarrier(dismissible: false, color: Colors.grey),
         ),
         Center(
           child: CircularProgressIndicator(),
@@ -77,24 +85,106 @@ class SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildLoginFromFacebook() {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Center(
           child: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Image.network(
-              "https://northlakeshotel.com.au/wp-content/uploads/2018/05/facebook-icon-preview-1.png",
-              fit: BoxFit.contain,
-              height: 200.0,
+            child: DefParameterNetworkImage(
+              imageUrl: "http://www.logodust.com/img/free/logo26.png",
+              isCover: false,
+              height: screenWidth / 2,
+              width: screenWidth / 2,
             ),
           ),
         ),
-        RaisedButton(
-          onPressed: () => widget.bLoC.logInToFacebook.add(true),
-          child: Text("Login", style: TextStyle(color: Colors.white)),
-          color: Color.fromARGB(255, 71, 89, 147),
+        SizedBox(
+          width: screenWidth / 1.5,
+          child: RaisedButton.icon(
+            icon: Icon(FontAwesomeIcons.google, color: Colors.white),
+            onPressed: () => widget.bLoC.issueSocialMediaCommand
+                .add(LogInCommand.GOOGLE_LOGIN),
+            label: Text("Google Login", style: TextStyle(color: Colors.white)),
+            color: Colors.red[800],
+          ),
+        ),
+        SizedBox(
+          width: screenWidth / 1.5,
+          child: RaisedButton.icon(
+            icon: Icon(FontAwesomeIcons.facebook, color: Colors.white),
+            onPressed: () => widget.bLoC.issueSocialMediaCommand
+                .add(LogInCommand.FACEBOOK_LOGIN),
+            label:
+                Text("Facebook Login", style: TextStyle(color: Colors.white)),
+            color: Color.fromARGB(255, 71, 89, 147),
+          ),
+        ),
+        SizedBox(
+          width: screenWidth / 1.5,
+          child: RaisedButton.icon(
+            icon: Icon(FontAwesomeIcons.twitter, color: Colors.white),
+            onPressed: () => widget.bLoC.issueSocialMediaCommand
+                .add(LogInCommand.TWITTER_LOGIN),
+            label: Text("Twitter Login", style: TextStyle(color: Colors.white)),
+            color: Colors.blue,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Card(
+            color: Colors.amber,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "Notice\n\n"
+                    "To use 'Page Public Content Access',"
+                    " this app has to be reviewed and approved by Facebook."
+                    "So Facebook Login feature is currently disabled.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.black, letterSpacing: 1.0),
+              ),
+            ),
+          ),
         )
+      ],
+    );
+  }
+
+  Widget _buildAdditionalInfoView() {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return ListView(
+      children: <Widget>[
+        Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: screenWidth / 15),
+            child: ClipOval(
+              child: DefParameterNetworkImage(
+                imageUrl:
+                    "https://graph.facebook.com/100002491783271/picture?type=large",
+                isCover: false,
+                height: screenWidth / 3,
+                width: screenWidth / 3,
+              ),
+            ),
+          ),
+        ),
+        TextBoxWidget(
+          icon: Icons.location_city,
+          onSubmit: (_) {},
+          maxLines: 3,
+          hintText: "Address",
+          helperText: "Enter your Address Here.",
+        ),
+        TextBoxWidget(
+          icon: Icons.call,
+          onSubmit: (_) {},
+          maxLines: 1,
+          hintText: "Phone Number",
+          helperText: "Enter your Personal Contact Here.\n"
+              "This number will be used later in order to contact you.",
+        ),
       ],
     );
   }
@@ -113,7 +203,7 @@ class TextBoxWidget extends StatefulWidget {
   TextBoxWidget({
     @required this.icon,
     @required this.onSubmit,
-    @required this.changeApplyFunc,
+    this.changeApplyFunc,
     this.helperText,
     this.hintText,
     this.isPassword = false,
@@ -149,8 +239,8 @@ class TextBoxWidgetState extends State<TextBoxWidget> {
           errorText: widget.invalidText != "" ? widget.invalidText : null,
         ),
         obscureText: widget.isPassword,
-        onSubmitted: (s) => widget.onSubmit(),
-        onChanged: widget.changeApplyFunc,
+        onSubmitted: widget.onSubmit,
+        onChanged: widget.changeApplyFunc ?? (_) {},
       ),
     );
   }

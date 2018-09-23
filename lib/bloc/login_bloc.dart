@@ -1,70 +1,111 @@
 import 'dart:async';
 
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:dengue_app/bloc/bloc.dart';
+import 'package:dengue_app/logic/socialmedia/controller.dart';
+import 'package:dengue_app/logic/socialmedia/facebook.dart';
+import 'package:dengue_app/logic/socialmedia/google.dart';
+import 'package:dengue_app/logic/socialmedia/loginresult.dart';
+import 'package:dengue_app/logic/socialmedia/twitter.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:rxdart/subjects.dart';
+
+enum LogInProgress { NOT_LOGGED, WAITING, LOGGED, LOGIN_ERROR }
+enum LogInCommand { FACEBOOK_LOGIN, TWITTER_LOGIN, GOOGLE_LOGIN, LOGOUT }
 
 class LoginBLoC extends BLoC {
   // Streams and Sinks
-  final BehaviorSubject<FacebookLoginResult> _loginResultStream =
+  final BehaviorSubject<LogInResult> _loginResultStream =
       BehaviorSubject(seedValue: null);
-  final BehaviorSubject<bool> _isLoggingIn = BehaviorSubject(seedValue: false);
   final BehaviorSubject<PageController> _pageControllerData = BehaviorSubject();
-  final StreamController<bool> _logInToFacebook = StreamController();
-  Stream<FacebookLoginResult> get loginResult => _loginResultStream.stream;
-  Stream<bool> get isLoggingIn => _isLoggingIn.stream;
+  final BehaviorSubject<LogInProgress> _logInState =
+      BehaviorSubject(seedValue: LogInProgress.NOT_LOGGED);
+  final StreamController<LogInCommand> _issueSocialMediaCommand =
+      StreamController();
+
+  Stream<LogInResult> get loginResult => _loginResultStream.stream;
+  Stream<LogInProgress> get logInState => _logInState.stream;
   Stream<PageController> get pageControllerData => _pageControllerData.stream;
-  Sink<bool> get logInToFacebook => _logInToFacebook.sink;
+  Sink<LogInCommand> get issueSocialMediaCommand =>
+      _issueSocialMediaCommand.sink;
 
   // Instance Variables
   PageController _pageController = PageController(initialPage: 0);
-  FacebookLoginResult _loginResult;
+  LogInResult _loginResult;
+  SocialMediaController _socialMediaLogin;
 
   LoginBLoC() {
     _pageControllerData.add(_pageController);
-    _logInToFacebook.stream.listen(_signInFacebook);
+    _issueSocialMediaCommand.stream.listen(_handleFacebookCommand);
   }
 
   @override
   void dispose() {
     _loginResultStream.close();
-    _isLoggingIn.close();
+    _logInState.close();
     _pageControllerData.close();
-    _logInToFacebook.close();
+    _issueSocialMediaCommand.close();
   }
 
-  void _signInFacebook(bool _) async {
-    FacebookLogin facebookLogin = FacebookLogin();
-    _isLoggingIn.add(true);
-    _loginResult = await facebookLogin.logInWithReadPermissions(['email']);
-    _isLoggingIn.add(false);
+  void _handleFacebookCommand(LogInCommand command) {
+    _logInState.add(LogInProgress.WAITING);
+    switch (command) {
+      case LogInCommand.FACEBOOK_LOGIN:
+        if (!(_socialMediaLogin is FacebookController)) {
+          _socialMediaLogin = FacebookController();
+        }
+        _signInSocialMedia();
+        break;
+      case LogInCommand.TWITTER_LOGIN:
+        if (!(_socialMediaLogin is TwitterController)) {
+          _socialMediaLogin = TwitterController();
+        }
+        _signInSocialMedia();
+        break;
+      case LogInCommand.GOOGLE_LOGIN:
+        if (!(_socialMediaLogin is GoogleController)) {
+          _socialMediaLogin = GoogleController();
+        }
+        _signInSocialMedia();
+        break;
+      case LogInCommand.LOGOUT:
+        _logOut();
+        break;
+    }
+  }
+
+  void _signInSocialMedia() async {
+    _loginResult = await _socialMediaLogin.login();
 
     switch (_loginResult.status) {
-      case FacebookLoginStatus.loggedIn:
+      case LogInResultStatus.loggedIn:
         _processLogInData();
         _pageController.animateToPage(1,
             duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-
         break;
-      case FacebookLoginStatus.cancelledByUser:
-        print("Cancelled");
+      case LogInResultStatus.cancelledByUser:
+        _logInState.add(LogInProgress.LOGIN_ERROR);
         break;
-      case FacebookLoginStatus.error:
-        print("Error: ${_loginResult.errorMessage}");
+      case LogInResultStatus.error:
+        print("Login Error: ${_loginResult.errorMessage}");
+        _logInState.add(LogInProgress.LOGIN_ERROR);
         break;
     }
   }
 
   void _processLogInData() async {
-    _isLoggingIn.add(true);
-    var graphResponse = await http.get(
-        'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${_loginResult.accessToken.token}');
-    var profile = json.decode(graphResponse.body);
-    print(profile.toString());
-    _isLoggingIn.add(false);
+    _logInState.add(LogInProgress.WAITING);
+//    var graphResponse = await http.get(
+//        'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${_loginResult.session.token}');
+//    var profile = json.decode(graphResponse.body);
+//    print(profile.toString());
+    _logInState.add(LogInProgress.LOGGED);
+  }
+
+  void _logOut() {
+    _socialMediaLogin?.logOut();
+    _pageController.animateToPage(0,
+        duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+    _logInState.add(LogInProgress.NOT_LOGGED);
   }
 }

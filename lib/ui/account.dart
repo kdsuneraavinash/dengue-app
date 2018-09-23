@@ -1,3 +1,4 @@
+import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/credits.dart';
@@ -16,10 +17,10 @@ class UserInfoPage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          Image.network(
-            "https://c2.staticflickr.com/6/5535/11292933694_706f6c01b6_b.jpg",
-            fit: BoxFit.cover,
-            height: 200.0,
+          DefParameterNetworkImage(
+            imageUrl:
+                "https://c2.staticflickr.com/6/5535/11292933694_706f6c01b6_b.jpg",
+            isCover: true,
           ),
           ListTile(
             title: Text(this.user.displayName),
@@ -57,7 +58,7 @@ class UserInfoPage extends StatelessWidget {
                 icon: Icon(Icons.developer_board),
                 label: Text("About")),
             FlatButton.icon(
-                onPressed: (){
+                onPressed: () {
                   TransitionMaker.fadeTransition(
                       destinationPageCall: () => SignUpPage())
                     ..start(context);

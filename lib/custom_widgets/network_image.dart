@@ -10,14 +10,25 @@ class DefParameterNetworkImage extends StatelessWidget {
       imageUrl: this.imageUrl,
       fit: isCover ? BoxFit.cover : BoxFit.contain,
       width: width ?? MediaQuery.of(context).size.width,
-      height: isCover ? MediaQuery.of(context).size.width / aspectRatio : null,
+      height:
+          isCover ? MediaQuery.of(context).size.width / aspectRatio : height,
+      placeholder: SizedBox(
+        width: width ?? MediaQuery.of(context).size.width,
+        height:
+        isCover ? MediaQuery.of(context).size.width / aspectRatio : height,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 
-  DefParameterNetworkImage({this.imageUrl, this.isCover = false, this.width });
+  DefParameterNetworkImage(
+      {this.imageUrl, this.isCover = false, this.width, this.height});
 
   final String imageUrl;
   final bool isCover;
   final double width;
+  final double height;
   final aspectRatio = 16 / 9;
 }

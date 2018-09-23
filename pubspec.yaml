@@ -27,7 +27,12 @@ dependencies:
   cached_network_image: ^0.4.2
   # Image Picker
   image_picker: ^0.4.10
+  # Facebook Login
   flutter_facebook_login: ^1.1.1
+  # Twitter Login
+  # flutter_twitter_login: ^1.1.0
+  # Google Login
+  google_sign_in: ^3.0.5
 
 dev_dependencies:
   flutter_test:
