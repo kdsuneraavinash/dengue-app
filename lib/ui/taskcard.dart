@@ -9,40 +9,53 @@ class TaskCard extends StatelessWidget {
 
   /// Flagged Item
   Widget _buildEventFlaggedItemButton(BuildContext context) {
-    return ExpansionTile(
+    return Card(
       key: Key(task.taskTitle),
-      title: Text(task.taskTitle),
-      leading: CircleAvatar(
-        child: Text("${task.allocatedPoints}"),
+      child: Column(
+        children: <Widget>[
+          ListTile(
+            title: Text(task.taskTitle),
+            leading: CircleAvatar(
+              child: Text("${task.allocatedPoints}"),
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Text(task.taskSteps, textAlign: TextAlign.justify),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(Icons.timer,
+                            color: Theme.of(context).accentColor),
+                        SizedBox(width: 10.0),
+                        Text(
+                          "${task.remainingChancesString}",
+                          style:
+                              TextStyle(color: Theme.of(context).accentColor),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                _buildActionButtonButton(
+                    icon: Icons.label_important,
+                    label: "Complete",
+                    onPressed: () => _handleViewPressed(context),
+                    context: context),
+              ],
+            ),
+          ),
+        ],
       ),
-      children: <Widget>[
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Text(
-            task.taskSteps,
-            textAlign: TextAlign.justify,
-          ),
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
-          child: Text(
-            task.remainingChancesString,
-            style: TextStyle(color: Theme.of(context).accentColor),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            _buildActionButtonButton(
-                icon: Icons.label_important,
-                label: "Complete",
-                onPressed: () => _handleViewPressed(context),
-                context: context),
-          ],
-        ),
-      ],
     );
   }
 

@@ -33,7 +33,7 @@ class TaskFeedPage extends StatelessWidget {
       SizedBox(
         height: 75.0,
         child: Center(
-          child: Text("No more post to show."),
+          child: Text("No more tasks to show."),
         ),
       )
     ]);
