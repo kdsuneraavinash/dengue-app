@@ -6,6 +6,7 @@ import 'package:dengue_app/logic/socialmedia/facebook.dart';
 import 'package:dengue_app/logic/socialmedia/google.dart';
 import 'package:dengue_app/logic/socialmedia/loginresult.dart';
 import 'package:dengue_app/logic/socialmedia/twitter.dart';
+import 'package:dengue_app/logic/user.dart';
 
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
@@ -17,6 +18,7 @@ class LoginBLoC extends BLoC {
   // Streams and Sinks
   final BehaviorSubject<LogInResult> _loginResultStream =
       BehaviorSubject(seedValue: null);
+  final BehaviorSubject<User> _userStream = BehaviorSubject(seedValue: null);
   final BehaviorSubject<PageController> _pageControllerData = BehaviorSubject();
   final BehaviorSubject<LogInProgress> _logInState =
       BehaviorSubject(seedValue: LogInProgress.NOT_LOGGED);
@@ -24,6 +26,7 @@ class LoginBLoC extends BLoC {
       StreamController();
 
   Stream<LogInResult> get loginResult => _loginResultStream.stream;
+  Stream<User> get userStream => _userStream.stream;
   Stream<LogInProgress> get logInState => _logInState.stream;
   Stream<PageController> get pageControllerData => _pageControllerData.stream;
   Sink<LogInCommand> get issueSocialMediaCommand =>
@@ -42,6 +45,7 @@ class LoginBLoC extends BLoC {
   @override
   void dispose() {
     _loginResultStream.close();
+    _userStream.close();
     _logInState.close();
     _pageControllerData.close();
     _issueSocialMediaCommand.close();
@@ -79,9 +83,10 @@ class LoginBLoC extends BLoC {
 
     switch (_loginResult.status) {
       case LogInResultStatus.loggedIn:
-        _processLogInData();
+        _userStream.add(_socialMediaLogin.user);
         _pageController.animateToPage(1,
             duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+        _logInState.add(LogInProgress.LOGGED);
         break;
       case LogInResultStatus.cancelledByUser:
         _logInState.add(LogInProgress.LOGIN_ERROR);
@@ -91,19 +96,22 @@ class LoginBLoC extends BLoC {
         _logInState.add(LogInProgress.LOGIN_ERROR);
         break;
     }
+
+
   }
 
-  void _processLogInData() async {
-    _logInState.add(LogInProgress.WAITING);
-//    var graphResponse = await http.get(
+//  void _processLogInData() async {
 //        'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${_loginResult.session.token}');
 //    var profile = json.decode(graphResponse.body);
 //    print(profile.toString());
-    _logInState.add(LogInProgress.LOGGED);
-  }
+//    _logInState.add(LogInProgress.LOGGED);
+//    _logInState.add(LogInProgress.WAITING);
+//    var graphResponse = await http.get(
+//  }
 
   void _logOut() {
     _socialMediaLogin?.logOut();
+    _userStream.add(null);
     _pageController.animateToPage(0,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
     _logInState.add(LogInProgress.NOT_LOGGED);

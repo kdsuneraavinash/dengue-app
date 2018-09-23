@@ -1,5 +1,6 @@
 import 'package:dengue_app/bloc/home_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
+import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/feed.dart';
 import 'package:dengue_app/ui/leaderboard.dart';
@@ -19,11 +20,11 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: StreamBuilder<User>(
-        stream: widget.uibLoC.userData,
-        builder: (_, snapshotUser) => StreamBuilder<PageController>(
+    return StreamBuilder<User>(
+      stream: widget.uibLoC.userData,
+      builder: (_, snapshotUser) => Scaffold(
+            appBar: _buildAppBar(snapshotUser.data),
+            body: StreamBuilder<PageController>(
               initialData: PageController(initialPage: 1),
               stream: widget.uibLoC.pageControllerData,
               builder: (_, snapshotPageController) => PageView(
@@ -38,18 +39,18 @@ class HomePageState extends State<HomePage> {
                     ],
                   ),
             ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => widget.uibLoC.tappedGoToUploadPage.add(context),
-        isExtended: true,
-        label: Text("Post"),
-        icon: Icon(Icons.camera_alt),
-      ),
+            bottomNavigationBar: _buildBottomNavigationBar(),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () => widget.uibLoC.tappedGoToUploadPage.add(context),
+              isExtended: true,
+              label: Text("Post"),
+              icon: Icon(Icons.camera_alt),
+            ),
+          ),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(User user) {
     return AppBar(
       title: Text("VCare"),
       actions: <Widget>[
@@ -60,19 +61,21 @@ class HomePageState extends State<HomePage> {
         FlatButton.icon(
           onPressed: null,
           icon: Icon(FontAwesomeIcons.fire, color: Colors.white),
-          label: StreamBuilder<User>(
-            stream: widget.uibLoC.userData,
-            builder: (_, snapshot) => Text(
-                  "${snapshot.data == null ? '--' : snapshot.data.points}",
-                  style: TextStyle(color: Colors.white),
-                ),
+          label: Text(
+            "${user == null ? '--' : user.points}",
+            style: TextStyle(color: Colors.white),
           ),
-        )
+        ),
       ],
       leading: IconButton(
         icon: CircleAvatar(
-          child: Icon(
-            Icons.person_outline,
+          child: ClipOval(
+            child: DefParameterNetworkImage(
+              imageUrl: user?.photoUrl == null
+                  ? User.BLANK_PHOTO
+                  : user?.photoUrl,
+              isCover: true,
+            ),
           ),
           backgroundColor: Colors.white,
         ),

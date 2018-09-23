@@ -11,21 +11,32 @@ class UserInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text("Account"),
       ),
       body: ListView(
         children: <Widget>[
-          DefParameterNetworkImage(
-            imageUrl:
-                "https://c2.staticflickr.com/6/5535/11292933694_706f6c01b6_b.jpg",
-            isCover: true,
+          Center(
+            child: SizedBox(
+              width: screenWidth / 2,
+              height: screenWidth / 2,
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: ClipOval(
+                  child: DefParameterNetworkImage(
+                    imageUrl: user?.photoUrl ?? User.BLANK_PHOTO,
+                    isCover: true,
+                  ),
+                ),
+              ),
+            ),
           ),
           ListTile(
             title: Text(this.user.displayName),
             subtitle: Text("Display Name"),
-            leading: Icon(Icons.title),
+            leading: Icon(Icons.person),
           ),
           ListTile(
             title: Text("Points : ${this.user.points}"),
@@ -33,14 +44,24 @@ class UserInfoPage extends StatelessWidget {
             leading: Icon(FontAwesomeIcons.fire),
           ),
           ListTile(
-            title: Text(this.user.name),
+            title: Text(this.user.fullName),
             subtitle: Text("Name"),
-            leading: Icon(Icons.person),
+            leading: Icon(Icons.title),
           ),
           ListTile(
             title: Text(this.user.address),
             subtitle: Text("Address"),
             leading: Icon(Icons.location_city),
+          ),
+          ListTile(
+            title: Text(this.user.telephone),
+            subtitle: Text("Phone Number"),
+            leading: Icon(Icons.phone),
+          ),
+          ListTile(
+            title: Text(this.user.email),
+            subtitle: Text("E Mail"),
+            leading: Icon(Icons.email),
           ),
         ],
       ),

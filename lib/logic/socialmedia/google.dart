@@ -5,7 +5,6 @@ import 'package:dengue_app/logic/socialmedia/loginresult.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleController extends SocialMediaController {
-//  TwitterLoginResult _loginResult;
   GoogleSignIn _googleSignIn;
 
   GoogleController() {
@@ -20,9 +19,15 @@ class GoogleController extends SocialMediaController {
   @override
   Future<LogInResult> login() async {
     try {
-      GoogleSignInAccount googleSignIn = await _googleSignIn.signIn();
+      GoogleSignInAccount googleAccount = await _googleSignIn.signIn();
+      user.setBasicDetails(
+        displayName: googleAccount.displayName,
+        email: googleAccount.email,
+        id: googleAccount.id,
+        photoUrl: googleAccount.photoUrl,
+      );
       return LogInResult(LogInResultStatus.loggedIn, null,
-          Session(googleSignIn?.id, googleSignIn?.email));
+          Session(googleAccount?.id, googleAccount?.email));
     } catch (error) {
       return LogInResult(LogInResultStatus.error, error.toString(), null);
     }

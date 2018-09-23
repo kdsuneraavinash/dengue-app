@@ -46,12 +46,7 @@ class HomePageBLoC extends BLoC {
     _tappedGoToAccountPage.stream.listen(_goToAccountPage);
     _tappedGoToGiftPage.stream.listen(_goToGiftsPage);
 
-    _user = User(
-      name: "Curt N. Call",
-      address: "4554, Doctors Drive, Los Angeles, California.",
-      displayName: "Curt",
-      points: 0,
-    );
+    _user = User.demo();
     _userData.add(_user);
     _pageControllerData.add(_pageController);
   }
@@ -98,7 +93,7 @@ class HomePageBLoC extends BLoC {
   }
 
   void _goToAccountPage(BuildContext context) {
-    if (_user != null){
+    if (_user != null) {
       TransitionMaker.fadeTransition(
           destinationPageCall: () => UserInfoPage(user: _user))
         ..start(context);

@@ -1,5 +1,7 @@
 import 'package:dengue_app/bloc/login_bloc.dart';
+import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
+import 'package:dengue_app/logic/user.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -154,38 +156,60 @@ class SignUpPageState extends State<SignUpPage> {
 
   Widget _buildAdditionalInfoView() {
     double screenWidth = MediaQuery.of(context).size.width;
-    return ListView(
-      children: <Widget>[
-        Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: screenWidth / 15),
-            child: ClipOval(
-              child: DefParameterNetworkImage(
-                imageUrl:
-                    "https://graph.facebook.com/100002491783271/picture?type=large",
-                isCover: false,
-                height: screenWidth / 3,
-                width: screenWidth / 3,
-              ),
-            ),
-          ),
-        ),
-        TextBoxWidget(
-          icon: Icons.location_city,
-          onSubmit: (_) {},
-          maxLines: 3,
-          hintText: "Address",
-          helperText: "Enter your Address Here.",
-        ),
-        TextBoxWidget(
-          icon: Icons.call,
-          onSubmit: (_) {},
-          maxLines: 1,
-          hintText: "Phone Number",
-          helperText: "Enter your Personal Contact Here.\n"
-              "This number will be used later in order to contact you.",
-        ),
-      ],
+    return Padding(
+      padding: EdgeInsets.all(8.0),
+      child: StreamBuilder<User>(
+        initialData: null,
+        stream: widget.bLoC.userStream,
+        builder: (_, snapshotUser) {
+          if (snapshotUser != null) {
+            return ListView(
+              children: <Widget>[
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: screenWidth / 15),
+                    child: ClipOval(
+                      child: DefParameterNetworkImage(
+                        imageUrl: snapshotUser.data == null ||
+                                snapshotUser.data.photoUrl == null
+                            ? User.BLANK_PHOTO
+                            : snapshotUser.data.photoUrl,
+                        isCover: false,
+                        height: screenWidth / 3,
+                        width: screenWidth / 3,
+                      ),
+                    ),
+                  ),
+                ),
+                TextBoxWidget(
+                  icon: Icons.person,
+                  onSubmit: (_) {},
+                  maxLines: 1,
+                  hintText: "Full Name",
+                  helperText: "Enter your Full Name with initials here.",
+                ),
+                TextBoxWidget(
+                  icon: Icons.location_city,
+                  onSubmit: (_) {},
+                  maxLines: 3,
+                  hintText: "Address",
+                  helperText: "Enter your Address here.",
+                ),
+                TextBoxWidget(
+                  icon: Icons.call,
+                  onSubmit: (_) {},
+                  maxLines: 1,
+                  hintText: "Phone Number",
+                  helperText: "Enter your Personal Contact here.\n"
+                      "This number will be used later in order to contact you.",
+                ),
+              ],
+            );
+          } else {
+            return ErrorViewWidget();
+          }
+        },
+      ),
     );
   }
 
