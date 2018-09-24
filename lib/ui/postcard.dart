@@ -13,10 +13,10 @@ class PostCard extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular((8.0)))),
       child: Column(
         children: <Widget>[
-          _buildTitleStrip(),
+          _buildTitleStrip(context),
           GestureDetector(
             child: _buildImageBanner(context),
-            onTap: () => null,
+            onTap: () {},
           ),
           _buildCaptionText(),
         ],
@@ -32,13 +32,15 @@ class PostCard extends StatelessWidget {
       children: <Widget>[
         Expanded(
           child: DefParameterNetworkImage(
-            imageUrl: post.beforeLink ?? "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
+            imageUrl: post.beforeLink ??
+                "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
             isCover: true,
           ),
         ),
         Expanded(
           child: DefParameterNetworkImage(
-            imageUrl: post.afterLink ?? "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
+            imageUrl: post.afterLink ??
+                "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
             isCover: true,
           ),
         ),
@@ -47,7 +49,7 @@ class PostCard extends StatelessWidget {
   }
 
   /// Build Title and flagging controller
-  Widget _buildTitleStrip() {
+  Widget _buildTitleStrip(BuildContext context) {
     // Image.network("https://api.adorable.io/avatars/15/abott@adorable${post.user}.png")
     return ListTile(
       leading: CircleAvatar(
@@ -57,7 +59,8 @@ class PostCard extends StatelessWidget {
       subtitle: Text("${post.likes} Likes | ${post.shares} shares"),
       trailing: IconButton(
         icon: Icon(FontAwesomeIcons.share),
-        onPressed: () => null,
+        onPressed: () {
+        },
       ),
     );
   }

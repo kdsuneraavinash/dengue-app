@@ -33,9 +33,9 @@ class CreditsPage extends StatelessWidget {
       bottomNavigationBar: BottomAppBar(
         child: AboutListTile(
           icon: Icon(Icons.developer_board),
-          applicationName: "VCare",
+          applicationName: "Dengue Free Zone",
           applicationVersion: "v0.1.0-alpha",
-          applicationLegalese: "Team Axys",
+          applicationLegalese: "Team Pulse",
         ),
         shape: CircularNotchedRectangle(),
       ),

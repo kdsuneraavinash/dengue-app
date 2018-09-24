@@ -33,6 +33,7 @@ dependencies:
   # flutter_twitter_login: ^1.1.0
   # Google Login
   google_sign_in: ^3.0.5
+  # Share Button Functionality
 
 dev_dependencies:
   flutter_test:

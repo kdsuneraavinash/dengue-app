@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dengue_app/logic/socialmedia/controller.dart';
 import 'package:dengue_app/logic/socialmedia/loginresult.dart';
+import 'package:dengue_app/logic/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleController extends SocialMediaController {
@@ -20,12 +21,14 @@ class GoogleController extends SocialMediaController {
   Future<LogInResult> login() async {
     try {
       GoogleSignInAccount googleAccount = await _googleSignIn.signIn();
-      user.setBasicDetails(
-        displayName: googleAccount.displayName,
-        email: googleAccount.email,
-        id: googleAccount.id,
-        photoUrl: googleAccount.photoUrl,
-      );
+
+      user = User()
+        ..setBasicDetails(
+          displayName: googleAccount.displayName,
+          email: googleAccount.email,
+          id: googleAccount.id,
+          photoUrl: googleAccount.photoUrl,
+        );
       return LogInResult(LogInResultStatus.loggedIn, null,
           Session(googleAccount?.id, googleAccount?.email));
     } catch (error) {
@@ -38,5 +41,11 @@ class GoogleController extends SocialMediaController {
   @override
   void logOut() async {
     await _googleSignIn.signOut();
+    user = null;
+  }
+
+  @override
+  Future<bool> isLoggedIn() async {
+    return await _googleSignIn.isSignedIn();
   }
 }

@@ -25,4 +25,9 @@ class TwitterController extends SocialMediaController {
   void logOut() async {
 //    await _twitterLogin.logOut();
   }
+
+  @override
+  Future<bool> isLoggedIn() async {
+    return false;
+  }
 }

@@ -37,4 +37,9 @@ class FacebookController extends SocialMediaController {
   void logOut() async {
     await _facebookLogin.logOut();
   }
+
+  @override
+  Future<bool>  isLoggedIn() async {
+    return false;
+  }
 }

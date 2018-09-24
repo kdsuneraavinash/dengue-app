@@ -72,6 +72,36 @@ class TransitionMaker {
     );
   }
 
+  void startPopAllAndPush(BuildContext context) {
+    while (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (_, __, ___) {
+          return this.destinationPageCall();
+        },
+        transitionsBuilder: this.transitionBuilder,
+      ),
+    );
+  }
+
+  void startReplace(BuildContext context) {
+    while (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (_, __, ___) {
+          return this.destinationPageCall();
+        },
+        transitionsBuilder: this.transitionBuilder,
+      ),
+    );
+  }
+
   /// Start animation as async.
   /// *Suitable for dialog boxes*
   Future startAndWait(BuildContext context) async {

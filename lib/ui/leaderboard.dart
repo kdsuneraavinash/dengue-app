@@ -24,12 +24,15 @@ class LeaderBoard extends StatelessWidget {
             itemCount: leaderBoard.length,
           ),
         ),
-        ListTile(
-          title: Text(user.displayName),
-          subtitle:
-          Text("Points ${user.points}"),
-          leading: CircleAvatar(
-            child: Text("56"),
+        Container(
+          color: Colors.amber,
+          child: ListTile(
+            title: Text(user.displayName),
+            subtitle:
+            Text("Points ${user.points}"),
+            leading: CircleAvatar(
+              child: Text("56"),
+            ),
           ),
         )
       ],
