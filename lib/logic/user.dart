@@ -19,27 +19,13 @@ class User {
       String fullName,
       String address,
       String telephone}) {
-    _id = id;
-    _displayName = displayName;
-    _email = email;
-    _photoUrl = photoUrl;
-    _fullName = fullName;
-    _address = address;
-    _telephone = telephone;
-  }
-
-  void setBasicDetails(
-      {String id, String displayName, String email, String photoUrl}) {
-    _id = id;
-    _displayName = displayName;
-    _email = email;
-    _photoUrl = photoUrl;
-  }
-
-  void setFurtherDetails({String fullName, String address, String telephone}) {
-    _fullName = fullName;
-    _address = address;
-    _telephone = telephone;
+    _id = id ?? _id;
+    _displayName = displayName ?? _displayName;
+    _email = email ?? _email;
+    _photoUrl = photoUrl ?? _photoUrl;
+    _fullName = fullName ?? _fullName;
+    _address = address ?? _address;
+    _telephone = telephone ?? _telephone;
   }
 
   set points(p) {

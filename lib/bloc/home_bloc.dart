@@ -9,8 +9,8 @@ class HomePageBLoC extends BLoC {
   /// update selected bottom navigation bar item
   final BehaviorSubject<int> _currentPageIndex = BehaviorSubject(seedValue: 1);
   /// Issues the command to change Tab Page.
-  final BehaviorSubject<int> _changeTabPageAnimate = BehaviorSubject();
-  final BehaviorSubject<int> _changeTabPageJump = BehaviorSubject();
+  final PublishSubject<int> _changeTabPageAnimate = PublishSubject();
+  final PublishSubject<int> _changeTabPageJump = PublishSubject();
 
   /// Change current page: using swiping page view
   final StreamController<int> _changeCurrentPage = StreamController();
@@ -33,9 +33,7 @@ class HomePageBLoC extends BLoC {
   // Current page of page controller
   int _currentPage = 1;
 
-  HomePageBLoC() {
-    streamConnect();
-  }
+  HomePageBLoC() :super();
 
   @override
   void streamConnect() {
@@ -65,10 +63,8 @@ class HomePageBLoC extends BLoC {
       if ((_currentPage - page).abs() > 1) {
         // Jump to page if page is far away
         _changeTabPageJump.add(page);
-        _changeTabPageJump.add(null);
       } else {
         _changeTabPageAnimate.add(page);
-        _changeTabPageAnimate.add(null);
       }
       changeCurrentPage.add(page);
   }

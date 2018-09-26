@@ -1,10 +1,12 @@
 import 'package:dengue_app/bloc/home_bloc.dart';
+import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
-           import 'package:dengue_app/logic/user.dart';
+import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/home.dart';
-import 'package:dengue_app/providers/login.dart';
+import 'package:dengue_app/providers/user.dart';
+import 'package:dengue_app/ui/account.dart';
 import 'package:dengue_app/ui/feed.dart';
 import 'package:dengue_app/ui/leaderboard.dart';
 import 'package:dengue_app/ui/taskfeed.dart';
@@ -13,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
-  final HomePageBLoC bLoC = HomePageBLoC();
   final PageController _pageController = PageController(initialPage: 1);
 
   HomePage();
@@ -25,27 +26,33 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  HomePageBLoC homeBLoC;
+  UserBLoC userBLoC;
+
   @override
-  Widget build(BuildContext context) {
-    final homeBLoC = HomeBLoCProvider.of(context);
-    final loginBLoC = LoginBLoCProvider.of(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    homeBLoC = HomePageBLoCProvider.of(context);
+    userBLoC = UserBLoCProvider.of(context);
     homeBLoC.goToTabPageAnimate.listen(_handleAnimateToPage);
     homeBLoC.goToTabPageJump.listen(_handleJumpToPage);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return StreamBuilder<User>(
-      stream: loginBLoC.userStream,
+      stream: userBLoC.userStream,
       builder: (_, snapshotUser) => Scaffold(
             appBar: _buildAppBar(snapshotUser.data),
-            body:PageView(
-                    controller: widget._pageController,
-                    onPageChanged: widget.bLoC.changeCurrentPage.add,
-                    children: <Widget>[
-                      TaskFeedPage(),
-                      FeedPage(),
-                      snapshotUser.data == null
-                          ? ErrorViewWidget()
-                          : LeaderBoard(user: snapshotUser.data),
-                    ],
-                  ),
+            body: PageView(
+              controller: widget._pageController,
+              onPageChanged: homeBLoC.changeCurrentPage.add,
+              children: <Widget>[
+                TaskFeedPage(),
+                FeedPage(),
+                snapshotUser.data == null ? ErrorViewWidget() : LeaderBoard(),
+              ],
+            ),
             bottomNavigationBar: _buildBottomNavigationBar(),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () => _handleNavigateToUploadPage(true),
@@ -74,18 +81,22 @@ class HomePageState extends State<HomePage> {
           ),
         ),
       ],
-      leading: IconButton(
-        icon: CircleAvatar(
-          child: ClipOval(
-            child: DefParameterNetworkImage(
-              imageUrl:
-                  user?.photoUrl == null ? User.BLANK_PHOTO : user?.photoUrl,
-              isCover: true,
+      leading: StreamBuilder<User>(
+        stream: userBLoC.userStream,
+        builder: (_, snapshot) => IconButton(
+              icon: CircleAvatar(
+                child: ClipOval(
+                  child: DefParameterNetworkImage(
+                    imageUrl: user?.photoUrl == null
+                        ? User.BLANK_PHOTO
+                        : user?.photoUrl,
+                    isCover: true,
+                  ),
+                ),
+                backgroundColor: Colors.white,
+              ),
+              onPressed: () => _handleNavigateToAccountPage(),
             ),
-          ),
-          backgroundColor: Colors.white,
-        ),
-        onPressed: () => _handleNavigateToAccountPage(true),
       ),
     );
   }
@@ -93,10 +104,10 @@ class HomePageState extends State<HomePage> {
   Widget _buildBottomNavigationBar() {
     return StreamBuilder<int>(
       initialData: 1,
-      stream: widget.bLoC.currentPageIndex,
+      stream: homeBLoC.currentPageIndex,
       builder: (_, snapshot) => BottomNavigationBar(
             type: BottomNavigationBarType.shifting,
-            onTap: widget.bLoC.changeCurrentPageByNavigationBar.add,
+            onTap: homeBLoC.changeCurrentPageByNavigationBar.add,
             currentIndex: snapshot.data ?? 1,
             items: <BottomNavigationBarItem>[
               _buildBottomNavigationBarItem(
@@ -127,14 +138,14 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  void _handleAnimateToPage(int page){
+  void _handleAnimateToPage(int page) {
     if (page != null && widget._pageController.hasClients) {
       widget._pageController.animateToPage(page,
           duration: Duration(milliseconds: 200), curve: Curves.easeIn);
     }
   }
 
-  void _handleJumpToPage(int page){
+  void _handleJumpToPage(int page) {
     if (page != null && widget._pageController.hasClients) {
       widget._pageController.jumpToPage(page);
     }
@@ -142,18 +153,16 @@ class HomePageState extends State<HomePage> {
 
   void _handleNavigateToUploadPage(navigate) {
     if (navigate && context != null) {
-      TransitionMaker.fadeTransition(
-          destinationPageCall: () => UploadImage())
+      TransitionMaker.fadeTransition(destinationPageCall: () => UploadImage())
         ..start(context);
     }
   }
 
-  void _handleNavigateToAccountPage(navigate) {
-//    if (navigate && context != null) {
-//      TransitionMaker.fadeTransition(
-//          destinationPageCall: () => UploadImage())
-//        ..start(context);
-//    }
+  void _handleNavigateToAccountPage() {
+    if (context != null) {
+      TransitionMaker.fadeTransition(destinationPageCall: () => UserInfoPage())
+        ..start(context);
+    }
   }
 
   void _handleNavigateToGiftPage(navigate) {

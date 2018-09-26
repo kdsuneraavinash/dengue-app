@@ -1,7 +1,7 @@
 
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
-enum LogInResultStatus { loggedIn, error, cancelledByUser }
+enum LogInResultStatus { signedUp, loggedIn, error, cancelledByUser }
 
 class Session {
   String _token;

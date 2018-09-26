@@ -33,7 +33,9 @@ dependencies:
   # flutter_twitter_login: ^1.1.0
   # Google Login
   google_sign_in: ^3.0.5
-  # Share Button Functionality
+  firebase_auth: ^0.5.20
+  cloud_firestore: ^0.8.0
+firebase_analytics: ^0.3.3
 
 dev_dependencies:
   flutter_test:

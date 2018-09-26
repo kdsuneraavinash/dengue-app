@@ -1,10 +1,12 @@
 import 'package:dengue_app/bloc/login_bloc.dart';
+import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
-import 'package:dengue_app/logic/socialmedia/controller.dart';
 import 'package:dengue_app/logic/user.dart';
+import 'package:dengue_app/providers/home.dart';
 import 'package:dengue_app/providers/login.dart';
+import 'package:dengue_app/providers/user.dart';
 import 'package:dengue_app/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,30 +25,40 @@ class SignUpPage extends StatefulWidget {
 }
 
 class SignUpPageState extends State<SignUpPage> {
+  LoginBLoC loginBLoC;
+  UserBLoC userBLoC;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    loginBLoC = LoginBLoCProvider.of(context);
+    userBLoC = UserBLoCProvider.of(context);
+    loginBLoC.signUpStatusUpdate.listen(userBLoC.signUpFinished.add);
+    userBLoC.logInState.listen(loginBLoC.loginStatusChanged.add);
+    loginBLoC.goToTabPage.listen(_handleChangeTabPage);
+    loginBLoC.navigateToHomePage.listen(_handleNavigateToHomePage);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bLoC = LoginBLoCProvider.of(context);
-    bLoC.goToTabPage.listen(_handleChangeTabPage);
-    bLoC.navigateToHomePage.listen(_handleNavigateToHomePage);
-
-    return StreamBuilder<LogInProgress>(
-      stream: bLoC.logInState,
-      initialData: LogInProgress.NOT_LOGGED,
+    return StreamBuilder<LogInState>(
+      stream: userBLoC.logInState,
+      initialData: LogInState.NOT_LOGGED,
       builder: (_, snapshotIsLoggingIn) => Scaffold(
             appBar: AppBar(title: Text("Sign Up")),
             body: Stack(
-              children: snapshotIsLoggingIn.data == LogInProgress.WAITING
-                  ? [_buildPagedView(context, bLoC), _buildOpacityOverlay()]
-                  : [_buildPagedView(context, bLoC)],
+              children: snapshotIsLoggingIn.data == LogInState.WAITING
+                  ? [_buildPagedView(), _buildOpacityOverlay()]
+                  : [_buildPagedView()],
             ),
             bottomNavigationBar: BottomAppBar(
               shape: CircularNotchedRectangle(),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  snapshotIsLoggingIn.data == LogInProgress.LOGGED
+                  snapshotIsLoggingIn.data == LogInState.SIGNED_UP
                       ? FlatButton.icon(
-                          onPressed: () => bLoC.issueSocialMediaCommand
+                          onPressed: () => userBLoC.firestoreAuthCommand
                               .add(LogInCommand.LOGOUT),
                           icon: Icon(Icons.arrow_back),
                           label: Text("Log Out"),
@@ -62,21 +74,21 @@ class SignUpPageState extends State<SignUpPage> {
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.endDocked,
             floatingActionButton:
-                snapshotIsLoggingIn.data == LogInProgress.LOGGED
+                (snapshotIsLoggingIn.data == LogInState.SIGNED_UP)
                     ? FloatingActionButton(
-                        onPressed: () => bLoC.submit.add(context),
-                        child: Icon(FontAwesomeIcons.check),
+                        onPressed: () => loginBLoC.submit.add(null),
+                        child: Icon(FontAwesomeIcons.forward),
                       )
                     : null,
           ),
     );
   }
 
-  Widget _buildPagedView(BuildContext context, LoginBLoC bLoC) {
+  Widget _buildPagedView() {
     return PageView(
       children: <Widget>[
-        _buildLoginFromFacebook(bLoC),
-        _buildAdditionalInfoView(bLoC),
+        _buildLoginFromGoogle(),
+        _buildAdditionalInfoView(),
       ],
       physics: NeverScrollableScrollPhysics(),
       controller: widget._pageController,
@@ -87,17 +99,19 @@ class SignUpPageState extends State<SignUpPage> {
     return Stack(
       children: <Widget>[
         Opacity(
-          opacity: 0.3,
-          child: ModalBarrier(dismissible: false, color: Colors.grey),
+          opacity: 0.5,
+          child: ModalBarrier(dismissible: false, color: Colors.black),
         ),
         Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Colors.yellow),
+          ),
         )
       ],
     );
   }
 
-  Widget _buildLoginFromFacebook(LoginBLoC bLoC) {
+  Widget _buildLoginFromGoogle() {
     double screenWidth = MediaQuery.of(context).size.width;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -118,56 +132,22 @@ class SignUpPageState extends State<SignUpPage> {
           child: RaisedButton.icon(
             icon: Icon(FontAwesomeIcons.google, color: Colors.white),
             onPressed: () =>
-                bLoC.issueSocialMediaCommand.add(LogInCommand.GOOGLE_LOGIN),
+                userBLoC.firestoreAuthCommand.add(LogInCommand.LOGIN),
             label: Text("Google Login", style: TextStyle(color: Colors.white)),
             color: Colors.red[800],
           ),
         ),
-        SizedBox(
-          width: screenWidth / 1.5,
-          child: RaisedButton.icon(
-            icon: Icon(FontAwesomeIcons.facebook, color: Colors.white),
-            onPressed: () {},
-            label:
-                Text("Facebook Login", style: TextStyle(color: Colors.white)),
-            color: Color.fromARGB(255, 71, 89, 147),
-          ),
-        ),
-        SizedBox(
-          width: screenWidth / 1.5,
-          child: RaisedButton.icon(
-            icon: Icon(FontAwesomeIcons.twitter, color: Colors.white),
-            onPressed: () {},
-            label: Text("Twitter Login", style: TextStyle(color: Colors.white)),
-            color: Colors.blue,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Card(
-            color: Colors.amber,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "Notice\n\n"
-                    "Facebook and Twitter logins are currently disabled due to app reviewing process. ",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black, letterSpacing: 1.0),
-              ),
-            ),
-          ),
-        )
       ],
     );
   }
 
-  Widget _buildAdditionalInfoView(LoginBLoC bLoC) {
+  Widget _buildAdditionalInfoView() {
     double screenWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: StreamBuilder<User>(
         initialData: null,
-        stream: bLoC.userStream,
+        stream: userBLoC.userStream,
         builder: (_, snapshotUser) {
           if (snapshotUser != null) {
             return ListView(
@@ -191,7 +171,7 @@ class SignUpPageState extends State<SignUpPage> {
                 TextBoxWidget(
                   icon: Icons.person,
                   onSubmit: (_) {},
-                  changeApplyFunc: bLoC.changeFullName.add,
+                  changeApplyFunc: loginBLoC.changeFullName.add,
                   maxLines: 1,
                   hintText: "Full Name",
                   helperText: "Enter your Full Name with initials here.",
@@ -199,7 +179,7 @@ class SignUpPageState extends State<SignUpPage> {
                 TextBoxWidget(
                   icon: Icons.location_city,
                   onSubmit: (_) {},
-                  changeApplyFunc: bLoC.changeAddress.add,
+                  changeApplyFunc: loginBLoC.changeAddress.add,
                   maxLines: 3,
                   hintText: "Address",
                   helperText: "Enter your Address here.",
@@ -207,11 +187,12 @@ class SignUpPageState extends State<SignUpPage> {
                 TextBoxWidget(
                   icon: Icons.call,
                   onSubmit: (_) {},
-                  changeApplyFunc: bLoC.changeTelephone.add,
+                  changeApplyFunc: loginBLoC.changeTelephone.add,
                   maxLines: 1,
                   hintText: "Phone Number",
                   helperText: "Enter your Personal Contact here.\n"
                       "This number will be used later in order to contact you.",
+                  keyBoardType: TextInputType.phone,
                 ),
               ],
             );
@@ -224,8 +205,9 @@ class SignUpPageState extends State<SignUpPage> {
   }
 
   void _handleNavigateToHomePage(bool navigate) {
-    if (navigate && context != null) {
-      TransitionMaker.fadeTransition(destinationPageCall: () => HomePage())
+    if (navigate != null && navigate && context != null) {
+      TransitionMaker.fadeTransition(
+          destinationPageCall: () => HomePageBLoCProvider(child: HomePage()))
         ..startReplace(context);
     }
   }
@@ -251,6 +233,7 @@ class TextBoxWidget extends StatefulWidget {
     this.isPassword = false,
     this.invalidText = "",
     this.maxLines = 1,
+    this.keyBoardType,
   });
 
   final IconData icon;
@@ -261,6 +244,7 @@ class TextBoxWidget extends StatefulWidget {
   final bool isPassword;
   final String invalidText;
   final int maxLines;
+  final TextInputType keyBoardType;
 }
 
 /// Builds a text box.
@@ -273,6 +257,7 @@ class TextBoxWidgetState extends State<TextBoxWidget> {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: TextField(
+        keyboardType: widget.keyBoardType ?? TextInputType.phone,
         maxLines: widget.maxLines,
         decoration: InputDecoration(
           icon: CircleAvatar(child: Icon(widget.icon)),

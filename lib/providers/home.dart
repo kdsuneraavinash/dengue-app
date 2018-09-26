@@ -2,21 +2,21 @@ import 'package:dengue_app/bloc/home_bloc.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:flutter/widgets.dart';
 
-class HomeBLoCProvider extends InheritedWidget {
+class HomePageBLoCProvider extends InheritedWidget {
   final HomePageBLoC homeBLoC;
 
-  HomeBLoCProvider({
+  HomePageBLoCProvider({
     Key key,
-    LoginBLoC loginBLoC,
+    HomePageBLoC homeBLoC,
     Widget child,
-  })  : homeBLoC = loginBLoC ?? HomePageBLoC(),
+  })  : homeBLoC = homeBLoC ?? HomePageBLoC(),
         super(key: key, child: child);
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => true;
 
   static HomePageBLoC of(BuildContext context) =>
-      (context.inheritFromWidgetOfExactType(HomeBLoCProvider)
-              as HomeBLoCProvider)
+      (context.inheritFromWidgetOfExactType(HomePageBLoCProvider)
+              as HomePageBLoCProvider)
           .homeBLoC;
 }

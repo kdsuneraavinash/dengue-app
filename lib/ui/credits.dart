@@ -69,22 +69,19 @@ class CreditsBody extends StatelessWidget {
             height: 100.0,
           ),
         ),
-        _buildCreditsTile("100013401603485", "K. D. Sunera Avinash Chandrasiri",
-            "Lead Programmer"),
-        _buildCreditsTile("100002491783271", "Ruchin Amarathunga",
-            "Programmer | Coordinator"),
-        _buildCreditsTile("100004130706471", "Anju Chamantha",
-            "Programmer | Product Manager"),
-        // _buildCreditsTile("100005312113806", "Deepana Ishtaweera", "[Role]"),
         _buildCreditsTile(
-            "100013403053394", "Uvindu Avishka", "Head of Marketing"),
+            "100013401603485", "K. D. Sunera Avinash Chandrasiri"),
+        _buildCreditsTile("100002491783271", "Ruchin Amarathunga"),
+        _buildCreditsTile("100004130706471", "Anju Chamantha"),
+        _buildCreditsTile("100005312113806", "Deepana Ishtaweera"),
+        _buildCreditsTile("100013403053394", "Uvindu Avishka"),
       ],
     );
   }
 
   /// Build each credits tile.
   /// Get Images from facebook.
-  Widget _buildCreditsTile(String facebookID, String title, String subtitle) {
+  Widget _buildCreditsTile(String facebookID, String title) {
     return ListTile(
       leading: CircleAvatar(
         child: ClipOval(
@@ -96,7 +93,6 @@ class CreditsBody extends StatelessWidget {
         ),
       ),
       title: Text(title),
-      subtitle: Text(subtitle),
     );
   }
 }
