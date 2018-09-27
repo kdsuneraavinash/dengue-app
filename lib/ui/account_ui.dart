@@ -6,6 +6,7 @@ import 'package:dengue_app/providers/login_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/credits_ui.dart';
 import 'package:dengue_app/ui/login_ui.dart';
+import 'package:dengue_app/ui/myposts.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -33,6 +34,23 @@ class UserInfoPageState extends State<UserInfoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Account"),
+        actions: <Widget>[
+          FlatButton.icon(
+            onPressed: () {
+              TransitionMaker.fadeTransition(
+                  destinationPageCall: () => MyPostsPage())
+                ..start(context);
+            },
+            icon: Icon(
+              Icons.tag_faces,
+              color: Colors.white,
+            ),
+            label: Text(
+              "My Posts",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
       ),
       body: StreamBuilder<User>(
         stream: userBLoC.userStream,
@@ -54,32 +72,32 @@ class UserInfoPageState extends State<UserInfoPage> {
                   ),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.displayName ?? "{Empty}"),
+                  title: Text(snapshot.data?.displayName ?? ""),
                   subtitle: Text("Display Name"),
                   leading: Icon(Icons.person),
                 ),
                 ListTile(
-                  title: Text("Points : ${snapshot.data?.points ?? "{Empty}"}"),
+                  title: Text("Points : ${snapshot.data?.points ?? ""}"),
                   subtitle: Text("Points"),
                   leading: Icon(FontAwesomeIcons.fire),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.fullName ?? "{Empty}"),
+                  title: Text(snapshot.data?.fullName ?? ""),
                   subtitle: Text("Name"),
                   leading: Icon(Icons.title),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.address ?? "{Empty}"),
+                  title: Text(snapshot.data?.address ?? ""),
                   subtitle: Text("Address"),
                   leading: Icon(Icons.location_city),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.telephone ?? "{Empty}"),
+                  title: Text(snapshot.data?.telephone ?? ""),
                   subtitle: Text("Phone Number"),
                   leading: Icon(Icons.phone),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.email ?? "{Empty}"),
+                  title: Text(snapshot.data?.email ?? ""),
                   subtitle: Text("E Mail"),
                   leading: Icon(Icons.email),
                 ),
@@ -101,12 +119,13 @@ class UserInfoPageState extends State<UserInfoPage> {
                 label: Text("About")),
             StreamBuilder<User>(
               stream: userBLoC.userStream,
-              builder: (_, snapshot) =>  FlatButton.icon(
+              builder: (_, snapshot) => FlatButton.icon(
                   onPressed: () {
                     if (snapshot.data != null) {
                       userBLoC.firestoreAuthCommand.add(LogInCommand.LOGOUT);
                       TransitionMaker.fadeTransition(
-                          destinationPageCall: () => LoginBLoCProvider(child: SignUpPage()))
+                          destinationPageCall: () =>
+                              LoginBLoCProvider(child: SignUpPage()))
                         ..startPopAllAndPush(context);
                     }
                   },

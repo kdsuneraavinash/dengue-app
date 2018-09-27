@@ -1,5 +1,13 @@
 import 'dart:io';
 
+import 'package:dengue_app/bloc/user_bloc.dart';
+import 'package:dengue_app/custom_widgets/errorwidget.dart';
+import 'package:dengue_app/logic/firebase/firestore.dart';
+import 'package:dengue_app/logic/post.dart';
+import 'package:dengue_app/logic/user.dart';
+import 'package:dengue_app/providers/user_provider.dart';
+import 'package:progress_indicators/progress_indicators.dart';
+
 import '../main.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,59 +16,103 @@ import 'package:image_picker/image_picker.dart';
 class UploadImage extends StatefulWidget {
   @override
   UploadImageState createState() {
-    return  UploadImageState();
+    return UploadImageState();
   }
 }
 
 class UploadImageState extends State<UploadImage> {
+  UserBLoC userBLoC;
+  bool _isUploading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userBLoC = UserBLoCProvider.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Upload"),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              child: Center(
-                child: _buildImageBanner(context),
+    return StreamBuilder<User>(
+      stream: userBLoC.userStream,
+      builder: (_, snapshot) => snapshot.data != null
+          ? Scaffold(
+              appBar: AppBar(
+                title: Text("Upload"),
               ),
-              decoration: BoxDecoration(
-                color: Colors.black,
+              body: Stack(
+                children: _isUploading
+                    ? [_buildUploadView(snapshot.data), _buildOpacityOverlay()]
+                    : [_buildUploadView(snapshot.data)],
               ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endFloat,
+              floatingActionButton: FloatingActionButton(
+                onPressed: _mediaFile != null && !_isUploading
+                    ? () => _handleSend(snapshot.data?.id)
+                    : null,
+                child: Icon(Icons.send),
+              ),
+            )
+          : ErrorViewWidget(),
+    );
+  }
+
+  Widget _buildUploadView(User user) {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            child: Center(
+              child: _buildImageBanner(user?.id),
+            ),
+            decoration: BoxDecoration(
+              color: Colors.black,
             ),
           ),
-          Container(
-            child: _buildTextArea(),
-            color: Colors.black,
-          )
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _mediaFile != null ? _handleSend : null,
-        child: Icon(Icons.send),
-      ),
+        ),
+        Container(
+          child: _buildTextArea(user?.id),
+          color: Colors.black,
+        )
+      ],
+    );
+  }
+
+  Widget _buildOpacityOverlay() {
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: 0.9,
+          child: ModalBarrier(dismissible: false, color: Colors.black),
+        ),
+        Center(
+          child: HeartbeatProgressIndicator(
+            child: Icon(
+              FontAwesomeIcons.upload,
+              color: Colors.white,
+            ),
+          ),
+        )
+      ],
     );
   }
 
   /// Builds CachedNetworkImage as Banner.
-  Widget _buildImageBanner(BuildContext context) {
+  Widget _buildImageBanner(String userName) {
     return Row(
       children: <Widget>[
         Expanded(
-          child: _buildImageButton(),
+          child: _buildImageButton(userName),
         ),
       ],
     );
   }
 
-  Widget _buildImageButton() {
+  Widget _buildImageButton(String userId) {
     if (_mediaFile == null) {
       return SizedBox(
         child: RaisedButton(
-          onPressed: () => _handleBrowseImage(),
+          onPressed: () => _handleBrowseImage(userId),
           child: Icon(
             FontAwesomeIcons.camera,
             color: Colors.white,
@@ -83,7 +135,7 @@ class UploadImageState extends State<UploadImage> {
             children: <Widget>[
               Expanded(
                 child: FlatButton.icon(
-                  onPressed: _handleBrowseImage,
+                  onPressed: () => _handleBrowseImage(userId),
                   icon: Icon(Icons.image, color: Colors.white),
                   label: Text("Change", style: TextStyle(color: Colors.white)),
                 ),
@@ -95,7 +147,7 @@ class UploadImageState extends State<UploadImage> {
     }
   }
 
-  Widget _buildTextArea() {
+  Widget _buildTextArea(String userId) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -124,7 +176,7 @@ class UploadImageState extends State<UploadImage> {
                   _titleText = text;
                 });
               },
-              onSubmitted: (_) => _handleSend(),
+              onSubmitted: (_) => _handleSend(userId),
             ),
           ),
         )
@@ -132,7 +184,7 @@ class UploadImageState extends State<UploadImage> {
     );
   }
 
-  void _handleBrowseImage() async {
+  void _handleBrowseImage(String userId) async {
     List command = await showDialog(
         context: context,
         builder: (dialogContext) => SimpleDialog(
@@ -168,15 +220,28 @@ class UploadImageState extends State<UploadImage> {
       return;
     }
     File browsedImage = await ImagePicker.pickImage(source: command[0]);
+    browsedImage = await browsedImage.rename(
+        "${browsedImage.parent.path}/$userId-${DateTime.now().millisecondsSinceEpoch}");
     setState(() {
       _mediaFile = browsedImage;
     });
   }
 
-  void _handleSend() async {
+  void _handleSend(String userId) async {
+    setState(() {
+      _isUploading = true;
+    });
     Uri res = await cloudStorage.uploadFile(_mediaFile);
-    print(_titleText);
-    print(res);
+    Post post = Post(
+      user: userId,
+      caption: _titleText ?? "",
+      approved: false,
+      mediaLink: res.toString(),
+    );
+    FireStoreController.addPostDocument(data: post.toMap());
+    setState(() {
+      _isUploading = false;
+    });
     Navigator.pop(context, true);
   }
 

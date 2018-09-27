@@ -10,6 +10,7 @@ import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/home_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage();
@@ -99,12 +100,15 @@ class SignUpPageState extends State<SignUpPage> {
     return Stack(
       children: <Widget>[
         Opacity(
-          opacity: 0.5,
+          opacity: 0.9,
           child: ModalBarrier(dismissible: false, color: Colors.black),
         ),
         Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(Colors.yellow),
+          child: HeartbeatProgressIndicator(
+            child: Icon(
+              FontAwesomeIcons.hourglass,
+              color: Colors.white,
+            ),
           ),
         )
       ],

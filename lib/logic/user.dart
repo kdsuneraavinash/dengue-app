@@ -42,19 +42,4 @@ class User {
   String get email => _email;
 
   User();
-
-  factory User.demo() {
-    User user = User()
-      ..setUser(
-        displayName: "Curt",
-        email: "curtainCall",
-        id: "154154154",
-        photoUrl:
-            "https://www.gannett-cdn.com/presto/2018/09/06/PDTF/a15ba8e1-519e-4196-9ee2-5dbaec87d9a4-Detroit_rapper_Eminem-15.JPG",
-        fullName: "Curt N. Call",
-        address: "4554, Doctors Drive, Los Angeles, California.",
-        telephone: "098-4546789",
-      );
-    return user;
-  }
 }

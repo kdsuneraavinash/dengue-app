@@ -31,6 +31,6 @@ ThemeData buildTheme(BuildContext context) {
     secondaryHeaderColor: Colors.black,
     platform: defaultTargetPlatform,
     brightness: Brightness.light,
-    //scaffoldBackgroundColor: Color(0xff90A4AE),
+//    scaffoldBackgroundColor: Color(0xffBDBDBD),
   );
 }

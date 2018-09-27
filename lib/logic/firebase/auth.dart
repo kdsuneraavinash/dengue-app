@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/firebase/loginresult.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart'
+    show FirebaseAuth, FirebaseUser;
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show DocumentSnapshot, QuerySnapshot;
 
 class FirebaseAuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -12,10 +15,9 @@ class FirebaseAuthController {
   User _user = User();
 
   Stream<QuerySnapshot> get userChanges =>
-      Firestore.instance.collection('users').snapshots();
+      FireStoreController.userDocuments.snapshots();
 
-  Stream<QuerySnapshot> get leaderBoard => Firestore.instance
-      .collection("users")
+  Stream<QuerySnapshot> get leaderBoard => FireStoreController.userDocuments
       .orderBy("points", descending: true)
       .limit(100)
       .snapshots();
@@ -74,7 +76,7 @@ class FirebaseAuthController {
         (await _auth.currentUser() != null);
   }
 
-  void setFurtherData(Map<String, dynamic> data) {
+  void setFurtherData(Map<String, dynamic> data) async {
     Map<String, dynamic> userData = {
       'displayName': _user.displayName,
       'email': _user.email,
@@ -87,16 +89,14 @@ class FirebaseAuthController {
     userData.addAll(data);
 
     if (user != null) {
-      Firestore.instance
-          .collection('users')
-          .document(user.id)
-          .setData(userData);
+      await FireStoreController.changeUserDocument(
+          userId: user.id, data: userData);
     }
   }
 
   Future<bool> getFurtherData() async {
     DocumentSnapshot snapshot =
-        await Firestore.instance.collection('users').document(user.id).get();
+        await FireStoreController.getUserDocumentOf(user.id);
     if (snapshot?.data == null) {
       return false;
     } else {
