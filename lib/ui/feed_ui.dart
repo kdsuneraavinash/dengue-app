@@ -11,10 +11,8 @@ class FeedPage extends StatelessWidget {
           user: "Jim Nasium",
           caption:
               "Limits marked led silent dining her she far. Sir but elegance marriage dwelling likewise position old pleasure men. Dissimilar themselves simplicity no of contrasted as. Delay great day hours men. Stuff front to do allow to asked he. ",
-          afterLink:
+          mediaLink:
               "https://www.trulawn.co.uk/wp-content/uploads/spring-garden-resize-1280x720.jpg",
-          beforeLink:
-          "http://fernandogarciadory.com/wp-content/uploads/170/flores-bonitas-rojas-jardin-banco-columpio-mesa.jpg",
           likes: 3,
           shares: 4,
         ),
@@ -24,10 +22,8 @@ class FeedPage extends StatelessWidget {
           user: "Will Power",
           caption:
               "Affronting everything discretion men now own did. Still round match we to. Frankness pronounce daughters remainder extensive has but. Happiness cordially one determine concluded fat. Plenty season beyond by hardly giving of.",
-          afterLink:
+          mediaLink:
               "https://www.wikihow.com/images/5/59/Clean-rusty-garden-tools-Intro.jpg",
-          beforeLink:
-          "http://www.fredshed.co.uk/photosgardtools/bulldogedgercu.jpg",
           likes: 16,
           shares: 3,
         ),
@@ -37,10 +33,8 @@ class FeedPage extends StatelessWidget {
           user: "Cliff Hanger",
           caption:
               "Consulted or acuteness dejection an smallness if. Outward general passage another as it. Very his are come man walk one next. Delighted prevailed supported too not remainder perpetual who furnished. Nay affronting bed projection compliment instrument. ",
-          afterLink:
+          mediaLink:
               "https://www.palmers.co.nz/wp-content/uploads/bfi_thumb/Autumn-garden-niqnooeadwzjf7upqytznjh6lc2lk87zbmuo3xmxtk.jpg",
-          beforeLink:
-          "https://cdn.eventfinda.co.nz/uploads/events/transformed/1098808-494526-34.jpg",
           likes: 26,
           shares: 3,
         ),
@@ -50,10 +44,8 @@ class FeedPage extends StatelessWidget {
           user: "Bud Jet",
           caption:
               "Do so written as raising parlors spirits mr elderly. Made late in of high left hold. Carried females of up highest calling.",
-          afterLink:
+          mediaLink:
               "https://timbercreekfarmer.com/wp-content/uploads/2016/06/weeds1.png",
-          beforeLink:
-          "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
           likes: 6,
           shares: 8,
         ),

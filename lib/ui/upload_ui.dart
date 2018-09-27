@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import '../main.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 class UploadImage extends StatefulWidget {
   @override
   UploadImageState createState() {
-    return new UploadImageState();
+    return  UploadImageState();
   }
 }
 
@@ -38,8 +39,7 @@ class UploadImageState extends State<UploadImage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
-        onPressed:
-            _beforeFile != null && _afterFile != null ? _handleSend : null,
+        onPressed: _mediaFile != null ? _handleSend : null,
         child: Icon(Icons.send),
       ),
     );
@@ -48,26 +48,21 @@ class UploadImageState extends State<UploadImage> {
   /// Builds CachedNetworkImage as Banner.
   Widget _buildImageBanner(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Expanded(
-          child: _buildImageButton(true),
-        ),
-        Expanded(
-          child: _buildImageButton(false),
+          child: _buildImageButton(),
         ),
       ],
     );
   }
 
-  Widget _buildImageButton(bool isBeforeImage) {
-    if ((isBeforeImage ? _beforeFile : _afterFile) == null) {
+  Widget _buildImageButton() {
+    if (_mediaFile == null) {
       return SizedBox(
         child: RaisedButton(
-          onPressed: () => _handleBrowseImage(isBeforeImage),
+          onPressed: () => _handleBrowseImage(),
           child: Icon(
-            FontAwesomeIcons.image,
+            FontAwesomeIcons.camera,
             color: Colors.white,
             size: MediaQuery.of(context).size.width / 3,
           ),
@@ -80,7 +75,7 @@ class UploadImageState extends State<UploadImage> {
         children: <Widget>[
           Expanded(
             child: Image.file(
-              isBeforeImage ? _beforeFile : _afterFile,
+              _mediaFile,
               fit: BoxFit.cover,
             ),
           ),
@@ -88,7 +83,7 @@ class UploadImageState extends State<UploadImage> {
             children: <Widget>[
               Expanded(
                 child: FlatButton.icon(
-                  onPressed: () => _handleBrowseImage(isBeforeImage),
+                  onPressed: _handleBrowseImage,
                   icon: Icon(Icons.image, color: Colors.white),
                   label: Text("Change", style: TextStyle(color: Colors.white)),
                 ),
@@ -137,7 +132,7 @@ class UploadImageState extends State<UploadImage> {
     );
   }
 
-  void _handleBrowseImage(bool isBeforeImage) async {
+  void _handleBrowseImage() async {
     List command = await showDialog(
         context: context,
         builder: (dialogContext) => SimpleDialog(
@@ -174,23 +169,18 @@ class UploadImageState extends State<UploadImage> {
     }
     File browsedImage = await ImagePicker.pickImage(source: command[0]);
     setState(() {
-      if (isBeforeImage) {
-        _beforeFile = browsedImage;
-      } else {
-        _afterFile = browsedImage;
-      }
+      _mediaFile = browsedImage;
     });
   }
 
-  void _handleSend() {
+  void _handleSend() async {
+    Uri res = await cloudStorage.uploadFile(_mediaFile);
     print(_titleText);
-    print(_beforeFile);
-    print(_afterFile);
+    print(res);
     Navigator.pop(context, true);
   }
 
   final TextEditingController textEditingController = TextEditingController();
   String _titleText = "";
-  File _beforeFile;
-  File _afterFile;
+  File _mediaFile;
 }

@@ -4,10 +4,10 @@ import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
-import 'package:dengue_app/providers/home.dart';
-import 'package:dengue_app/providers/login.dart';
-import 'package:dengue_app/providers/user.dart';
-import 'package:dengue_app/ui/home.dart';
+import 'package:dengue_app/providers/home_provider.dart';
+import 'package:dengue_app/providers/login_provider.dart';
+import 'package:dengue_app/providers/user_provider.dart';
+import 'package:dengue_app/ui/home_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

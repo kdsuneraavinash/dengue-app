@@ -1,5 +1,5 @@
 import 'package:dengue_app/logic/task.dart';
-import 'package:dengue_app/ui/taskcard.dart';
+import 'package:dengue_app/ui/taskcard_ui.dart';
 import 'package:flutter/material.dart';
 
 class TaskFeedPage extends StatelessWidget {

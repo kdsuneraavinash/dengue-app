@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dengue_app/bloc/bloc.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
-import 'package:dengue_app/logic/socialmedia/firebase.dart';
-import 'package:dengue_app/logic/socialmedia/loginresult.dart';
+import 'package:dengue_app/logic/firebase/auth.dart';
+import 'package:dengue_app/logic/firebase/loginresult.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:rxdart/rxdart.dart';
 

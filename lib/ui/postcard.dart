@@ -26,25 +26,10 @@ class PostCard extends StatelessWidget {
 
   /// Builds CachedNetworkImage as Banner.
   Widget _buildImageBanner(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Expanded(
-          child: DefParameterNetworkImage(
-            imageUrl: post.beforeLink ??
-                "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
-            isCover: true,
-          ),
-        ),
-        Expanded(
-          child: DefParameterNetworkImage(
-            imageUrl: post.afterLink ??
-                "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
-            isCover: true,
-          ),
-        ),
-      ],
+    return DefParameterNetworkImage(
+      imageUrl: post.mediaLink ??
+          "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
+      isCover: true,
     );
   }
 

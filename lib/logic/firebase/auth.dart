@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dengue_app/logic/socialmedia/loginresult.dart';
+import 'package:dengue_app/logic/firebase/loginresult.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +13,7 @@ class FirebaseAuthController {
 
   Stream<QuerySnapshot> get userChanges =>
       Firestore.instance.collection('users').snapshots();
+
   Stream<QuerySnapshot> get leaderBoard => Firestore.instance
       .collection("users")
       .orderBy("points", descending: true)
