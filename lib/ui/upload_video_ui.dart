@@ -47,16 +47,16 @@ class UploadCameraState extends UploadAbstractState {
     setState(() {
       isUploading = true;
     });
-    String thumbnail ="THUMB-$userId-${DateTime.now().millisecondsSinceEpoch}";
+    String thumbnail ="THUMB-$userId-${DateTime.now().millisecondsSinceEpoch}.png";
     String thumbnailFile = "${(await getApplicationDocumentsDirectory()).path}/$thumbnail";
 
     await _retrieveVideoFrameFromVideo(mediaFile.path, thumbnailFile);
 
     File thumbnailFileUpload = File(thumbnailFile);
 
-    Uri resImage = await cloudStorage.uploadFile(thumbnailFileUpload, thumbnail);
+    Uri resImage = await cloudStorage.uploadFile(thumbnailFileUpload, thumbnail, "thumbnails");
     Uri resVideo = await cloudStorage.uploadFile(
-        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}");
+        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
 
     Post post = Post(
       videoLink: resVideo.toString(),

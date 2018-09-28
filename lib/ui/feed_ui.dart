@@ -7,6 +7,8 @@ import 'package:dengue_app/ui/postcard_image.dart';
 import 'package:dengue_app/ui/postcard_text.dart';
 import 'package:dengue_app/ui/postcard_video.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class FeedPage extends StatefulWidget {
   @override
@@ -57,7 +59,13 @@ class FeedPageState extends State<FeedPage>
                           },
                           itemCount: snapshot.data.length,
                         )
-                      : Center(child: CircularProgressIndicator()),
+                      : Center(
+                          child: HeartbeatProgressIndicator(
+                          child: Icon(
+                            FontAwesomeIcons.newspaper,
+                            color: Colors.black,
+                          ),
+                        )),
                 ),
                 Align(
                   alignment: Alignment.topCenter,

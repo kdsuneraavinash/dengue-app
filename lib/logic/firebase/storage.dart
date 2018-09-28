@@ -9,8 +9,8 @@ class CloudStorage {
       FirebaseStorage(storageBucket: 'gs://dengue-app-pulse.appspot.com');
   final Directory systemTempDir = Directory.systemTemp;
 
-  Future<Uri> uploadFile(File file, String fileName) async {
-    final StorageReference ref = storage.ref().child('images').child('$fileName');
+  Future<Uri> uploadFile(File file, String fileName, String folderName) async {
+    final StorageReference ref = storage.ref().child(folderName).child('$fileName');
     final StorageUploadTask uploadTask = ref.putFile(
       file,
       new StorageMetadata(

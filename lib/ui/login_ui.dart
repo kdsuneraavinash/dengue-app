@@ -12,6 +12,7 @@ import 'package:dengue_app/ui/home_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage();
@@ -66,7 +67,8 @@ class SignUpPageState extends State<SignUpPage> {
                           label: Text("Log Out"),
                         )
                       : FlatButton.icon(
-                          onPressed: () => null,
+                          onPressed: () =>
+                              _launchUrl("https://www.facebook.com/denguefreezone/"),
                           icon: Icon(FontAwesomeIcons.globe),
                           label: Text("Visit our page"),
                         ),
@@ -221,6 +223,15 @@ class SignUpPageState extends State<SignUpPage> {
     if (page != null && widget._pageController.hasClients) {
       widget._pageController.animateToPage(page,
           duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+    }
+  }
+
+  void _launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+      print(url);
+    } else {
+      return;
     }
   }
 }

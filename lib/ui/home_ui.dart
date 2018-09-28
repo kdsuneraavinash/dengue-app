@@ -1,12 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dengue_app/bloc/home_bloc.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
-import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/home_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/account_ui.dart';
+import 'package:dengue_app/ui/achievements_ui.dart';
+import 'package:dengue_app/ui/credits_ui.dart';
 import 'package:dengue_app/ui/feed_ui.dart';
 import 'package:dengue_app/ui/leaderboard_ui.dart';
 import 'package:dengue_app/ui/taskfeed_ui.dart';
@@ -17,6 +19,7 @@ import 'package:dengue_app/ui/upload_video_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unicorndial/unicorndial.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum UploadType { Text, Camera, Gallery, WeeklyPost }
 
@@ -49,6 +52,7 @@ class HomePageState extends State<HomePage> {
     return StreamBuilder<User>(
       stream: userBLoC.userStream,
       builder: (_, snapshotUser) => Scaffold(
+            drawer: _buildDrawer(snapshotUser.data),
             appBar: _buildAppBar(snapshotUser.data),
             body: PageView(
               controller: widget._pageController,
@@ -56,7 +60,7 @@ class HomePageState extends State<HomePage> {
               children: <Widget>[
                 TaskFeedPage(),
                 FeedPage(),
-                snapshotUser.data == null ? ErrorViewWidget() : LeaderBoard(),
+                (snapshotUser.data == null) ? ErrorViewWidget() : LeaderBoard(),
               ],
             ),
             bottomNavigationBar: _buildBottomNavigationBar(),
@@ -81,35 +85,118 @@ class HomePageState extends State<HomePage> {
     return AppBar(
       title: Text("Dengue Free Zone"),
       actions: <Widget>[
-        IconButton(
-          onPressed: () => _handleNavigateToGiftPage(true),
-          icon: Icon(FontAwesomeIcons.gift),
-        ),
         FlatButton.icon(
           onPressed: null,
           icon: Icon(FontAwesomeIcons.fire, color: Colors.white),
           label: Text(
-            "${user == null ? '--' : user.points}",
+            "${(user == null) ? '--' : user.points}",
             style: TextStyle(color: Colors.white),
           ),
         ),
       ],
-      leading: StreamBuilder<User>(
-        stream: userBLoC.userStream,
-        builder: (_, snapshot) => IconButton(
-              icon: CircleAvatar(
-                child: ClipOval(
-                  child: DefParameterNetworkImage(
-                    imageUrl: user?.photoUrl == null
-                        ? User.BLANK_PHOTO
-                        : user?.photoUrl,
-                    isCover: true,
-                  ),
-                ),
-                backgroundColor: Colors.white,
+    );
+  }
+
+  Widget _buildDrawer(User user) {
+    if (user == null){
+      return Container();
+    }
+    return Drawer(
+      child: Column(
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text(user.displayName),
+            accountEmail: Text(user.email),
+            currentAccountPicture: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                _handleNavigateToAccountPage();
+              },
+              child: CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(user.photoUrl),
               ),
-              onPressed: () => _handleNavigateToAccountPage(),
             ),
+          ),
+          MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: Expanded(
+              child: ListView(
+                children: <Widget>[
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleNavigateToAchievementsPage();
+                    },
+                    leading: Icon(FontAwesomeIcons.medal),
+                    title: Text("Achievements"),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleNavigateToGiftPage(true);
+                    },
+                    leading: Icon(FontAwesomeIcons.gift),
+                    title: Text("Next Gifts"),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    leading: Icon(FontAwesomeIcons.tags),
+                    title: Text("View Winners"),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _launchUrl("https://www.youtube.com/watch?v=-fQevMEQDJQ");
+                    },
+                    leading: Icon(FontAwesomeIcons.playCircle),
+                    title: Text("View Tutorials"),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _launchUrl("https://www.facebook.com/denguefreezone/");
+                    },
+                    leading: Icon(FontAwesomeIcons.facebookSquare),
+                    title: Text("Facebook Page"),
+                  ),
+                  ListTile(
+                    onTap: () {
+                    Navigator.pop(context);
+                    String toMailId = "denguefreezone@gmail.com";
+                    String subject = "Feedback on Dengue Freezone App";
+                    String body = "";
+                    _launchUrl('mailto:$toMailId?subject=$subject&body=$body');
+                    },
+                    leading: Icon(FontAwesomeIcons.envelope),
+                    title: Text("Send Feedback"),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _launchUrl("https://github.com/kdsuneraavinash/dengue_app");
+                    },
+                    leading: Icon(FontAwesomeIcons.listAlt),
+                    title: Text("What's New"),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleNavigateToAboutPage();
+                    },
+                    leading: Icon(FontAwesomeIcons.questionCircle),
+                    title: Text("About"),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -192,7 +279,21 @@ class HomePageState extends State<HomePage> {
 
   void _handleNavigateToAccountPage() {
     if (context != null) {
-      TransitionMaker.fadeTransition(destinationPageCall: () => UserInfoPage())
+      TransitionMaker.slideTransition(destinationPageCall: () => UserInfoPage())
+        ..start(context);
+    }
+  }
+
+  void _handleNavigateToAboutPage() {
+    if (context != null) {
+      TransitionMaker.slideTransition(destinationPageCall: () => CreditsPage())
+        ..start(context);
+    }
+  }
+
+  void _handleNavigateToAchievementsPage() {
+    if (context != null) {
+      TransitionMaker.slideTransition(destinationPageCall: () => AchievementsPage())
         ..start(context);
     }
   }
@@ -263,5 +364,14 @@ class HomePageState extends State<HomePage> {
     );
 
     super.initState();
+  }
+
+  void _launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+      print(url);
+    } else {
+      return;
+    }
   }
 }

@@ -233,7 +233,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
       isUploading = true;
     });
     Uri res = await cloudStorage.uploadFile(
-        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}");
+        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}.png", "images");
     Post post = Post(
       type: PostType.Image,
       user: userId,
