@@ -47,7 +47,7 @@ class SignUpPageState extends State<SignUpPage> {
       stream: userBLoC.logInState,
       initialData: LogInState.NOT_LOGGED,
       builder: (_, snapshotIsLoggingIn) => Scaffold(
-            appBar: AppBar(title: Text("Sign Up")),
+            appBar: AppBar(title: Text("Dengue Free Zone")),
             body: Stack(
               children: snapshotIsLoggingIn.data == LogInState.WAITING
                   ? [_buildPagedView(), _buildOpacityOverlay()]

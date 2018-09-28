@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart';
 
 class CloudStorage {
   static const String kTestString = "Hello world!";
@@ -11,8 +9,7 @@ class CloudStorage {
       FirebaseStorage(storageBucket: 'gs://dengue-app-pulse.appspot.com');
   final Directory systemTempDir = Directory.systemTemp;
 
-  Future<Uri> uploadFile(File file) async {
-    String fileName = basename(file.path);
+  Future<Uri> uploadFile(File file, String fileName) async {
     final StorageReference ref = storage.ref().child('images').child('$fileName');
     final StorageUploadTask uploadTask = ref.putFile(
       file,

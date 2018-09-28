@@ -1,4 +1,7 @@
+enum PostType { WeeklyPost, Image, Text }
+
 class Post {
+  PostType _type;
   String _user;
   String _caption;
   String _mediaLink;
@@ -8,6 +11,7 @@ class Post {
   DateTime _datePosted;
 
   Post({
+    PostType type,
     String user,
     String caption,
     String mediaLink,
@@ -17,6 +21,7 @@ class Post {
     bool addDate = true,
     DateTime datePosted,
   }) {
+    this._type = type ?? PostType.Image;
     this._user = user;
     this._mediaLink = mediaLink;
     this._caption = caption;
@@ -31,7 +36,24 @@ class Post {
   }
 
   factory Post.fromMap(Map<String, dynamic> data) {
+    PostType postType;
+    switch (data["type"]) {
+      //WeeklyPost, Gallery, Camera, Text
+      case "WeeklyPost":
+        postType = PostType.WeeklyPost;
+        break;
+      case "Image":
+        postType = PostType.Image;
+        break;
+      case "Text":
+        postType = PostType.WeeklyPost;
+        break;
+      default:
+        postType = PostType.Image;
+    }
+
     return Post(
+        type: postType,
         user: data["user"],
         mediaLink: data["mediaLink"],
         caption: data["caption"],
@@ -43,7 +65,21 @@ class Post {
   }
 
   Map<String, dynamic> toMap() {
+    String postType;
+    switch (this.type) {
+      case PostType.Image:
+        postType = "Image";
+        break;
+      case PostType.Text:
+        postType = "Text";
+        break;
+      case PostType.WeeklyPost:
+        postType = "WeeklyPost";
+        break;
+    }
+
     return {
+      "type": postType,
       "user": this.user,
       "mediaLink": this.mediaLink,
       "caption": this.caption,
@@ -67,6 +103,8 @@ class Post {
   bool get approved => _approved;
 
   DateTime get datePosted => _datePosted;
+
+  PostType get type => _type;
 
   // Format Date to string
   String get formattedDatePosted {

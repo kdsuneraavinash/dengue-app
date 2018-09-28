@@ -13,16 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
-class UploadImage extends StatefulWidget {
+abstract class UploadAbstract extends StatefulWidget {
   @override
-  UploadImageState createState() {
-    return UploadImageState();
-  }
+  UploadAbstractState createState();
 }
 
-class UploadImageState extends State<UploadImage> {
+abstract class UploadAbstractState extends State<UploadAbstract> {
   UserBLoC userBLoC;
-  bool _isUploading = false;
+  bool isUploading = false;
 
   @override
   void didChangeDependencies() {
@@ -40,18 +38,19 @@ class UploadImageState extends State<UploadImage> {
                 title: Text("Upload"),
               ),
               body: Stack(
-                children: _isUploading
+                children: isUploading
                     ? [_buildUploadView(snapshot.data), _buildOpacityOverlay()]
                     : [_buildUploadView(snapshot.data)],
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endFloat,
-              floatingActionButton: FloatingActionButton(
-                onPressed: _mediaFile != null && !_isUploading
-                    ? () => _handleSend(snapshot.data?.id)
-                    : null,
-                child: Icon(Icons.send),
-              ),
+              floatingActionButton: mediaFile != null && !isUploading
+                  ? FloatingActionButton(
+                      key: Key("FAB"),
+                      onPressed: () => handleSend(snapshot.data?.id),
+                      child: Icon(Icons.send),
+                    )
+                  : null,
             )
           : ErrorViewWidget(),
     );
@@ -71,7 +70,7 @@ class UploadImageState extends State<UploadImage> {
           ),
         ),
         Container(
-          child: _buildTextArea(user?.id),
+          child: buildTextArea(user?.id),
           color: Colors.black,
         )
       ],
@@ -102,19 +101,19 @@ class UploadImageState extends State<UploadImage> {
     return Row(
       children: <Widget>[
         Expanded(
-          child: _buildImageButton(userName),
+          child: buildImageButton(userName),
         ),
       ],
     );
   }
 
-  Widget _buildImageButton(String userId) {
-    if (_mediaFile == null) {
+  Widget buildImageButton(String userId) {
+    if (mediaFile == null) {
       return SizedBox(
         child: RaisedButton(
-          onPressed: () => _handleBrowseImage(userId),
+          onPressed: () => handleBrowseImage(userId),
           child: Icon(
-            FontAwesomeIcons.camera,
+            backgroundIcon,
             color: Colors.white,
             size: MediaQuery.of(context).size.width / 3,
           ),
@@ -127,7 +126,7 @@ class UploadImageState extends State<UploadImage> {
         children: <Widget>[
           Expanded(
             child: Image.file(
-              _mediaFile,
+              mediaFile,
               fit: BoxFit.cover,
             ),
           ),
@@ -135,7 +134,7 @@ class UploadImageState extends State<UploadImage> {
             children: <Widget>[
               Expanded(
                 child: FlatButton.icon(
-                  onPressed: () => _handleBrowseImage(userId),
+                  onPressed: () => handleBrowseImage(userId),
                   icon: Icon(Icons.image, color: Colors.white),
                   label: Text("Change", style: TextStyle(color: Colors.white)),
                 ),
@@ -147,7 +146,7 @@ class UploadImageState extends State<UploadImage> {
     }
   }
 
-  Widget _buildTextArea(String userId) {
+  Widget buildTextArea(String userId) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -161,9 +160,9 @@ class UploadImageState extends State<UploadImage> {
             child: TextField(
               maxLines: 3,
               controller: TextEditingController.fromValue(TextEditingValue(
-                  text: _titleText,
+                  text: titleText,
                   selection:
-                      TextSelection.collapsed(offset: _titleText.length))),
+                      TextSelection.collapsed(offset: titleText.length))),
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                   hintText: "Type your thoughts here",
@@ -173,10 +172,10 @@ class UploadImageState extends State<UploadImage> {
                   )),
               onChanged: (text) {
                 setState(() {
-                  _titleText = text;
+                  titleText = text;
                 });
               },
-              onSubmitted: (_) => _handleSend(userId),
+              onSubmitted: (_) => handleSend(userId),
             ),
           ),
         )
@@ -184,7 +183,7 @@ class UploadImageState extends State<UploadImage> {
     );
   }
 
-  void _handleBrowseImage(String userId) async {
+  void handleBrowseImage(String userId) async {
     List command = await showDialog(
         context: context,
         builder: (dialogContext) => SimpleDialog(
@@ -220,32 +219,33 @@ class UploadImageState extends State<UploadImage> {
       return;
     }
     File browsedImage = await ImagePicker.pickImage(source: command[0]);
-    browsedImage = await browsedImage.rename(
-        "${browsedImage.parent.path}/$userId-${DateTime.now().millisecondsSinceEpoch}");
     setState(() {
-      _mediaFile = browsedImage;
+      mediaFile = browsedImage;
     });
   }
 
-  void _handleSend(String userId) async {
+  void handleSend(String userId) async {
     setState(() {
-      _isUploading = true;
+      isUploading = true;
     });
-    Uri res = await cloudStorage.uploadFile(_mediaFile);
+    Uri res = await cloudStorage.uploadFile(
+        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}");
     Post post = Post(
+      type: PostType.Image,
       user: userId,
-      caption: _titleText ?? "",
+      caption: titleText ?? "",
       approved: false,
       mediaLink: res.toString(),
     );
     FireStoreController.addPostDocument(data: post.toMap());
     setState(() {
-      _isUploading = false;
+      isUploading = false;
     });
     Navigator.pop(context, true);
   }
 
   final TextEditingController textEditingController = TextEditingController();
-  String _titleText = "";
-  File _mediaFile;
+  String titleText = "";
+  File mediaFile;
+  IconData backgroundIcon = Icons.camera_alt;
 }

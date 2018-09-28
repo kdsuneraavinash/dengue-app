@@ -10,10 +10,13 @@ import 'package:dengue_app/ui/account_ui.dart';
 import 'package:dengue_app/ui/feed_ui.dart';
 import 'package:dengue_app/ui/leaderboard_ui.dart';
 import 'package:dengue_app/ui/taskfeed_ui.dart';
-import 'package:dengue_app/ui/upload_ui.dart';
+import 'package:dengue_app/ui/upload_camera_ui.dart';
+import 'package:dengue_app/ui/upload_gallery_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unicorndial/unicorndial.dart';
+
+enum UploadType { Text, Camera, Gallery, WeeklyPost }
 
 class HomePage extends StatefulWidget {
   final PageController _pageController = PageController(initialPage: 1);
@@ -159,10 +162,21 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  void _handleNavigateToUploadPage(navigate) {
-    if (navigate && context != null) {
-      TransitionMaker.fadeTransition(destinationPageCall: () => UploadImage())
-        ..start(context);
+  void _handleNavigateToUploadPage(UploadType navigate) {
+    if (context != null) {
+      switch (navigate) {
+        case UploadType.Text:
+        case UploadType.WeeklyPost:
+        case UploadType.Camera:
+          TransitionMaker.fadeTransition(
+              destinationPageCall: () => UploadCamera())
+            ..start(context);
+          break;
+        case UploadType.Gallery:
+          TransitionMaker.fadeTransition(
+              destinationPageCall: () => UploadGallery())
+            ..start(context);
+      }
     }
   }
 
@@ -202,7 +216,7 @@ class HomePageState extends State<HomePage> {
           labelText: "Gallery",
           labelColor: Colors.black,
           currentButton: FloatingActionButton(
-              onPressed: () => _handleNavigateToUploadPage(true),
+              onPressed: () => _handleNavigateToUploadPage(UploadType.Gallery),
               heroTag: "gallery",
               backgroundColor: Colors.green,
               mini: true,
@@ -219,7 +233,7 @@ class HomePageState extends State<HomePage> {
             backgroundColor: Colors.blue,
             mini: true,
             child: Icon(Icons.camera_alt),
-            onPressed: () {},
+            onPressed: () => _handleNavigateToUploadPage(UploadType.Camera),
           )),
     );
 
