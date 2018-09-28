@@ -5,6 +5,7 @@ import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/providers/feed_provider.dart';
 import 'package:dengue_app/ui/postcard_image.dart';
 import 'package:dengue_app/ui/postcard_text.dart';
+import 'package:dengue_app/ui/postcard_video.dart';
 import 'package:flutter/material.dart';
 
 class FeedPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class FeedPageState extends State<FeedPage>
     super.didChangeDependencies();
     feedBLoC = FeedBLoCProvider.of(context);
     feedBLoC.refreshAvailable.listen((available) {
-      if (available ?? false) {
+      if (context != null && available ?? false) {
         setState(() {
           controller.forward();
         });
@@ -50,7 +51,7 @@ class FeedPageState extends State<FeedPage>
                                 return PostTextCard(
                                     processedPost: snapshot.data[i]);
                               case PostType.WeeklyPost:
-                                return PostImageCard(
+                                return PostWeeklyCard(
                                     processedPost: snapshot.data[i]);
                             }
                           },

@@ -81,4 +81,5 @@ class UploadTextState extends UploadAbstractState {
     });
     Navigator.pop(context, true);
   }
+
 }

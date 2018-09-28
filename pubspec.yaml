@@ -16,28 +16,30 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
   # Add additional Icon set
   font_awesome_flutter: 8.0.1
   # Stream Controlling
   rxdart: ^0.18.1
   # Library to view network images
   cached_network_image: ^0.4.2
+  # Library to view Videos
+  chewie: ^0.7.0
   # Image Picker
   image_picker: ^0.4.10
+  # Speed dial type Floating action button
+  unicorndial: ^1.1.4
+  # Progress indication animations
+  progress_indicators: ^0.1.2
   # Facebook Login
   flutter_facebook_login: ^1.1.1
-  # Twitter Login
-  # flutter_twitter_login: ^1.1.0
   # Google Login
   google_sign_in: ^3.0.5
+  # Firebase Authentication
   firebase_auth: ^0.5.20
+  # Firestore Database
   cloud_firestore: ^0.8.0
+  # Firebase Cloud storage
   firebase_storage: ^1.0.2
-  progress_indicators: ^0.1.2
-  unicorndial: ^1.1.4
 firebase_analytics: ^0.3.3
 
 dev_dependencies:

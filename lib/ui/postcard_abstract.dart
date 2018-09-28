@@ -1,6 +1,8 @@
 import 'package:dengue_app/bloc/feed_bloc.dart';
 import 'package:dengue_app/custom_widgets/icontext.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
+import 'package:dengue_app/custom_widgets/transition_maker.dart';
+import 'package:dengue_app/ui/image_view_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -24,7 +26,7 @@ abstract class PostCardAbstract extends StatelessWidget {
           buildCaptionText(),
           GestureDetector(
             child: buildImageBanner(context),
-            onTap: () {},
+            onTap: () => handlePostTapped(context),
           ),
           buildRatingStrip(context, ""),
         ],
@@ -103,11 +105,23 @@ abstract class PostCardAbstract extends StatelessWidget {
             icon: Icons.verified_user,
             text: "Rating : ${'★' * processedPost.post.rating}",
             mainAxisAlignment: MainAxisAlignment.center,
+            color: Colors.blue[900],
           )
         : IconText(
             icon: FontAwesomeIcons.clock,
             text: "Approval Pending",
             mainAxisAlignment: MainAxisAlignment.center,
+            color: Colors.blue[500],
           );
+  }
+
+  void handlePostTapped(BuildContext context) {
+    TransitionMaker.fadeTransition(
+      destinationPageCall: () => ImageView(
+            processedPost.post.videoLink,
+            MediaType.Video,
+            "",
+          ),
+    )..start(context);
   }
 }

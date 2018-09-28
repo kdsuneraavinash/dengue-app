@@ -9,6 +9,7 @@ class Post {
   int _rating;
   String _sharableLink;
   DateTime _datePosted;
+  String _videoLink;
 
   Post({
     PostType type,
@@ -20,6 +21,7 @@ class Post {
     String sharableLink = "",
     bool addDate = true,
     DateTime datePosted,
+    String videoLink,
   }) {
     this._type = type ?? PostType.Image;
     this._user = user;
@@ -33,6 +35,7 @@ class Post {
     } else {
       this._datePosted = datePosted;
     }
+    this._videoLink = videoLink ?? "";
   }
 
   factory Post.fromMap(Map<String, dynamic> data) {
@@ -53,15 +56,17 @@ class Post {
     }
 
     return Post(
-        type: postType,
-        user: data["user"],
-        mediaLink: data["mediaLink"],
-        caption: data["caption"],
-        approved: data["approved"],
-        rating: data["rating"],
-        sharableLink: data["sharableLink"],
-        addDate: false,
-        datePosted: data["datePosted"]);
+      type: postType,
+      user: data["user"],
+      mediaLink: data["mediaLink"],
+      caption: data["caption"],
+      approved: data["approved"],
+      rating: data["rating"],
+      sharableLink: data["sharableLink"],
+      addDate: false,
+      datePosted: data["datePosted"],
+      videoLink: data["videoLink"] ?? "",
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -87,6 +92,7 @@ class Post {
       "rating": this.rating,
       "sharableLink": this.sharableLink,
       "datePosted": this.datePosted,
+      "videoLink": this.videoLink,
     };
   }
 
@@ -95,6 +101,8 @@ class Post {
   String get caption => _caption;
 
   String get mediaLink => _mediaLink;
+
+  String get videoLink => _videoLink;
 
   String get sharableLink => _sharableLink;
 

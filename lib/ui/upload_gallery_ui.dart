@@ -15,10 +15,10 @@ class UploadGallery extends UploadAbstract {
 class UploadGalleryState extends UploadAbstractState {
   @override
   void handleBrowseImage(String userId) async {
-    File browsedImage =
+    File pickedFile =
         await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      mediaFile = browsedImage;
+      mediaFile = pickedFile;
     });
   }
 

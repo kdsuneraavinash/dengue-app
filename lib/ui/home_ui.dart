@@ -13,6 +13,7 @@ import 'package:dengue_app/ui/taskfeed_ui.dart';
 import 'package:dengue_app/ui/upload_camera_ui.dart';
 import 'package:dengue_app/ui/upload_gallery_ui.dart';
 import 'package:dengue_app/ui/upload_text_ui.dart';
+import 'package:dengue_app/ui/upload_video_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unicorndial/unicorndial.dart';
@@ -172,6 +173,10 @@ class HomePageState extends State<HomePage> {
             ..start(context);
           break;
         case UploadType.WeeklyPost:
+          TransitionMaker.fadeTransition(
+              destinationPageCall: () => UploadWeekly())
+            ..start(context);
+          break;
         case UploadType.Camera:
           TransitionMaker.fadeTransition(
               destinationPageCall: () => UploadCamera())
@@ -211,7 +216,7 @@ class HomePageState extends State<HomePage> {
             backgroundColor: Colors.red,
             mini: true,
             child: Icon(Icons.play_arrow),
-            onPressed: () {},
+            onPressed: () => _handleNavigateToUploadPage(UploadType.WeeklyPost),
           )),
     );
 
@@ -221,11 +226,12 @@ class HomePageState extends State<HomePage> {
           labelText: "Gallery",
           labelColor: Colors.black,
           currentButton: FloatingActionButton(
-              onPressed: () => _handleNavigateToUploadPage(UploadType.Gallery),
-              heroTag: "gallery",
-              backgroundColor: Colors.green,
-              mini: true,
-              child: Icon(Icons.image))),
+            heroTag: "gallery",
+            backgroundColor: Colors.green,
+            mini: true,
+            child: Icon(Icons.image),
+            onPressed: () => _handleNavigateToUploadPage(UploadType.Gallery),
+          )),
     );
 
     childButtons.add(

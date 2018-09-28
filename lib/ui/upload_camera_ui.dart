@@ -15,9 +15,9 @@ class UploadCamera extends UploadAbstract {
 class UploadCameraState extends UploadAbstractState {
   @override
   void handleBrowseImage(String userId) async {
-    File browsedImage = await ImagePicker.pickImage(source: ImageSource.camera);
+    File pickedFile = await ImagePicker.pickImage(source: ImageSource.camera);
     setState(() {
-      mediaFile = browsedImage;
+      mediaFile = pickedFile;
     });
   }
 

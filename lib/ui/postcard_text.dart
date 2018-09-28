@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:dengue_app/custom_widgets/icontext.dart';
 import 'package:dengue_app/ui/postcard_abstract.dart';
@@ -53,4 +52,7 @@ class PostTextCard extends PostCardAbstract {
       color: Colors.blueGrey,
     );
   }
+
+  @override
+  void handlePostTapped(BuildContext context) {}
 }
