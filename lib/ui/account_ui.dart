@@ -6,7 +6,6 @@ import 'package:dengue_app/providers/login_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/credits_ui.dart';
 import 'package:dengue_app/ui/login_ui.dart';
-import 'package:dengue_app/ui/myposts.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -34,23 +33,6 @@ class UserInfoPageState extends State<UserInfoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Account"),
-        actions: <Widget>[
-          FlatButton.icon(
-            onPressed: () {
-              TransitionMaker.fadeTransition(
-                  destinationPageCall: () => MyPostsPage())
-                ..start(context);
-            },
-            icon: Icon(
-              Icons.tag_faces,
-              color: Colors.white,
-            ),
-            label: Text(
-              "My Posts",
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
       ),
       body: StreamBuilder<User>(
         stream: userBLoC.userStream,

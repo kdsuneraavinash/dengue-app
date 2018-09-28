@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
-import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/user_provider.dart';
-import 'package:dengue_app/ui/postcard.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -66,7 +64,5 @@ class MyPostsPageState extends State<MyPostsPage> {
 }
 
 Widget _buildPostView(DocumentSnapshot doc) {
-  return PostCard(
-    post: Post.fromMap(doc.data),
-  );
+  return Container();
 }

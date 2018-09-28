@@ -4,6 +4,7 @@ import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
+import 'package:dengue_app/providers/feed_provider.dart';
 import 'package:dengue_app/providers/home_provider.dart';
 import 'package:dengue_app/providers/login_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
@@ -211,7 +212,7 @@ class SignUpPageState extends State<SignUpPage> {
   void _handleNavigateToHomePage(bool navigate) {
     if (navigate != null && navigate && context != null) {
       TransitionMaker.fadeTransition(
-          destinationPageCall: () => HomePageBLoCProvider(child: HomePage()))
+          destinationPageCall: () => HomePageBLoCProvider(child: FeedBLoCProvider(child: HomePage())))
         ..startReplace(context);
     }
   }

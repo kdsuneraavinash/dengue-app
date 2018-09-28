@@ -4,7 +4,6 @@ import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
-import '../main.dart';
 import 'package:dengue_app/providers/home_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/account_ui.dart';
@@ -14,6 +13,7 @@ import 'package:dengue_app/ui/taskfeed_ui.dart';
 import 'package:dengue_app/ui/upload_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:unicorndial/unicorndial.dart';
 
 class HomePage extends StatefulWidget {
   final PageController _pageController = PageController(initialPage: 1);
@@ -55,13 +55,20 @@ class HomePageState extends State<HomePage> {
               ],
             ),
             bottomNavigationBar: _buildBottomNavigationBar(),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () => _handleNavigateToUploadPage(true),
-              isExtended: true,
-              label: Text("Post"),
-              icon: Icon(Icons.camera_alt),
-            ),
+            floatingActionButton: _buildFloatingActionButton(),
           ),
+    );
+  }
+
+  List<UnicornButton> childButtons;
+
+  Widget _buildFloatingActionButton() {
+    return UnicornDialer(
+      backgroundColor: Color.fromRGBO(0, 0, 0, 0.6),
+      parentButtonBackground: Theme.of(context).accentColor,
+      orientation: UnicornOrientation.VERTICAL,
+      parentButton: Icon(FontAwesomeIcons.pen),
+      childButtons: childButtons,
     );
   }
 
@@ -169,5 +176,67 @@ class HomePageState extends State<HomePage> {
   void _handleNavigateToGiftPage(navigate) {
     // Go To Last Week Winners
     print("Go to gifts page");
+  }
+
+  @override
+  void initState() {
+    childButtons = List<UnicornButton>();
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Weekly Post",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "weeklyPost",
+            backgroundColor: Colors.red,
+            mini: true,
+            child: Icon(Icons.play_arrow),
+            onPressed: () {},
+          )),
+    );
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Gallery",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+              onPressed: () => _handleNavigateToUploadPage(true),
+              heroTag: "gallery",
+              backgroundColor: Colors.green,
+              mini: true,
+              child: Icon(Icons.image))),
+    );
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Camera",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "camera",
+            backgroundColor: Colors.blue,
+            mini: true,
+            child: Icon(Icons.camera_alt),
+            onPressed: () {},
+          )),
+    );
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Text",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "text",
+            backgroundColor: Colors.deepPurple,
+            mini: true,
+            child: Icon(Icons.title),
+            onPressed: () {},
+          )),
+    );
+
+    super.initState();
   }
 }

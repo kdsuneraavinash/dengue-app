@@ -14,6 +14,8 @@ class Post {
     bool approved = false,
     int rating = 0,
     String sharableLink = "",
+    bool addDate = true,
+    DateTime datePosted,
   }) {
     this._user = user;
     this._mediaLink = mediaLink;
@@ -21,18 +23,23 @@ class Post {
     this._approved = approved;
     this._rating = rating;
     this._sharableLink = sharableLink;
-    this._datePosted = DateTime.now();
+    if (addDate) {
+      this._datePosted = DateTime.now();
+    } else {
+      this._datePosted = datePosted;
+    }
   }
 
   factory Post.fromMap(Map<String, dynamic> data) {
     return Post(
-      user: data["user"],
-      mediaLink: data["mediaLink"],
-      caption: data["caption"],
-      approved: data["approved"],
-      rating: data["rating"],
-      sharableLink: data["sharableLink"],
-    );
+        user: data["user"],
+        mediaLink: data["mediaLink"],
+        caption: data["caption"],
+        approved: data["approved"],
+        rating: data["rating"],
+        sharableLink: data["sharableLink"],
+        addDate: false,
+        datePosted: data["datePosted"]);
   }
 
   Map<String, dynamic> toMap() {
@@ -60,4 +67,26 @@ class Post {
   bool get approved => _approved;
 
   DateTime get datePosted => _datePosted;
+
+  // Format Date to string
+  String get formattedDatePosted {
+    String str = "";
+    List<String> months = [
+      'Jan',
+      'Feb',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    str += '${datePosted.year} ${months[datePosted.month - 1]} ${datePosted.day} ' +
+        'at ${(datePosted.hour % 12 == 0) ? 12 : (datePosted.hour % 12)}:${datePosted.minute.toString().padRight(2, '0')} ${datePosted.hour / 12 == 0 ? "AM" : "PM"}';
+    return str;
+  }
 }

@@ -31,7 +31,7 @@ class LeaderBoardState extends State<LeaderBoard> {
             stream: userBLoC.leaderBoard,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) return CircularProgressIndicator();
+              if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
               return ListView.builder(
                 itemBuilder: (_, i) => ListTile(
                       title: Text(snapshot.data.documents[i].data["displayName"]),
@@ -42,6 +42,7 @@ class LeaderBoardState extends State<LeaderBoard> {
                         isCover: false,
                         width: 40.0,
                         height: 40.0,
+                        needProgress: false,
                       ),
                       trailing: _buildTrailingBadge(i),
                     ),
