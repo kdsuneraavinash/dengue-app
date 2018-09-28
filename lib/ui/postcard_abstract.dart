@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
-class PostCard extends StatelessWidget {
+abstract class PostCardAbstract extends StatelessWidget {
   final ProcessedPost processedPost;
 
-  PostCard({@required this.processedPost});
+  PostCardAbstract({@required this.processedPost});
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +21,19 @@ class PostCard extends StatelessWidget {
       child: Column(
         children: <Widget>[
           _buildTitleStrip(context),
-          _buildCaptionText(),
+          buildCaptionText(),
           GestureDetector(
-            child: _buildImageBanner(context),
+            child: buildImageBanner(context),
             onTap: () {},
           ),
-          _buildRatingStrip(context, ""),
+          buildRatingStrip(context, ""),
         ],
       ),
     );
   }
 
   /// Builds CachedNetworkImage as Banner.
-  Widget _buildImageBanner(BuildContext context) {
+  Widget buildImageBanner(BuildContext context) {
     return DefParameterNetworkImage(
       imageUrl: processedPost.post.mediaLink ??
           "https://www.almanac.com/sites/default/files/styles/primary_image_in_article/public/image_nodes/dandelion-greens-weeds.jpg?itok=J1YWOB1u",
@@ -85,7 +85,7 @@ class PostCard extends StatelessWidget {
           );
   }
 
-  Widget _buildCaptionText() {
+  Widget buildCaptionText() {
     return processedPost.post.caption.length != 0
         ? Container(
             alignment: Alignment.centerLeft,
@@ -97,7 +97,7 @@ class PostCard extends StatelessWidget {
   }
 
   /// Build Time Date Data
-  Widget _buildRatingStrip(BuildContext context, String text) {
+  Widget buildRatingStrip(BuildContext context, String text) {
     return processedPost.post.approved
         ? IconText(
             icon: Icons.verified_user,

@@ -44,7 +44,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.endFloat,
-              floatingActionButton: mediaFile != null && !isUploading
+              floatingActionButton: shouldEnableSendButton()
                   ? FloatingActionButton(
                       key: Key("FAB"),
                       onPressed: () => handleSend(snapshot.data?.id),
@@ -54,6 +54,10 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
             )
           : ErrorViewWidget(),
     );
+  }
+
+  bool shouldEnableSendButton() {
+    return mediaFile != null && !isUploading;
   }
 
   Widget _buildUploadView(User user) {

@@ -8,7 +8,7 @@ class IconText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColor,
+      color: color ?? Theme.of(context).primaryColor,
       padding: EdgeInsets.all(8.0),
       child: Row(
         mainAxisAlignment: this.mainAxisAlignment,
@@ -24,16 +24,17 @@ class IconText extends StatelessWidget {
           Text(
             this.text,
             textAlign: TextAlign.end,
-            style: Theme.of(context).textTheme.button.apply(color: Colors.white),
+            style:  Theme.of(context).textTheme.button.apply(color: Colors.white),
           ),
         ],
       ),
     );
   }
 
-  IconText({this.icon, this.text, this.mainAxisAlignment});
+  IconText({this.icon, this.text, this.mainAxisAlignment, this.color});
 
   final IconData icon;
   final String text;
   final MainAxisAlignment mainAxisAlignment;
+  final Color color;
 }

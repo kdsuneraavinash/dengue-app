@@ -46,7 +46,7 @@ class Post {
         postType = PostType.Image;
         break;
       case "Text":
-        postType = PostType.WeeklyPost;
+        postType = PostType.Text;
         break;
       default:
         postType = PostType.Image;

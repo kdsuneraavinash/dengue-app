@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:dengue_app/bloc/feed_bloc.dart';
+import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/providers/feed_provider.dart';
-import 'package:dengue_app/ui/postcard.dart';
+import 'package:dengue_app/ui/postcard_image.dart';
+import 'package:dengue_app/ui/postcard_text.dart';
 import 'package:flutter/material.dart';
 
 class FeedPage extends StatefulWidget {
@@ -39,8 +41,19 @@ class FeedPageState extends State<FeedPage>
                   stream: feedBLoC.postsFeed,
                   builder: (_, snapshot) => snapshot.hasData
                       ? ListView.builder(
-                          itemBuilder: (_, i) =>
-                              PostCard(processedPost: snapshot.data[i]),
+                          itemBuilder: (_, i) {
+                            switch (snapshot.data[i].post.type) {
+                              case PostType.Image:
+                                return PostImageCard(
+                                    processedPost: snapshot.data[i]);
+                              case PostType.Text:
+                                return PostTextCard(
+                                    processedPost: snapshot.data[i]);
+                              case PostType.WeeklyPost:
+                                return PostImageCard(
+                                    processedPost: snapshot.data[i]);
+                            }
+                          },
                           itemCount: snapshot.data.length,
                         )
                       : Center(child: CircularProgressIndicator()),

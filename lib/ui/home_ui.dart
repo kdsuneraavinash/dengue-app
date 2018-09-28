@@ -12,6 +12,7 @@ import 'package:dengue_app/ui/leaderboard_ui.dart';
 import 'package:dengue_app/ui/taskfeed_ui.dart';
 import 'package:dengue_app/ui/upload_camera_ui.dart';
 import 'package:dengue_app/ui/upload_gallery_ui.dart';
+import 'package:dengue_app/ui/upload_text_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unicorndial/unicorndial.dart';
@@ -166,6 +167,10 @@ class HomePageState extends State<HomePage> {
     if (context != null) {
       switch (navigate) {
         case UploadType.Text:
+          TransitionMaker.fadeTransition(
+              destinationPageCall: () => UploadText())
+            ..start(context);
+          break;
         case UploadType.WeeklyPost:
         case UploadType.Camera:
           TransitionMaker.fadeTransition(
@@ -247,7 +252,7 @@ class HomePageState extends State<HomePage> {
             backgroundColor: Colors.deepPurple,
             mini: true,
             child: Icon(Icons.title),
-            onPressed: () {},
+            onPressed: () => _handleNavigateToUploadPage(UploadType.Text),
           )),
     );
 
