@@ -1,21 +1,18 @@
 import 'dart:async';
 
 import 'package:dengue_app/logic/firebase/firestore.dart';
-import 'package:dengue_app/logic/firebase/loginresult.dart';
 import 'package:dengue_app/logic/user.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart'
-    show FirebaseAuth, FirebaseUser;
-import 'package:cloud_firestore/cloud_firestore.dart'
-    show DocumentSnapshot, QuerySnapshot;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum LoginMethod { GOOGLE, FACEBOOK }
 
 class FirebaseAuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-  User _user = User();
-
-  Stream<QuerySnapshot> get userChanges =>
-      FireStoreController.userDocuments.snapshots();
+  final GoogleSignIn _nativeGoogleSignIn = GoogleSignIn();
+  final FacebookLogin _nativeFacebookSignIn = FacebookLogin();
 
   Stream<QuerySnapshot> get leaderBoard => FireStoreController.userDocuments
       .orderBy("points", descending: true)
@@ -23,78 +20,89 @@ class FirebaseAuthController {
       .snapshots();
 
   Future<FirebaseUser> _googleLogIn() async {
-    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    GoogleSignInAccount googleUser;
+    try {
+      googleUser = await _nativeGoogleSignIn.signIn();
 
-    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    FirebaseUser user = await _auth.signInWithGoogle(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    return user;
+      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      FirebaseUser user = await _auth.signInWithGoogle(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      return user;
+    } catch (e) {
+      print("Google Sign In Error: ${e.toString()}");
+      return null;
+    }
   }
 
-  Future<LogInResult> login() async {
+  Future<FirebaseUser> _facebookLogIn() async {
     try {
-      FirebaseUser _fbUser = await _googleLogIn();
+      FacebookLoginResult facebookUser = await _nativeFacebookSignIn
+          .logInWithReadPermissions(['email', 'public_profile']);
 
-      if (_fbUser != null) {
-        _user = User()
-          ..setUser(
-              displayName: _fbUser.displayName,
-              email: _fbUser.email,
-              id: _fbUser.uid,
-              photoUrl: _fbUser.photoUrl,
-              telephone: _fbUser.phoneNumber ?? "",
-              fullName: _fbUser.displayName,
-              address: "");
-        bool isAlreadyPresent = await getFurtherData();
-        if (!isAlreadyPresent) {
-          // Fresh Sign Up
-          setFurtherData({});
-          return LogInResult(LogInResultStatus.signedUp, null,
-              Session(_fbUser?.uid, _fbUser?.email));
-        } else {
-          return LogInResult(LogInResultStatus.loggedIn, null,
-              Session(_fbUser?.uid, _fbUser?.email));
-        }
-      } else {
-        return LogInResult(LogInResultStatus.error, null, null);
+      if (facebookUser.status == FacebookLoginStatus.loggedIn) {
+        FirebaseUser user = await _auth.signInWithFacebook(
+          accessToken: facebookUser.accessToken.token,
+        );
+        return user;
       }
-    } catch (error) {
-      return LogInResult(LogInResultStatus.error, error.toString(), null);
+      return null;
+    } catch (e) {
+      // TODO: Handle error when logging in with same account
+      print("Google Sign In Error: ${e.toString()}");
+      return null;
     }
+  }
+
+  /// Sign in using the social media specified
+  Future<FirebaseUser> signInFromSocialMedia(LoginMethod method) async {
+    FirebaseUser firebaseUser;
+    switch (method) {
+      case LoginMethod.GOOGLE:
+        firebaseUser = await _googleLogIn();
+        break;
+      case LoginMethod.FACEBOOK:
+        firebaseUser = await _facebookLogIn();
+        break;
+    }
+    return firebaseUser;
+  }
+
+  /// Gets user data from firestore database.
+  /// Requires a [FirebaseUser].
+  Future<User> getUserDataFromFirestore(FirebaseUser firebaseUser) async {
+    DocumentSnapshot snapshot =
+        await FireStoreController.getUserDocumentOf(firebaseUser.uid);
+    if (snapshot.data != null) {
+      User user = User.fromMap(firebaseUser.uid, snapshot.data);
+      return user;
+    }
+    return null;
   }
 
   void logOut() async {
     await _auth.signOut();
-    await _googleSignIn.signOut();
-    _user = null;
+    try {
+      await _nativeGoogleSignIn.signOut();
+      await _nativeFacebookSignIn.logOut();
+    } catch (ignored) {}
   }
 
-  Future<bool> isLoggedIn() async {
-    return (await _googleSignIn.isSignedIn()) &&
-        (await _auth.currentUser() != null);
-  }
+  Future<FirebaseUser> get currentFirebaseUser async =>
+      await _auth.currentUser();
 
-  void setFurtherData(Map<String, dynamic> data) async {
-    Map<String, dynamic> userData = {
-      'displayName': _user.displayName,
-      'email': _user.email,
-      'photoUrl': _user.photoUrl,
-      'fullName': _user.fullName,
-      'address': _user.address,
-      'telephone': _user.telephone,
-      'points': _user.points,
-    };
-    userData.addAll(data);
-
+  void setFurtherData(User user, Map<String, dynamic> data) async {
     if (user != null) {
+      Map<String, dynamic> userData = user.toMap();
+      userData.addAll(data);
       await FireStoreController.changeUserDocument(
           userId: user.id, data: userData);
     }
   }
 
-  Future<bool> getFurtherData() async {
+  Future<bool> getFurtherData(User user) async {
     DocumentSnapshot snapshot =
         await FireStoreController.getUserDocumentOf(user.id);
     if (snapshot?.data == null) {
@@ -102,17 +110,15 @@ class FirebaseAuthController {
     } else {
       Map<String, dynamic> map = snapshot?.data;
       user.setUser(
-        displayName: map['displayName'] ?? _user.displayName,
-        email: map['email'] ?? _user.email,
-        photoUrl: map['photoUrl'] ?? _user.photoUrl,
-        telephone: map['telephone'] ?? _user.telephone,
-        fullName: map['fullName'] ?? _user.fullName,
-        address: map['address'] ?? _user.address,
+        displayName: map['displayName'] ?? user.displayName,
+        email: map['email'] ?? user.email,
+        photoUrl: map['photoUrl'] ?? user.photoUrl,
+        telephone: map['telephone'] ?? user.telephone,
+        fullName: map['fullName'] ?? user.fullName,
+        address: map['address'] ?? user.address,
       );
       user.points = map['points'];
       return true;
     }
   }
-
-  User get user => _user;
 }

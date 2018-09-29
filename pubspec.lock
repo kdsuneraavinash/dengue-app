@@ -193,6 +193,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.10"
+  intro_slider:
+    dependency: "direct main"
+    description:
+      name: intro_slider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
+  intro_views_flutter:
+    dependency: "direct main"
+    description:
+      name: intro_views_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.0"
   io:
     dependency: transitive
     description:

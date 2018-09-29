@@ -25,7 +25,7 @@ class FeedPageState extends State<FeedPage>
     super.didChangeDependencies();
     feedBLoC = FeedBLoCProvider.of(context);
     feedBLoC.refreshAvailable.listen((available) {
-      if (context != null && available ?? false) {
+      if (mounted && available ?? false) {
         setState(() {
           controller.forward();
         });

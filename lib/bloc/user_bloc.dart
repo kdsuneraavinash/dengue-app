@@ -4,11 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dengue_app/bloc/bloc.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:dengue_app/logic/firebase/auth.dart';
-import 'package:dengue_app/logic/firebase/loginresult.dart';
+import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
-enum LogInCommand { LOGIN, LOGOUT }
+enum LogInCommand { GOOGLE_LOGIN, FACEBOOK_LOGIN, LOGOUT }
 
 class UserBLoC extends BLoC {
   /// Stream which sends the last logged in [User].
@@ -17,64 +18,66 @@ class UserBLoC extends BLoC {
 
   /// [LogInState] updater.
   /// Changes when login state changes.
-  final BehaviorSubject<LogInState> _logInState = BehaviorSubject();
+  final BehaviorSubject<LogInState> _logInStateStream = BehaviorSubject();
 
   /// Listens for commands to Social Media Controller such as Login, Logout.
-  final StreamController<LogInCommand> _firestoreAuthCommand =
+  final StreamController<LogInCommand> _firestoreAuthCommandStreamController =
       StreamController();
 
-  final StreamController<Map<String, dynamic>> _signUpFinished = StreamController();
+  final StreamController<Map<String, dynamic>> _signUpFinishedStreamController =
+      StreamController();
 
   /// Defining Outputs from stream
   /// Stream ------------> Widgets
-  Stream<LogInState> get logInState => _logInState.stream;
+  Stream<LogInState> get logInStateStream => _logInStateStream.stream;
   Stream<User> get userStream => _userStream.stream;
-  Stream<QuerySnapshot> get leaderBoard => firestoreAuthController.leaderBoard;
+  Stream<QuerySnapshot> get leaderBoardStream =>
+      _firestoreAuthController.leaderBoard;
 
   /// Defining Outputs to stream
   /// Stream <------------ Widgets
-  Sink<LogInCommand> get firestoreAuthCommand => _firestoreAuthCommand.sink;
-  Sink<Map<String, dynamic>> get signUpFinished => _signUpFinished.sink;
+  Sink<LogInCommand> get firestoreAuthCommandSink =>
+      _firestoreAuthCommandStreamController.sink;
+  Sink<Map<String, dynamic>> get signUpFinishedSink =>
+      _signUpFinishedStreamController.sink;
 
   /// Firestore Controller
-  final FirebaseAuthController firestoreAuthController = FirebaseAuthController();
+  final FirebaseAuthController _firestoreAuthController =
+      FirebaseAuthController();
+  User _loggedInUser;
 
   @override
   void dispose() {
-    _signUpFinished.close();
+    _signUpFinishedStreamController.close();
     _userStream.close();
-    _firestoreAuthCommand.close();
+    _firestoreAuthCommandStreamController.close();
   }
 
   @override
   void streamConnect() {
-    _firestoreAuthCommand.stream.listen(_handleSocialMediaCommand);
-    _signUpFinished.stream.listen(_handleSignUpFinished);
-    firestoreAuthController.userChanges.listen(_usersChanged);
+    _firestoreAuthCommandStreamController.stream
+        .listen(_handleSocialMediaCommand);
+    _signUpFinishedStreamController.stream.listen(_handleSignUpFinished);
+    _userStream.stream.listen(_handleUserAddedToStream);
     loginIfAlreadyLoggedIn();
   }
 
-  void _usersChanged(QuerySnapshot query) {
-    if (query?.documentChanges != null) {
-      for (DocumentChange change in query.documentChanges) {
-        if (change.document.documentID == firestoreAuthController.user.id) {
-          firestoreAuthController.user.setUser(
-              address: change.document.data['address'],
-              fullName: change.document.data['fullName'],
-              telephone: change.document.data['telephone']);
-          firestoreAuthController.user.points = change.document.data['points'];
-          _userStream.add(firestoreAuthController.user);
-        }
-      }
+  void _usersChanged(DocumentSnapshot doc) {
+    if (doc.data != null) {
+      User user = User.fromMap(_loggedInUser.id, doc.data);
+      _userStream.add(user);
     }
   }
 
   /// Check for command and logs in or logs out
   void _handleSocialMediaCommand(LogInCommand command) {
-    _logInState.add(LogInState.WAITING);
+    _logInStateStream.add(LogInState.WAITING);
     switch (command) {
-      case LogInCommand.LOGIN:
-        login();
+      case LogInCommand.GOOGLE_LOGIN:
+        login(LoginMethod.GOOGLE);
+        break;
+      case LogInCommand.FACEBOOK_LOGIN:
+        login(LoginMethod.FACEBOOK);
         break;
       case LogInCommand.LOGOUT:
         logout();
@@ -83,52 +86,67 @@ class UserBLoC extends BLoC {
   }
 
   void _handleSignUpFinished(Map<String, dynamic> data) {
-    print(data);
     if (data != null) {
-      firestoreAuthController.setFurtherData(data);
-      _logInState.add(LogInState.LOGGED);
+      _firestoreAuthController.setFurtherData(_loggedInUser, data);
     }
   }
 
-  void login() async {
-    LogInResult _loginResult = await firestoreAuthController.login();
-
-    switch (_loginResult.status) {
-      case LogInResultStatus.loggedIn:
-        _userStream.add(firestoreAuthController.user);
-        _logInState.add(LogInState.LOGGED);
-        break;
-      case LogInResultStatus.signedUp:
-        _userStream.add(firestoreAuthController.user);
-        _logInState.add(LogInState.SIGNED_UP);
-        break;
-      case LogInResultStatus.cancelledByUser:
-      case LogInResultStatus.error:
-        _logInState.add(LogInState.NOT_LOGGED);
-        break;
+  void login(LoginMethod method) async {
+    FirebaseUser firebaseUser =
+        await _firestoreAuthController.signInFromSocialMedia(method);
+    if (firebaseUser == null) {
+      // Login skipped
+      _logInStateStream.add(LogInState.NOT_LOGGED);
+    } else {
+      User userAsInDatabase =
+          await _firestoreAuthController.getUserDataFromFirestore(firebaseUser);
+      if (userAsInDatabase == null) {
+        // First Login
+        User newUser = User.fromFirebaseUser(firebaseUser);
+        _userStream.add(newUser);
+        _logInStateStream.add(LogInState.SIGNED_UP);
+      } else {
+        // Re login
+        _userStream.add(userAsInDatabase);
+        _logInStateStream.add(LogInState.LOGGED);
+      }
     }
   }
 
   void logout() {
-    firestoreAuthController.logOut();
+    _firestoreAuthController.logOut();
     // defaults to output values
     _userStream.add(null);
-    _logInState.add(LogInState.NOT_LOGGED);
+    _logInStateStream.add(LogInState.NOT_LOGGED);
   }
 
   /// Login if already logged in
   void loginIfAlreadyLoggedIn() async {
-    if (await firestoreAuthController.isLoggedIn()) {
-      _logInState.add(LogInState.WAITING);
-      await firestoreAuthController.login().then((b) {
-        if (b.status == LogInResultStatus.loggedIn) {
-          _userStream.add(firestoreAuthController.user);
-          _logInState.add(LogInState.LOGGED);
-        } else {
-          _logInState.add(LogInState.NOT_LOGGED);
-        }
-      });
+    FirebaseUser currentUser =
+        await _firestoreAuthController.currentFirebaseUser;
+    if (currentUser != null) {
+      _logInStateStream.add(LogInState.WAITING);
+      User user =
+          await _firestoreAuthController.getUserDataFromFirestore(currentUser);
+      if (user != null) {
+        _userStream.add(user);
+        _logInStateStream.add(LogInState.LOGGED);
+        return;
+      }
     }
+    _logInStateStream.add(LogInState.NOT_LOGGED);
+  }
+
+  void _handleUserAddedToStream(User user) {
+    if (user != null) {
+      if (_loggedInUser == null && !user.equals(_loggedInUser)) {
+        FireStoreController.userDocuments
+            .document(user.id)
+            .snapshots()
+            .listen(_usersChanged);
+      }
+    }
+    _loggedInUser = user;
   }
 
   UserBLoC() : super();

@@ -28,7 +28,7 @@ class LeaderBoardState extends State<LeaderBoard> {
       children: <Widget>[
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
-            stream: userBLoC.leaderBoard,
+            stream: userBLoC.leaderBoardStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
@@ -63,7 +63,7 @@ class LeaderBoardState extends State<LeaderBoard> {
                       stream: userBLoC.userStream,
                       builder: (context, snapshotUser) =>
                           StreamBuilder<QuerySnapshot>(
-                              stream: userBLoC.leaderBoard,
+                              stream: userBLoC.leaderBoardStream,
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData)
                                   return CircularProgressIndicator();

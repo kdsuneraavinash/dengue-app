@@ -42,6 +42,10 @@ dependencies:
   firebase_storage: ^1.0.2
   # Library to launch phone calls, messages and email.
   url_launcher: ^3.0.2
+  # Gift Page and Winner page
+  intro_views_flutter: ^2.2.4
+  # Intro View
+  intro_slider: ^1.0.6
 firebase_analytics: ^0.3.3
 
 dev_dependencies:
@@ -61,9 +65,12 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
-  #  - images/a_dot_ham.jpeg
+  assets:
+    - images/data.png
+    - images/gifts.png
+    - images/clean.png
+    - images/mosquito.png
+    - logo.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

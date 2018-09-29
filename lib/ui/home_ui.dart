@@ -10,6 +10,7 @@ import 'package:dengue_app/ui/account_ui.dart';
 import 'package:dengue_app/ui/achievements_ui.dart';
 import 'package:dengue_app/ui/credits_ui.dart';
 import 'package:dengue_app/ui/feed_ui.dart';
+import 'package:dengue_app/ui/gifts_ui.dart';
 import 'package:dengue_app/ui/leaderboard_ui.dart';
 import 'package:dengue_app/ui/taskfeed_ui.dart';
 import 'package:dengue_app/ui/upload_camera_ui.dart';
@@ -25,6 +26,7 @@ enum UploadType { Text, Camera, Gallery, WeeklyPost }
 
 class HomePage extends StatefulWidget {
   final PageController _pageController = PageController(initialPage: 1);
+  static const routeName = "/home";
 
   HomePage();
 
@@ -135,7 +137,7 @@ class HomePageState extends State<HomePage> {
                   ListTile(
                     onTap: () {
                       Navigator.pop(context);
-                      _handleNavigateToGiftPage(true);
+                      _handleNavigateToGiftPage();
                     },
                     leading: Icon(FontAwesomeIcons.gift),
                     title: Text("Next Gifts"),
@@ -143,6 +145,7 @@ class HomePageState extends State<HomePage> {
                   ListTile(
                     onTap: () {
                       Navigator.pop(context);
+                      _handleNavigateToWinnersPage();
                     },
                     leading: Icon(FontAwesomeIcons.tags),
                     title: Text("View Winners"),
@@ -252,7 +255,7 @@ class HomePageState extends State<HomePage> {
   }
 
   void _handleNavigateToUploadPage(UploadType navigate) {
-    if (context != null) {
+    if (mounted) {
       switch (navigate) {
         case UploadType.Text:
           TransitionMaker.fadeTransition(
@@ -278,29 +281,38 @@ class HomePageState extends State<HomePage> {
   }
 
   void _handleNavigateToAccountPage() {
-    if (context != null) {
+    if (mounted) {
       TransitionMaker.slideTransition(destinationPageCall: () => UserInfoPage())
         ..start(context);
     }
   }
 
   void _handleNavigateToAboutPage() {
-    if (context != null) {
+    if (mounted) {
       TransitionMaker.slideTransition(destinationPageCall: () => CreditsPage())
         ..start(context);
     }
   }
 
   void _handleNavigateToAchievementsPage() {
-    if (context != null) {
+    if (mounted) {
       TransitionMaker.slideTransition(destinationPageCall: () => AchievementsPage())
         ..start(context);
     }
   }
 
-  void _handleNavigateToGiftPage(navigate) {
-    // Go To Last Week Winners
-    print("Go to gifts page");
+  void _handleNavigateToGiftPage() {
+    if (mounted) {
+      TransitionMaker.slideTransition(destinationPageCall: () => GiftsPage())
+        ..start(context);
+    }
+  }
+
+  void _handleNavigateToWinnersPage() {
+    if (mounted) {
+      TransitionMaker.slideTransition(destinationPageCall: () => WinnersPage())
+        ..start(context);
+    }
   }
 
   @override
