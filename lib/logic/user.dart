@@ -35,12 +35,19 @@ class User {
   }
 
   String get fullName => _fullName;
+
   String get displayName => _displayName;
+
   int get points => _points;
+
   String get id => _id;
+
   String get telephone => _telephone;
+
   String get address => _address;
+
   String get photoUrl => _photoUrl;
+
   String get email => _email;
 
   User.fromMap(String id, Map<String, dynamic> map) {
@@ -69,7 +76,7 @@ class User {
     return {
       'displayName': _displayName,
       'email': _email,
-      'photoUrl': _photoUrl.replaceFirst( "?type=large", ""),
+      'photoUrl': _photoUrl.replaceFirst("?type=large", ""),
       'fullName': _fullName,
       'address': _address,
       'telephone': _telephone,
@@ -90,7 +97,7 @@ class User {
   }
 
   bool equals(User otherUser) {
-    if (otherUser == null){
+    if (otherUser == null) {
       return false;
     }
     return (_points == otherUser.points) &&

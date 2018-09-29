@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/ui/upload_abstract_ui.dart';
-
 import 'package:flutter/material.dart';
 
 class UploadText extends UploadAbstract {
@@ -33,14 +30,14 @@ class UploadTextState extends UploadAbstractState {
             fontSize: 32.0,
           ),
           decoration: InputDecoration(
-            border: InputBorder.none,
+              border: InputBorder.none,
               hintText: "Write Your Post Here",
               hintStyle: TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w400,
               )),
           onChanged: (text) {
-            if (text.length <= 500){
+            if (text.length <= 500) {
               setState(() {
                 titleText = text;
               });
@@ -81,5 +78,4 @@ class UploadTextState extends UploadAbstractState {
     });
     Navigator.pop(context, true);
   }
-
 }

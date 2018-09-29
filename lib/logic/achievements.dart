@@ -25,16 +25,26 @@ class Achievement {
     String message =
         (days == 1) ? "Logged in 1 day" : "Logged in $days days in a row";
     int points = days * 5;
-    return Achievement(FontAwesomeIcons.walking, "Daily Fighter: ${levels[level]}", message,
-        points, "dailyVisit$days", Colors.green)..timesTaken = timesTaken;
+    return Achievement(
+        FontAwesomeIcons.walking,
+        "Daily Fighter: ${levels[level]}",
+        message,
+        points,
+        "dailyVisit$days",
+        Colors.green)
+      ..timesTaken = timesTaken;
   }
 
   factory Achievement.addPosts(int posts, int level) {
     String message = "Posted $posts posts in the week";
     int points = posts * 5;
-    return Achievement(FontAwesomeIcons.newspaper, "Post King: ${levels[level]}", message,
-        points, "addPosts$posts", Colors.deepPurple
-    );
+    return Achievement(
+        FontAwesomeIcons.newspaper,
+        "Post King: ${levels[level]}",
+        message,
+        points,
+        "addPosts$posts",
+        Colors.deepPurple);
   }
 
   static List<String> levels = [
@@ -61,7 +71,8 @@ class Achievement {
         "Create an account using your gmail account",
         250,
         "account",
-        Colors.pink)..timesTaken=1,
+        Colors.pink)
+      ..timesTaken = 1,
     Achievement.divider(),
     Achievement.dailyVisit(1, 0, 1),
     Achievement.dailyVisit(2, 2, 1),

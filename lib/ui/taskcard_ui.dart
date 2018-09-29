@@ -1,3 +1,4 @@
+import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/logic/task.dart';
 import 'package:flutter/material.dart';
 
@@ -9,49 +10,34 @@ class TaskCard extends StatelessWidget {
 
   /// Flagged Item
   Widget _buildEventFlaggedItemButton(BuildContext context) {
-    return Card(
+    return Container(
+      margin: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.black), color: Colors.blueGrey[100]),
       key: Key(task.taskTitle),
       child: Column(
         children: <Widget>[
+          Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: DefParameterNetworkImage(
+              imageUrl: task.taskImage,
+              isCover: true,
+            ),
+          ),
           ListTile(
             title: Text(task.taskTitle),
             leading: CircleAvatar(
-              child: Text("${task.allocatedPoints}"),
+              child: Text(
+                "${task.allocatedPoints}",
+              ),
             ),
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Text(task.taskSteps, textAlign: TextAlign.justify),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(Icons.timer,
-                            color: Theme.of(context).accentColor),
-                        SizedBox(width: 10.0),
-                        Text(
-                          "${task.remainingChancesString}",
-                          style:
-                              TextStyle(color: Theme.of(context).accentColor),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                _buildActionButtonButton(
-                    icon: Icons.label_important,
-                    label: "Complete",
-                    onPressed: () => _handleViewPressed(context),
-                    context: context),
-              ],
+            trailing: Text(
+              "(${task.remainingChances})",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+                fontSize: 20.0,
+              ),
             ),
           ),
         ],

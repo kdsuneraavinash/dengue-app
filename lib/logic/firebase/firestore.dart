@@ -8,7 +8,7 @@ class FireStoreController {
   static CollectionReference postDocuments =
       Firestore.instance.collection('posts');
   static CollectionReference prizesDocuments =
-  Firestore.instance.collection('prizes');
+      Firestore.instance.collection('prizes');
 
   static Future<void> changeUserDocument(
       {String userId, Map<String, dynamic> data}) async {

@@ -8,27 +8,37 @@ class TaskFeedPage extends StatelessWidget {
     return ListView(children: <Widget>[
       TaskCard(
         Task(
-            taskTitle: "Clean your garden and post a video",
+          taskTitle: "Share Posts",
+          allocatedPoints: 25,
+          remainingChances: 30,
+          taskImage:
+              "https://us.123rf.com/450wm/kali13/kali131703/kali13170300064/74185019-cell-phone-with-messages-sms-concept-with-letters-and-paper-planes.jpg?ver=6",
+        ),
+      ),
+      TaskCard(
+        Task(
+          taskTitle: "Read Articles",
+          allocatedPoints: 4,
+          remainingChances: 30,
+          taskImage:
+              "http://lankasee.com/wp-content/uploads/2017/11/476a9331fc6ff72dab916e903d434189_XL.jpg",
+        ),
+      ),
+      TaskCard(
+        Task(
+          taskTitle: "Share Artcles and Spread Awareness",
+          allocatedPoints: 150,
+          remainingChances: 4,
+          taskImage: "https://i.ytimg.com/vi/hhd7RR4b0Zc/maxresdefault.jpg",
+        ),
+      ),
+      TaskCard(
+        Task(
+            taskTitle: "Create a vlog of Cleaning your garden",
             allocatedPoints: 1000,
             remainingChances: 1,
-            taskSteps:
-                "Perhaps far exposed age effects. Now distrusts you her delivered applauded affection out sincerity. As tolerably recommend shameless unfeeling he objection consisted. She although cheerful perceive screened throwing met not eat distance. Viewing hastily or written dearest elderly up weather it as. So direction so sweetness or extremity at daughters. Provided put unpacked now but bringing."),
-      ),
-      TaskCard(
-        Task(
-            taskTitle: "Share Posts",
-            allocatedPoints: 25,
-            remainingChances: 30,
-            taskSteps:
-                "In no impression assistance contrasted. Manners she wishing justice hastily new anxious. At discovery discourse departure objection we. Few extensive add delighted tolerably sincerity her. Law ought him least enjoy decay one quick court. Expect warmly its tended garden him esteem had remove off. Effects dearest staying now sixteen nor improve. "),
-      ),
-      TaskCard(
-        Task(
-            taskTitle: "Like Posts",
-            allocatedPoints: 5,
-            remainingChances: 50,
-            taskSteps:
-                "Prevailed sincerity behaviour to so do principle mr. As departure at no propriety zealously my. On dear rent if girl view. First on smart there he sense. Earnestly enjoyment her you resources. Brother chamber ten old against. Mr be cottage so related minuter is. Delicate say and blessing ladyship exertion few margaret. Delight herself welcome against smiling its for. Suspected discovery by he affection household of principle perfectly he. "),
+            taskImage:
+                "http://static.dailymirror.lk/media/images/image_1467830611-f4b5923e3a.jpg"),
       ),
       SizedBox(
         height: 75.0,

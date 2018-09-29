@@ -10,7 +10,8 @@ class CloudStorage {
   final Directory systemTempDir = Directory.systemTemp;
 
   Future<Uri> uploadFile(File file, String fileName, String folderName) async {
-    final StorageReference ref = storage.ref().child(folderName).child('$fileName');
+    final StorageReference ref =
+        storage.ref().child(folderName).child('$fileName');
     final StorageUploadTask uploadTask = ref.putFile(
       file,
       new StorageMetadata(
@@ -18,7 +19,7 @@ class CloudStorage {
         customMetadata: <String, String>{'uploadedBy': 'Dengue Free Zone'},
       ),
     );
-    UploadTaskSnapshot snapshot =  await uploadTask.future;
+    UploadTaskSnapshot snapshot = await uploadTask.future;
     return snapshot.downloadUrl;
   }
 

@@ -10,7 +10,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 abstract class PostCardAbstract extends StatelessWidget {
   final ProcessedPost processedPost;
 
-  PostCardAbstract({@required this.processedPost});
+  PostCardAbstract({Key key, @required this.processedPost}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

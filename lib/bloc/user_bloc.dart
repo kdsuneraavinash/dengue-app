@@ -30,7 +30,9 @@ class UserBLoC extends BLoC {
   /// Defining Outputs from stream
   /// Stream ------------> Widgets
   Stream<LogInState> get logInStateStream => _logInStateStream.stream;
+
   Stream<User> get userStream => _userStream.stream;
+
   Stream<QuerySnapshot> get leaderBoardStream =>
       _firestoreAuthController.leaderBoard;
 
@@ -38,6 +40,7 @@ class UserBLoC extends BLoC {
   /// Stream <------------ Widgets
   Sink<LogInCommand> get firestoreAuthCommandSink =>
       _firestoreAuthCommandStreamController.sink;
+
   Sink<Map<String, dynamic>> get signUpFinishedSink =>
       _signUpFinishedStreamController.sink;
 

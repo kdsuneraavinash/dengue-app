@@ -13,8 +13,8 @@ import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/home_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 import 'package:intro_slider/intro_slider.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage();

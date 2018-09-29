@@ -14,7 +14,11 @@ class ErrorViewWidget extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text("Sorry couldn't load this Page\nPlease check your Connection", style: TextStyle(fontSize: 20.0), textAlign: TextAlign.center,),
+            child: Text(
+              "Sorry couldn't load this Page\nPlease check your Connection",
+              style: TextStyle(fontSize: 20.0),
+              textAlign: TextAlign.center,
+            ),
           )
         ],
       ),

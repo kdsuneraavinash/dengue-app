@@ -6,12 +6,12 @@ import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/user_provider.dart';
-import 'package:progress_indicators/progress_indicators.dart';
-
-import '../main.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:progress_indicators/progress_indicators.dart';
+
+import '../main.dart';
 
 abstract class UploadAbstract extends StatefulWidget {
   @override
@@ -232,8 +232,8 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
     setState(() {
       isUploading = true;
     });
-    Uri res = await cloudStorage.uploadFile(
-        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}.png", "images");
+    Uri res = await cloudStorage.uploadFile(mediaFile,
+        "$userId-${DateTime.now().millisecondsSinceEpoch}.png", "images");
     Post post = Post(
       type: PostType.Image,
       user: userId,

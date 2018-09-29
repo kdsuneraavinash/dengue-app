@@ -1,7 +1,6 @@
 import 'package:chewie/chewie.dart';
-import 'package:flutter/material.dart';
-
 import 'package:dengue_app/custom_widgets/zoomable_image.dart';
+import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 enum MediaType { Video, Image }

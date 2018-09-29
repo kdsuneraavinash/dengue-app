@@ -14,7 +14,9 @@ class FeedBLoC extends BLoC {
   StreamController<Null> _refreshCommandIssued = StreamController();
 
   Stream<List<ProcessedPost>> get postsFeed => _postsFeed.stream;
+
   Stream<bool> get refreshAvailable => _refreshAvailable.stream;
+
   Stream<bool> get refreshFinished => _refreshFinished.stream;
 
   Sink<Null> get refreshCommandIssued => _refreshCommandIssued;
@@ -53,9 +55,9 @@ class FeedBLoC extends BLoC {
     List<ProcessedPost> result = List();
     for (DocumentSnapshot doc in lastQuerySnapshot.documents) {
       result.add(await ProcessedPost.processedPostFromDoc(doc));
+      _postsFeed.add(result);
     }
     _refreshFinished.add(true);
-    _postsFeed.add(result);
   }
 }
 

@@ -31,10 +31,12 @@ class LeaderBoardState extends State<LeaderBoard> {
             stream: userBLoC.leaderBoardStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+              if (!snapshot.hasData)
+                return Center(child: CircularProgressIndicator());
               return ListView.builder(
                 itemBuilder: (_, i) => ListTile(
-                      title: Text(snapshot.data.documents[i].data["displayName"]),
+                      title:
+                          Text(snapshot.data.documents[i].data["displayName"]),
                       subtitle: Text(
                           "Points ${snapshot.data.documents[i].data['points']} | Rank ${i + 1}"),
                       leading: DefParameterNetworkImage(

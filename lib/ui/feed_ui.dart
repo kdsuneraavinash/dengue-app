@@ -20,6 +20,7 @@ class FeedPage extends StatefulWidget {
 class FeedPageState extends State<FeedPage>
     with SingleTickerProviderStateMixin {
   FeedBLoC feedBLoC;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -45,16 +46,19 @@ class FeedPageState extends State<FeedPage>
                   builder: (_, snapshot) => snapshot.hasData
                       ? ListView.builder(
                           itemBuilder: (_, i) {
+                            Key key = Key(snapshot.data[i].post.datePosted
+                                    .toIso8601String() +
+                                snapshot.data[i].post.user);
                             switch (snapshot.data[i].post.type) {
                               case PostType.Image:
                                 return PostImageCard(
-                                    processedPost: snapshot.data[i]);
+                                    key: key, processedPost: snapshot.data[i]);
                               case PostType.Text:
                                 return PostTextCard(
-                                    processedPost: snapshot.data[i]);
+                                    key: key, processedPost: snapshot.data[i]);
                               case PostType.WeeklyPost:
                                 return PostWeeklyCard(
-                                    processedPost: snapshot.data[i]);
+                                    key: key, processedPost: snapshot.data[i]);
                             }
                           },
                           itemCount: snapshot.data.length,

@@ -1,10 +1,10 @@
-
 import 'package:dengue_app/custom_widgets/icontext.dart';
 import 'package:dengue_app/ui/postcard_abstract.dart';
 import 'package:flutter/material.dart';
 
 class PostTextCard extends PostCardAbstract {
-  PostTextCard({@required processedPost}) : super(processedPost: processedPost);
+  PostTextCard({Key key, @required processedPost})
+      : super(key: key, processedPost: processedPost);
 
   final List colors = [
     Colors.blueGrey[800],

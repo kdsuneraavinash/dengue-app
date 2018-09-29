@@ -1,26 +1,26 @@
-class Task{
+class Task {
   String _taskTitle = "[Task Title]";
   int _allocatedPoints = 0;
   int _remainingChances = 0;
-  String _taskSteps = "[Task Steps]";
+  String _taskImage;
 
-  Task({taskTitle, allocatedPoints, remainingChances,
-    taskSteps}){
+  Task({taskTitle, allocatedPoints, remainingChances, taskImage}) {
     _taskTitle = taskTitle;
     _allocatedPoints = allocatedPoints;
     _remainingChances = remainingChances;
-    _taskSteps = taskSteps;
+    _taskImage = taskImage;
   }
 
-  String get taskSteps => _taskSteps;
+  String get taskImage => _taskImage;
 
   int get remainingChances => _remainingChances;
-  String get remainingChancesString{
-    if (_remainingChances == 0){
+
+  String get remainingChancesString {
+    if (_remainingChances == 0) {
       return "No remaining Chances";
-    }else if (_remainingChances == 1){
+    } else if (_remainingChances == 1) {
       return "Remaining 1 chance";
-    }else{
+    } else {
       return "Remaining $_remainingChances chances";
     }
   }
@@ -28,5 +28,4 @@ class Task{
   int get allocatedPoints => _allocatedPoints;
 
   String get taskTitle => _taskTitle;
-
 }

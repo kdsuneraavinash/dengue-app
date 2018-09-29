@@ -1,5 +1,4 @@
 import 'package:dengue_app/bloc/home_bloc.dart';
-import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:flutter/widgets.dart';
 
 class HomePageBLoCProvider extends InheritedWidget {

@@ -1,5 +1,4 @@
 import 'package:dengue_app/bloc/feed_bloc.dart';
-import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:flutter/widgets.dart';
 
 /// This is an InheritedWidget that wraps around [CartBloc]. Think about this

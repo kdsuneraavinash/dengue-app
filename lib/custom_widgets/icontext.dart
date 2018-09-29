@@ -24,7 +24,8 @@ class IconText extends StatelessWidget {
           Text(
             this.text,
             textAlign: TextAlign.end,
-            style:  Theme.of(context).textTheme.button.apply(color: Colors.white),
+            style:
+                Theme.of(context).textTheme.button.apply(color: Colors.white),
           ),
         ],
       ),

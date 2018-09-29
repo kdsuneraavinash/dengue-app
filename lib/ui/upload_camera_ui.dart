@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dengue_app/ui/upload_abstract_ui.dart';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

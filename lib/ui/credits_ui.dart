@@ -5,9 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 /**
  * Dengue App
  * ==============
- * 
+ *
  * Project MoraEvents
- * 
+ *
  * Programmed By K. D. Sunera Avinash Chandrasiri
  * kdsuneraavinash@gmail.com
  * (c) 2018

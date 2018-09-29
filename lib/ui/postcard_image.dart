@@ -5,8 +5,8 @@ import 'package:dengue_app/ui/postcard_abstract.dart';
 import 'package:flutter/material.dart';
 
 class PostImageCard extends PostCardAbstract {
-  PostImageCard({@required processedPost})
-      : super(processedPost: processedPost);
+  PostImageCard({Key key, @required processedPost})
+      : super(key: key, processedPost: processedPost);
 
   @override
   Widget buildRatingStrip(BuildContext context, String text) {

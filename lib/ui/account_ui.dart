@@ -104,7 +104,8 @@ class UserInfoPageState extends State<UserInfoPage> {
               builder: (_, snapshot) => FlatButton.icon(
                   onPressed: () {
                     if (snapshot.data != null) {
-                      userBLoC.firestoreAuthCommandSink.add(LogInCommand.LOGOUT);
+                      userBLoC.firestoreAuthCommandSink
+                          .add(LogInCommand.LOGOUT);
                       TransitionMaker.fadeTransition(
                           destinationPageCall: () =>
                               LoginBLoCProvider(child: SignUpPage()))

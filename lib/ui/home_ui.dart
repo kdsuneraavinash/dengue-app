@@ -100,7 +100,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildDrawer(User user) {
-    if (user == null){
+    if (user == null) {
       return Container();
     }
     return Drawer(
@@ -169,11 +169,12 @@ class HomePageState extends State<HomePage> {
                   ),
                   ListTile(
                     onTap: () {
-                    Navigator.pop(context);
-                    String toMailId = "denguefreezone@gmail.com";
-                    String subject = "Feedback on Dengue Freezone App";
-                    String body = "";
-                    _launchUrl('mailto:$toMailId?subject=$subject&body=$body');
+                      Navigator.pop(context);
+                      String toMailId = "denguefreezone@gmail.com";
+                      String subject = "Feedback on Dengue Freezone App";
+                      String body = "";
+                      _launchUrl(
+                          'mailto:$toMailId?subject=$subject&body=$body');
                     },
                     leading: Icon(FontAwesomeIcons.envelope),
                     title: Text("Send Feedback"),
@@ -182,7 +183,8 @@ class HomePageState extends State<HomePage> {
                   ListTile(
                     onTap: () {
                       Navigator.pop(context);
-                      _launchUrl("https://github.com/kdsuneraavinash/dengue_app");
+                      _launchUrl(
+                          "https://github.com/kdsuneraavinash/dengue_app");
                     },
                     leading: Icon(FontAwesomeIcons.listAlt),
                     title: Text("What's New"),
@@ -296,7 +298,8 @@ class HomePageState extends State<HomePage> {
 
   void _handleNavigateToAchievementsPage() {
     if (mounted) {
-      TransitionMaker.slideTransition(destinationPageCall: () => AchievementsPage())
+      TransitionMaker.slideTransition(
+          destinationPageCall: () => AchievementsPage())
         ..start(context);
     }
   }

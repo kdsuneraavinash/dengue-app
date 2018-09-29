@@ -1,11 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
-import 'package:cached_network_image/cached_network_image.dart';
 
 /// Author : perlatus
 ///
@@ -117,10 +116,12 @@ class _ZoomableImageState extends State<ZoomableImage> {
     final Offset newOffset = d.focalPoint - normalizedOffset * newScale;
 
     double padding = 100.0;
-    double _boundMinX = _mediaQuery.size.width - _imageSize.width *_scale - padding;
+    double _boundMinX =
+        _mediaQuery.size.width - _imageSize.width * _scale - padding;
     double _boundMinY = 0.0 - padding;
     double _boundMaxX = 0.0 + padding;
-    double _boundMaxY = _mediaQuery.size.height -  _imageSize.height *_scale + padding;
+    double _boundMaxY =
+        _mediaQuery.size.height - _imageSize.height * _scale + padding;
     if (newOffset.dx < _boundMinX || newOffset.dy < _boundMinY) {
       double _newDx = math.max(_boundMinX, newOffset.dx);
       double _newDy = math.max(_boundMinY, newOffset.dy);

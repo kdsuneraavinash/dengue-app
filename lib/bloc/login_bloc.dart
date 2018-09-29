@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dengue_app/bloc/bloc.dart';
-
 import 'package:rxdart/subjects.dart';
 
 enum LogInState { SIGNED_UP, NOT_LOGGED, WAITING, LOGGED }
@@ -20,30 +19,42 @@ class LoginBLoC extends BLoC {
       PublishSubject();
 
   /// Further details Text Change Methods
-  final StreamController<String> _changeFullNameStreamController = StreamController();
-  final StreamController<String> _changeAddressStreamController = StreamController();
-  final StreamController<String> _changeTelephoneStreamController = StreamController();
+  final StreamController<String> _changeFullNameStreamController =
+      StreamController();
+  final StreamController<String> _changeAddressStreamController =
+      StreamController();
+  final StreamController<String> _changeTelephoneStreamController =
+      StreamController();
 
   /// Further details Text Submit Methods
   final StreamController<int> _submitStreamController = StreamController();
 
   /// Login Status Changed
-  final StreamController<LogInState> _loginStatusChangedStreamController = StreamController();
+  final StreamController<LogInState> _loginStatusChangedStreamController =
+      StreamController();
 
   /// Defining Outputs from stream
   /// Stream ------------> Widgets
   Stream<int> get goToTabPageStream => _currentTabPageStream.stream;
-  Stream<Null> get navigateToHomePageStream => _shouldNavigateToHomePageStream.stream;
+
+  Stream<Null> get navigateToHomePageStream =>
+      _shouldNavigateToHomePageStream.stream;
+
   Stream<Map<String, dynamic>> get signUpStatusUpdateStream =>
       _signUpStatusUpdateStream.stream;
 
   /// Defining Outputs to stream
   /// Stream <------------ Widgets
   Sink<String> get changeFullNameSink => _changeFullNameStreamController.sink;
+
   Sink<String> get changeAddressSink => _changeAddressStreamController.sink;
+
   Sink<String> get changeTelephoneSink => _changeTelephoneStreamController.sink;
+
   Sink<int> get submitSink => _submitStreamController.sink;
-  Sink<LogInState> get loginStatusChangedSink => _loginStatusChangedStreamController.sink;
+
+  Sink<LogInState> get loginStatusChangedSink =>
+      _loginStatusChangedStreamController.sink;
 
   /// Further Detail Strings
   String _fullName;
@@ -61,7 +72,8 @@ class LoginBLoC extends BLoC {
     _changeAddressStreamController.stream.listen(_handleAddressChanged);
     _changeTelephoneStreamController.stream.listen(_handleTelephoneChanged);
     _submitStreamController.stream.listen(_handleSubmitPressed);
-    _loginStatusChangedStreamController.stream.listen(_handleLoginStatusChanged);
+    _loginStatusChangedStreamController.stream
+        .listen(_handleLoginStatusChanged);
   }
 
   @override
@@ -102,7 +114,7 @@ class LoginBLoC extends BLoC {
   /// Texts Submitted Handler
   void _handleSubmitPressed(int stage) {
     print(stage);
-    if (stage == 0){
+    if (stage == 0) {
       _fullName = _fullName.trim();
       _address = _address.trim();
       _telephone = _telephone.trim();
@@ -119,15 +131,16 @@ class LoginBLoC extends BLoC {
         _currentTabPageStream.add(2);
         _emptyTexts();
       }
-    }else if (stage == 1){
+    } else if (stage == 1) {
       _loginStatusChangedStreamController.add(LogInState.LOGGED);
     }
-
   }
 
   /// Text Changed Handlers
   void _handleFullNameChanged(s) => _fullName = s;
+
   void _handleAddressChanged(s) => _address = s;
+
   void _handleTelephoneChanged(s) => _telephone = s;
 
   /// Empty texts

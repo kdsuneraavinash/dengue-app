@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chewie/chewie.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/main.dart';
 import 'package:dengue_app/ui/upload_abstract_ui.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:chewie/chewie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -47,16 +46,19 @@ class UploadCameraState extends UploadAbstractState {
     setState(() {
       isUploading = true;
     });
-    String thumbnail ="THUMB-$userId-${DateTime.now().millisecondsSinceEpoch}.png";
-    String thumbnailFile = "${(await getApplicationDocumentsDirectory()).path}/$thumbnail";
+    String thumbnail =
+        "THUMB-$userId-${DateTime.now().millisecondsSinceEpoch}.png";
+    String thumbnailFile =
+        "${(await getApplicationDocumentsDirectory()).path}/$thumbnail";
 
     await _retrieveVideoFrameFromVideo(mediaFile.path, thumbnailFile);
 
     File thumbnailFileUpload = File(thumbnailFile);
 
-    Uri resImage = await cloudStorage.uploadFile(thumbnailFileUpload, thumbnail, "thumbnails");
-    Uri resVideo = await cloudStorage.uploadFile(
-        mediaFile, "$userId-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
+    Uri resImage = await cloudStorage.uploadFile(
+        thumbnailFileUpload, thumbnail, "thumbnails");
+    Uri resVideo = await cloudStorage.uploadFile(mediaFile,
+        "$userId-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
 
     Post post = Post(
       videoLink: resVideo.toString(),
