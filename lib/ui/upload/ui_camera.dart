@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:dengue_app/ui/upload_abstract_ui.dart';
+import 'package:dengue_app/ui/upload/abs_upload.dart';
+import 'package:dengue_app/ui/upload/abs_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -11,7 +12,7 @@ class UploadCamera extends UploadAbstract {
   }
 }
 
-class UploadCameraState extends UploadAbstractState {
+class UploadCameraState extends UploadImageAbstractState {
   @override
   void handleBrowseImage(String userId) async {
     File pickedFile = await ImagePicker.pickImage(source: ImageSource.camera);

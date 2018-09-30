@@ -18,8 +18,8 @@ class TaskFeedPage extends StatelessWidget {
       TaskCard(
         Task(
           taskTitle: "Read Articles",
-          allocatedPoints: 4,
-          remainingChances: 30,
+          allocatedPoints: 30,
+          remainingChances: 4,
           taskImage:
               "http://lankasee.com/wp-content/uploads/2017/11/476a9331fc6ff72dab916e903d434189_XL.jpg",
         ),

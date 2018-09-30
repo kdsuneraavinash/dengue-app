@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:dengue_app/bloc/feed_bloc.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/providers/feed_provider.dart';
-import 'package:dengue_app/ui/postcard_image.dart';
-import 'package:dengue_app/ui/postcard_text.dart';
-import 'package:dengue_app/ui/postcard_video.dart';
+import 'package:dengue_app/ui/post/ui_image.dart';
+import 'package:dengue_app/ui/post/ui_text.dart';
+import 'package:dengue_app/ui/post/ui_video.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -51,13 +51,13 @@ class FeedPageState extends State<FeedPage>
                                 snapshot.data[i].post.user);
                             switch (snapshot.data[i].post.type) {
                               case PostType.Image:
-                                return PostImageCard(
+                                return ImagePost(
                                     key: key, processedPost: snapshot.data[i]);
                               case PostType.Text:
-                                return PostTextCard(
+                                return TextPost(
                                     key: key, processedPost: snapshot.data[i]);
                               case PostType.WeeklyPost:
-                                return PostWeeklyCard(
+                                return VideoPost(
                                     key: key, processedPost: snapshot.data[i]);
                             }
                           },
@@ -65,40 +65,38 @@ class FeedPageState extends State<FeedPage>
                         )
                       : Center(
                           child: HeartbeatProgressIndicator(
-                          child: Icon(
-                            FontAwesomeIcons.newspaper,
-                            color: Colors.black,
-                          ),
-                        )),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: ScaleTransition(
-                    scale: newPostAnimation,
-                    child: Container(
-                      margin: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                          color: Colors.amber,
-                          border: Border.all(color: Colors.black, width: 1.0),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(10.0))),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Icon(Icons.arrow_downward),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(4.0),
-                            child: Text(
-                              "Pull to Refresh",
-                              style: Theme.of(context).textTheme.button,
+                            child: Icon(
+                              FontAwesomeIcons.newspaper,
+                              color: Colors.black,
                             ),
                           ),
-                        ],
+                        ),
+                ),
+                FadeTransition(
+                  opacity: newPostAnimation,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).accentColor,
+                            boxShadow: [
+                              BoxShadow(
+                                offset: Offset(0.0, 1.0),
+                                color: Color(0x88000000),
+                              )
+                            ]),
+                        child: Padding(
+                          padding: EdgeInsets.all(4.0),
+                          child: Center(
+                            child: Text(
+                              "Pull to Refresh Updates",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 )
               ],
@@ -110,7 +108,7 @@ class FeedPageState extends State<FeedPage>
   Future<void> _handleRefreshPage(bool refreshAvailable) {
     controller.reverse();
     Completer waitForFinish = Completer();
-    if (refreshAvailable) {
+    if (refreshAvailable && mounted) {
       feedBLoC.refreshFinished.listen((_) {
         try {
           waitForFinish.complete();

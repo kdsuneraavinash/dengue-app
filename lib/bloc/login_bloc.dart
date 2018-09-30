@@ -18,14 +18,6 @@ class LoginBLoC extends BLoC {
   final PublishSubject<Map<String, dynamic>> _signUpStatusUpdateStream =
       PublishSubject();
 
-  /// Further details Text Change Methods
-  final StreamController<String> _changeFullNameStreamController =
-      StreamController();
-  final StreamController<String> _changeAddressStreamController =
-      StreamController();
-  final StreamController<String> _changeTelephoneStreamController =
-      StreamController();
-
   /// Further details Text Submit Methods
   final StreamController<int> _submitStreamController = StreamController();
 
@@ -45,32 +37,14 @@ class LoginBLoC extends BLoC {
 
   /// Defining Outputs to stream
   /// Stream <------------ Widgets
-  Sink<String> get changeFullNameSink => _changeFullNameStreamController.sink;
-
-  Sink<String> get changeAddressSink => _changeAddressStreamController.sink;
-
-  Sink<String> get changeTelephoneSink => _changeTelephoneStreamController.sink;
-
   Sink<int> get submitSink => _submitStreamController.sink;
 
   Sink<LogInState> get loginStatusChangedSink =>
       _loginStatusChangedStreamController.sink;
 
-  /// Further Detail Strings
-  String _fullName;
-  String _address;
-  String _telephone;
-
-  LoginBLoC() : super() {
-    _emptyTexts(); // Empty all Texts
-  }
-
   @override
   void streamConnect() async {
     /// Associates handlers to inputs to stream
-    _changeFullNameStreamController.stream.listen(_handleFullNameChanged);
-    _changeAddressStreamController.stream.listen(_handleAddressChanged);
-    _changeTelephoneStreamController.stream.listen(_handleTelephoneChanged);
     _submitStreamController.stream.listen(_handleSubmitPressed);
     _loginStatusChangedStreamController.stream
         .listen(_handleLoginStatusChanged);
@@ -80,9 +54,6 @@ class LoginBLoC extends BLoC {
   void dispose() {
     _signUpStatusUpdateStream.close();
     _loginStatusChangedStreamController.close();
-    _changeFullNameStreamController.close();
-    _changeAddressStreamController.close();
-    _changeTelephoneStreamController.close();
     _submitStreamController.close();
     _currentTabPageStream.close();
     _shouldNavigateToHomePageStream.close();
@@ -108,45 +79,14 @@ class LoginBLoC extends BLoC {
   /// Logout command
   void _logOut() {
     _currentTabPageStream.add(0);
-    _emptyTexts();
   }
 
   /// Texts Submitted Handler
   void _handleSubmitPressed(int stage) {
-    print(stage);
     if (stage == 0) {
-      _fullName = _fullName.trim();
-      _address = _address.trim();
-      _telephone = _telephone.trim();
-      bool fullNameValid = _fullName.length != 0;
-      bool addressValid = _address.length != 0;
-      bool telephoneValid = _telephone.length != 0;
-
-      if (fullNameValid && addressValid && telephoneValid) {
-        _signUpStatusUpdateStream.add(<String, dynamic>{
-          'telephone': _telephone,
-          'fullName': _fullName,
-          'address': _address
-        });
-        _currentTabPageStream.add(2);
-        _emptyTexts();
-      }
+      _currentTabPageStream.add(2);
     } else if (stage == 1) {
       _loginStatusChangedStreamController.add(LogInState.LOGGED);
     }
-  }
-
-  /// Text Changed Handlers
-  void _handleFullNameChanged(s) => _fullName = s;
-
-  void _handleAddressChanged(s) => _address = s;
-
-  void _handleTelephoneChanged(s) => _telephone = s;
-
-  /// Empty texts
-  void _emptyTexts() {
-    _fullName = "";
-    _address = "";
-    _telephone = "";
   }
 }

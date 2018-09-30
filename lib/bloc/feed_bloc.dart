@@ -41,10 +41,10 @@ class FeedBLoC extends BLoC {
     feedQuery.listen(_handleUpdateBecameAvailable);
   }
 
-  void _handleUpdateBecameAvailable(QuerySnapshot data) {
+  void _handleUpdateBecameAvailable(QuerySnapshot data) async {
     if (lastQuerySnapshot == null) {
-      _refreshCommandIssued.add(null);
       lastQuerySnapshot = data;
+      _handleFirstRefreshed();
     } else {
       lastQuerySnapshot = data;
       _refreshAvailable.add(true);
@@ -52,12 +52,24 @@ class FeedBLoC extends BLoC {
   }
 
   void _handleRefreshed() async {
+    List<DocumentSnapshot> docs = lastQuerySnapshot.documents;
     List<ProcessedPost> result = List();
-    for (DocumentSnapshot doc in lastQuerySnapshot.documents) {
-      result.add(await ProcessedPost.processedPostFromDoc(doc));
+    for (DocumentSnapshot doc in docs) {
+      result.add(await ProcessedPost.processedPostFromDoc(doc.data));
+    }
+    _postsFeed.add(result);
+    _refreshFinished.add(true);
+  }
+
+  void _handleFirstRefreshed() async {
+    List<Map<String, dynamic>> allData =
+        lastQuerySnapshot.documents.map((c) => c.data).toList();
+    List<ProcessedPost> result = List();
+    _refreshFinished.add(true);
+    for (Map<String, dynamic> data in allData) {
+      result.add(await ProcessedPost.processedPostFromDoc(data));
       _postsFeed.add(result);
     }
-    _refreshFinished.add(true);
   }
 }
 
@@ -69,12 +81,12 @@ class ProcessedPost {
   ProcessedPost(this.post, this.username, this.displayImage);
 
   static Future<ProcessedPost> processedPostFromDoc(
-      DocumentSnapshot doc) async {
-    Post post = Post.fromMap(doc.data);
+      Map<String, dynamic> data) async {
+    Post post = Post.fromMap(data);
     DocumentSnapshot userDocSnap =
         await FireStoreController.getUserDocumentOf(post.user);
-    String username = userDocSnap.data["displayName"];
-    String displayImage = userDocSnap.data["photoUrl"];
+    String username = userDocSnap?.data["displayName"];
+    String displayImage = userDocSnap?.data["photoUrl"];
     return ProcessedPost(post, username, displayImage);
   }
 }

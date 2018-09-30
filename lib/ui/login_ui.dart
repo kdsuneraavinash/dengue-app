@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
@@ -11,6 +10,7 @@ import 'package:dengue_app/providers/home_provider.dart';
 import 'package:dengue_app/providers/login_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/home_ui.dart';
+import 'package:dengue_app/ui/userdata_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intro_slider/intro_slider.dart';
@@ -23,7 +23,7 @@ class SignUpPage extends StatefulWidget {
 
   @override
   SignUpPageState createState() {
-    return new SignUpPageState();
+    return SignUpPageState();
   }
 
   final PageController _pageController = PageController(initialPage: 0);
@@ -32,6 +32,12 @@ class SignUpPage extends StatefulWidget {
 class SignUpPageState extends State<SignUpPage> {
   LoginBLoC loginBLoC;
   UserBLoC userBLoC;
+
+  @override
+  void dispose() {
+    widget._pageController.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -49,41 +55,79 @@ class SignUpPageState extends State<SignUpPage> {
   }
 
   @override
-  void dispose() {
-    loginBLoC.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return StreamBuilder<LogInState>(
-        stream: userBLoC.logInStateStream,
-        initialData: LogInState.WAITING,
-        builder: (_, snapshotIsLoggingIn) => Stack(
-              children: snapshotIsLoggingIn.data == LogInState.WAITING
-                  ? [_buildMainView(), _buildLoadingView()]
-                  : [_buildMainView()],
-            ));
+    return StreamBuilder<Object>(
+      stream: userBLoC.issueExceptionStream,
+      initialData: null,
+      builder: (_, snapshotError) => StreamBuilder<LogInState>(
+          stream: userBLoC.logInStateStream,
+          initialData: LogInState.WAITING,
+          builder: (_, snapshotIsLoggingIn) {
+            List<Widget> children;
+            if (snapshotError.data != null) {
+              children = [
+                _buildPagedView(),
+                _buildErrorView(snapshotError.data)
+              ];
+            } else if (snapshotIsLoggingIn.data == LogInState.WAITING) {
+              children = [_buildPagedView(), _buildLoadingView()];
+            } else {
+              children = [_buildPagedView()];
+            }
+            return Stack(children: children);
+          }),
+    );
   }
 
-  Widget _buildMainView() {
-    return Scaffold(
-      body: _buildPagedView(),
+  Widget _buildErrorView(Object e) {
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: 0.9,
+          child: ModalBarrier(
+              dismissible: false, color: Theme.of(context).accentColor),
+        ),
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text(
+                  e.toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
+              RaisedButton(
+                onPressed: () => userBLoC.issueExceptionSink.add(null),
+                color: Colors.white,
+                child: Text("Dismiss"),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildPagedView() {
-    return PageView(
-      children: <Widget>[
-        _buildLoginScreen(),
-        _buildAdditionalInfoView(),
-        IntroductionView(
-          () => loginBLoC.submitSink.add(1),
-          () => loginBLoC.submitSink.add(1),
-        ),
-      ],
-      physics: NeverScrollableScrollPhysics(),
-      controller: widget._pageController,
+    return Scaffold(
+      body: PageView(
+        children: <Widget>[
+          _buildLoginScreen(),
+          _buildAdditionalInfoView(),
+          IntroductionView(
+            () => loginBLoC.submitSink.add(1),
+            () => loginBLoC.submitSink.add(1),
+          ),
+        ],
+        physics: NeverScrollableScrollPhysics(),
+        controller: widget._pageController,
+      ),
     );
   }
 
@@ -100,7 +144,6 @@ class SignUpPageState extends State<SignUpPage> {
             child: Icon(
               FontAwesomeIcons.globe,
               color: Colors.white,
-              size: 70.0,
             ),
           ),
         ),
@@ -111,143 +154,117 @@ class SignUpPageState extends State<SignUpPage> {
   Widget _buildLoginScreen() {
     Size screenSize = MediaQuery.of(context).size;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            color: Theme.of(context).primaryColor,
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8.0),
-            child: DefParameterNetworkImage(
-              imageUrl: "http://www.logodust.com/img/free/logo26.png",
-              isCover: false,
-              needProgress: false,
-              width: screenSize.width / 1.5,
-              height: screenSize.width / 1.5,
-            ),
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: CachedNetworkImageProvider(
+              "http://www.mobileswall.com/wp-content/uploads/2015/12/640-Quiet-Environment-l.jpg"),
         ),
-        SizedBox(
-          height: screenSize.height / 3,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              SizedBox(
-                width: screenSize.width / 1.5,
-                child: RaisedButton.icon(
-                  icon: Icon(
-                    FontAwesomeIcons.google,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => userBLoC.firestoreAuthCommandSink
-                      .add(LogInCommand.GOOGLE_LOGIN),
-                  label: Text(
-                    "Google Login",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.red[800],
+      ),
+      child: Opacity(
+        opacity: 0.9,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                color: Theme.of(context).primaryColor,
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(8.0),
+                child: DefParameterNetworkImage(
+                  imageUrl: "http://www.logodust.com/img/free/logo26.png",
+                  isCover: false,
+                  needProgress: false,
+                  width: screenSize.width / 1.5,
+                  height: screenSize.width / 1.5,
                 ),
               ),
-              SizedBox(
-                width: screenSize.width / 1.5,
-                child: RaisedButton.icon(
-                  icon: Icon(
-                    FontAwesomeIcons.facebookSquare,
-                    color: Colors.white,
+            ),
+            SizedBox(
+              height: screenSize.height / 3,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    width: screenSize.width / 1.5,
+                    child: RaisedButton.icon(
+                      icon: Icon(
+                        FontAwesomeIcons.google,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => userBLoC.firestoreAuthCommandSink
+                          .add(LogInCommand.GOOGLE_LOGIN),
+                      label: Text(
+                        "Google Login",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.red[800],
+                    ),
                   ),
-                  onPressed: () => userBLoC.firestoreAuthCommandSink
-                      .add(LogInCommand.FACEBOOK_LOGIN),
-                  label: Text(
-                    "Facebook Login",
-                    style: TextStyle(color: Colors.white),
+                  SizedBox(
+                    width: screenSize.width / 1.5,
+                    child: RaisedButton.icon(
+                      icon: Icon(
+                        FontAwesomeIcons.facebookSquare,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => userBLoC.firestoreAuthCommandSink
+                          .add(LogInCommand.FACEBOOK_LOGIN),
+                      label: Text(
+                        "Facebook Login",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Color(0xff3B5998),
+                    ),
                   ),
-                  color: Color(0xff3B5998),
-                ),
+                ],
               ),
-            ],
-          ),
-        )
-      ],
+            )
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildAdditionalInfoView() {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: StreamBuilder<User>(
+    return StreamBuilder<User>(
         initialData: null,
         stream: userBLoC.userStream,
         builder: (_, snapshotUser) {
           if (snapshotUser != null) {
-            return ListView(
-              children: <Widget>[
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: screenWidth / 15),
-                    child: ClipOval(
-                      child: DefParameterNetworkImage(
-                        imageUrl: snapshotUser.data == null ||
-                                snapshotUser.data.photoUrl == null
-                            ? User.BLANK_PHOTO
-                            : snapshotUser.data.photoUrl,
-                        isCover: false,
-                        height: screenWidth / 3,
-                        width: screenWidth / 3,
-                      ),
-                    ),
-                  ),
-                ),
-                TextBoxWidget(
-                  icon: Icons.person,
-                  onSubmit: (_) {},
-                  changeApplyFunc: loginBLoC.changeFullNameSink.add,
-                  maxLines: 1,
-                  hintText: "Full Name",
-                  helperText: "Enter your Full Name with initials here.",
-                ),
-                TextBoxWidget(
-                  icon: Icons.location_city,
-                  onSubmit: (_) {},
-                  changeApplyFunc: loginBLoC.changeAddressSink.add,
-                  maxLines: 3,
-                  hintText: "Address",
-                  helperText: "Enter your Address here.",
-                ),
-                TextBoxWidget(
-                  icon: Icons.call,
-                  onSubmit: (_) {},
-                  changeApplyFunc: loginBLoC.changeTelephoneSink.add,
-                  maxLines: 1,
-                  hintText: "Phone Number",
-                  helperText: "Enter your Personal Contact here.\n"
-                      "This number will be used later in order to contact you.",
-                  keyBoardType: TextInputType.phone,
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 32.0, left: 8.0, right: 8.0),
-                  child: RaisedButton(
-                    onPressed: () {
-                      loginBLoC.submitSink.add(0);
-                    },
-                    child: Text(
-                      "Submit",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    color: Theme.of(context).primaryColor,
-                  ),
-                )
-              ],
+            return UserDataEditView(
+              photo: snapshotUser.data?.photoUrl == null
+                  ? User.BLANK_PHOTO
+                  : snapshotUser.data.photoUrl,
+              afterSubmit: _handleSubmitPressed,
             );
           } else {
             return ErrorViewWidget();
           }
-        },
-      ),
-    );
+        });
+  }
+
+  /// Texts Submitted Handler
+  bool _handleSubmitPressed(String fullName, String address, String telephone) {
+    String _fullName = fullName.trim();
+    String _address = address.trim();
+    String _telephone = telephone.trim();
+    bool fullNameValid = _fullName.length != 0;
+    bool addressValid = _address.length != 0;
+    bool telephoneValid = _telephone.length != 0;
+
+    if (fullNameValid && addressValid && telephoneValid) {
+      userBLoC.signUpFinishedSink.add(<String, dynamic>{
+        'telephone': _telephone,
+        'fullName': _fullName,
+        'address': _address
+      });
+      loginBLoC.submitSink.add(0);
+      return true;
+    }
+    return false;
   }
 
   void _handleNavigateToHomePage(_) {
@@ -260,62 +277,10 @@ class SignUpPageState extends State<SignUpPage> {
   }
 
   void _handleChangeTabPage(int page) async {
-    await Future.delayed(Duration(seconds: 1));
     if (page != null && mounted && widget._pageController.hasClients) {
       widget._pageController.animateToPage(page,
           duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
     }
-  }
-}
-
-class TextBoxWidget extends StatefulWidget {
-  @override
-  TextBoxWidgetState createState() => TextBoxWidgetState();
-
-  TextBoxWidget({
-    @required this.icon,
-    @required this.onSubmit,
-    this.changeApplyFunc,
-    this.helperText,
-    this.hintText,
-    this.isPassword = false,
-    this.invalidText = "",
-    this.maxLines = 1,
-    this.keyBoardType,
-  });
-
-  final IconData icon;
-  final Function onSubmit;
-  final Function changeApplyFunc;
-  final String helperText;
-  final String hintText;
-  final bool isPassword;
-  final String invalidText;
-  final int maxLines;
-  final TextInputType keyBoardType;
-}
-
-/// Builds a text box.
-/// So need to pass a function that will change outer variable value.
-class TextBoxWidgetState extends State<TextBoxWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: TextField(
-        keyboardType: widget.keyBoardType ?? TextInputType.text,
-        maxLines: widget.maxLines,
-        decoration: InputDecoration(
-          icon: CircleAvatar(child: Icon(widget.icon)),
-          hintText: widget.hintText,
-          helperText: widget.helperText,
-          errorText: widget.invalidText != "" ? widget.invalidText : null,
-        ),
-        obscureText: widget.isPassword,
-        onSubmitted: widget.onSubmit,
-        onChanged: widget.changeApplyFunc ?? (_) {},
-      ),
-    );
   }
 }
 
@@ -336,13 +301,18 @@ class _IntroductionViewState extends State<IntroductionView> {
   void initState() {
     super.initState();
 
+    double width = MediaQuery.of(context).size.width / 1.5;
+    double height = MediaQuery.of(context).size.width / 1.5;
+
     slides.add(
       Slide(
         title: "WELCOME",
         description:
             "Welcome to Dengue Free Zone App. Click NEXT to learn more.",
-        pathImage: "images/logo.jpg",
+        pathImage: "images/mobile.png",
         backgroundColor: 0xff607D8B,
+        widthImage: width,
+        heightImage: height,
       ),
     );
     slides.add(
@@ -352,6 +322,8 @@ class _IntroductionViewState extends State<IntroductionView> {
             "Earn free data.... We gift free data to 100 each week and you can easily be one of them.",
         pathImage: "images/data.png",
         backgroundColor: 0xffb71c1c,
+        widthImage: width,
+        heightImage: height,
       ),
     );
     slides.add(
@@ -361,6 +333,8 @@ class _IntroductionViewState extends State<IntroductionView> {
             "We present gifts for three users each week. Be one of them and earn amazing gifts.",
         pathImage: "images/gifts.png",
         backgroundColor: 0xff203152,
+        widthImage: width,
+        heightImage: height,
       ),
     );
     slides.add(
@@ -370,6 +344,8 @@ class _IntroductionViewState extends State<IntroductionView> {
             "The only task you have to do is to clean your environment and update us with your progress.",
         pathImage: "images/clean.png",
         backgroundColor: 0xff4A148C,
+        widthImage: width,
+        heightImage: height,
       ),
     );
     slides.add(
@@ -379,6 +355,8 @@ class _IntroductionViewState extends State<IntroductionView> {
             "Defend yourself against dengue. Why not join us and earn free gifts while cleaning your own garden?",
         pathImage: "images/mosquito.png",
         backgroundColor: 0xff004D40,
+        widthImage: width,
+        heightImage: height,
       ),
     );
   }

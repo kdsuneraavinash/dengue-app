@@ -1,5 +1,5 @@
 import 'package:chewie/chewie.dart';
-import 'package:dengue_app/custom_widgets/zoomable_image.dart';
+import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -10,11 +10,8 @@ class ImageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text(caption),
-      ),
       backgroundColor: Colors.black,
+      appBar: AppBar(backgroundColor: Colors.black,title: Text("Content"),),
       body: Stack(
         children: <Widget>[
           (type == MediaType.Image) ? _buildImageBox() : _buildVideoBox(),
@@ -26,7 +23,7 @@ class ImageView extends StatelessWidget {
   /// Build Page View with Image
   Widget _buildImageBox() {
     return Center(
-      child: ZoomableImage(this.media),
+      child: DefParameterNetworkImage(imageUrl: this.media, isCover: false),
     );
   }
 
@@ -42,9 +39,8 @@ class ImageView extends StatelessWidget {
     );
   }
 
-  ImageView(this.media, this.type, this.caption);
+  ImageView(this.media, this.type);
 
-  final String caption;
   final String media;
   final MediaType type;
 }

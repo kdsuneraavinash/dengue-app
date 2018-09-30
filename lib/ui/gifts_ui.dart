@@ -151,7 +151,7 @@ class WinnersPageState extends GiftsPageState {
             fontWeight: FontWeight.w400),
       ),
       title: Text(
-        "(#${index + 1}) ${userDoc.data["displayName"]}",
+        "(#${index + 1}) ${userDoc?.data["displayName"]}",
         textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.black,
@@ -160,7 +160,7 @@ class WinnersPageState extends GiftsPageState {
             fontWeight: FontWeight.w800),
       ),
       mainImage: Image(
-        image: CachedNetworkImageProvider(userDoc.data["photoUrl"]),
+        image: CachedNetworkImageProvider(userDoc?.data["photoUrl"]),
         width: width / 3,
         fit: BoxFit.fitWidth,
         alignment: Alignment.center,

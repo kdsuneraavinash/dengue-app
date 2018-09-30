@@ -1,9 +1,9 @@
 import 'package:dengue_app/custom_widgets/icontext.dart';
-import 'package:dengue_app/ui/postcard_abstract.dart';
+import 'package:dengue_app/ui/post/abs_post.dart';
 import 'package:flutter/material.dart';
 
-class PostTextCard extends PostCardAbstract {
-  PostTextCard({Key key, @required processedPost})
+class TextPost extends AbstractPost {
+  TextPost({Key key, @required processedPost})
       : super(key: key, processedPost: processedPost);
 
   final List colors = [
@@ -18,7 +18,7 @@ class PostTextCard extends PostCardAbstract {
 
   /// Builds CachedNetworkImage as Banner.
   @override
-  Widget buildImageBanner(BuildContext context) {
+  Widget buildPostMedia(BuildContext context) {
     Color color = colors[
         processedPost.post.datePosted.millisecondsSinceEpoch % colors.length];
     double width = MediaQuery.of(context).size.width;
@@ -44,12 +44,11 @@ class PostTextCard extends PostCardAbstract {
   }
 
   @override
-  Widget buildRatingStrip(BuildContext context, String text) {
+  Widget buildBottomStrip() {
     return IconText(
-      icon: Icons.textsms,
+      icon: Icons.sms,
       text: "Text Post",
       mainAxisAlignment: MainAxisAlignment.center,
-      color: Colors.blueGrey,
     );
   }
 

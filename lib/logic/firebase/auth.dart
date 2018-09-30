@@ -21,38 +21,30 @@ class FirebaseAuthController {
 
   Future<FirebaseUser> _googleLogIn() async {
     GoogleSignInAccount googleUser;
-    try {
-      googleUser = await _nativeGoogleSignIn.signIn();
+    googleUser = await _nativeGoogleSignIn.signIn();
 
-      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      FirebaseUser user = await _auth.signInWithGoogle(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-      return user;
-    } catch (e) {
-      print("Google Sign In Error: ${e.toString()}");
-      return null;
-    }
+    FirebaseUser user = await _auth.signInWithGoogle(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return user;
   }
 
   Future<FirebaseUser> _facebookLogIn() async {
-    try {
-      FacebookLoginResult facebookUser = await _nativeFacebookSignIn
-          .logInWithReadPermissions(['email', 'public_profile']);
+    FacebookLoginResult facebookUser = await _nativeFacebookSignIn
+        .logInWithReadPermissions(['email', 'public_profile']);
 
-      if (facebookUser.status == FacebookLoginStatus.loggedIn) {
-        FirebaseUser user = await _auth.signInWithFacebook(
-          accessToken: facebookUser.accessToken.token,
-        );
-        return user;
-      }
+    if (facebookUser.status == FacebookLoginStatus.loggedIn) {
+      FirebaseUser user = await _auth.signInWithFacebook(
+        accessToken: facebookUser.accessToken.token,
+      );
+      return user;
+    } else if (facebookUser.status == FacebookLoginStatus.cancelledByUser) {
       return null;
-    } catch (e) {
-      // TODO: Handle error when logging in with same account
-      print("Google Sign In Error: ${e.toString()}");
-      return null;
+    } else {
+      throw Exception(facebookUser.errorMessage);
     }
   }
 
@@ -73,13 +65,14 @@ class FirebaseAuthController {
   /// Gets user data from firestore database.
   /// Requires a [FirebaseUser].
   Future<User> getUserDataFromFirestore(FirebaseUser firebaseUser) async {
-    DocumentSnapshot snapshot =
-        await FireStoreController.getUserDocumentOf(firebaseUser.uid);
-    if (snapshot.data != null) {
+    DocumentSnapshot snapshot;
+    snapshot = await FireStoreController.getUserDocumentOf(firebaseUser.uid);
+    if (snapshot?.data != null) {
       User user = User.fromMap(firebaseUser.uid, snapshot.data);
       return user;
+    } else {
+      return null;
     }
-    return null;
   }
 
   void logOut() async {
@@ -99,26 +92,6 @@ class FirebaseAuthController {
       userData.addAll(data);
       await FireStoreController.changeUserDocument(
           userId: user.id, data: userData);
-    }
-  }
-
-  Future<bool> getFurtherData(User user) async {
-    DocumentSnapshot snapshot =
-        await FireStoreController.getUserDocumentOf(user.id);
-    if (snapshot?.data == null) {
-      return false;
-    } else {
-      Map<String, dynamic> map = snapshot?.data;
-      user.setUser(
-        displayName: map['displayName'] ?? user.displayName,
-        email: map['email'] ?? user.email,
-        photoUrl: map['photoUrl'] ?? user.photoUrl,
-        telephone: map['telephone'] ?? user.telephone,
-        fullName: map['fullName'] ?? user.fullName,
-        address: map['address'] ?? user.address,
-      );
-      user.points = map['points'];
-      return true;
     }
   }
 }

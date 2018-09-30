@@ -16,6 +16,8 @@ class UserBLoC extends BLoC {
   /// null if no one is logged in.
   final BehaviorSubject<User> _userStream = BehaviorSubject();
 
+  final BehaviorSubject<Object> _issueExceptionStream = BehaviorSubject();
+
   /// [LogInState] updater.
   /// Changes when login state changes.
   final BehaviorSubject<LogInState> _logInStateStream = BehaviorSubject();
@@ -36,6 +38,8 @@ class UserBLoC extends BLoC {
   Stream<QuerySnapshot> get leaderBoardStream =>
       _firestoreAuthController.leaderBoard;
 
+  Stream<Object> get issueExceptionStream => _issueExceptionStream.stream;
+
   /// Defining Outputs to stream
   /// Stream <------------ Widgets
   Sink<LogInCommand> get firestoreAuthCommandSink =>
@@ -44,6 +48,8 @@ class UserBLoC extends BLoC {
   Sink<Map<String, dynamic>> get signUpFinishedSink =>
       _signUpFinishedStreamController.sink;
 
+  Sink<Object> get issueExceptionSink => _issueExceptionStream.sink;
+
   /// Firestore Controller
   final FirebaseAuthController _firestoreAuthController =
       FirebaseAuthController();
@@ -51,6 +57,7 @@ class UserBLoC extends BLoC {
 
   @override
   void dispose() {
+    _issueExceptionStream.close();
     _signUpFinishedStreamController.close();
     _userStream.close();
     _firestoreAuthCommandStreamController.close();
@@ -89,30 +96,33 @@ class UserBLoC extends BLoC {
   }
 
   void _handleSignUpFinished(Map<String, dynamic> data) {
-    if (data != null) {
-      _firestoreAuthController.setFurtherData(_loggedInUser, data);
-    }
+    _firestoreAuthController.setFurtherData(_loggedInUser, data);
   }
 
   void login(LoginMethod method) async {
-    FirebaseUser firebaseUser =
-        await _firestoreAuthController.signInFromSocialMedia(method);
-    if (firebaseUser == null) {
-      // Login skipped
-      _logInStateStream.add(LogInState.NOT_LOGGED);
-    } else {
-      User userAsInDatabase =
-          await _firestoreAuthController.getUserDataFromFirestore(firebaseUser);
-      if (userAsInDatabase == null) {
-        // First Login
-        User newUser = User.fromFirebaseUser(firebaseUser);
-        _userStream.add(newUser);
-        _logInStateStream.add(LogInState.SIGNED_UP);
+    try {
+      FirebaseUser firebaseUser =
+          await _firestoreAuthController.signInFromSocialMedia(method);
+      if (firebaseUser == null) {
+        // Login skipped
+        _logInStateStream.add(LogInState.NOT_LOGGED);
       } else {
-        // Re login
-        _userStream.add(userAsInDatabase);
-        _logInStateStream.add(LogInState.LOGGED);
+        User userAsInDatabase = await _firestoreAuthController
+            .getUserDataFromFirestore(firebaseUser);
+        if (userAsInDatabase == null) {
+          // First Login
+          User newUser = User.fromFirebaseUser(firebaseUser);
+          _userStream.add(newUser);
+          _logInStateStream.add(LogInState.SIGNED_UP);
+        } else {
+          // Re login
+          _userStream.add(userAsInDatabase);
+          _logInStateStream.add(LogInState.LOGGED);
+        }
       }
+    } catch (e) {
+      _logInStateStream.add(LogInState.NOT_LOGGED);
+      _issueExceptionStream.add(e);
     }
   }
 
@@ -129,12 +139,16 @@ class UserBLoC extends BLoC {
         await _firestoreAuthController.currentFirebaseUser;
     if (currentUser != null) {
       _logInStateStream.add(LogInState.WAITING);
-      User user =
-          await _firestoreAuthController.getUserDataFromFirestore(currentUser);
-      if (user != null) {
-        _userStream.add(user);
-        _logInStateStream.add(LogInState.LOGGED);
-        return;
+      try {
+        User user = await _firestoreAuthController
+            .getUserDataFromFirestore(currentUser);
+        if (user != null) {
+          _userStream.add(user);
+          _logInStateStream.add(LogInState.LOGGED);
+          return;
+        }
+      } catch (e) {
+        _issueExceptionStream.add(e);
       }
     }
     _logInStateStream.add(LogInState.NOT_LOGGED);

@@ -10,37 +10,44 @@ class TaskCard extends StatelessWidget {
 
   /// Flagged Item
   Widget _buildEventFlaggedItemButton(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.black), color: Colors.blueGrey[100]),
-      key: Key(task.taskTitle),
-      child: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-            child: DefParameterNetworkImage(
-              imageUrl: task.taskImage,
-              isCover: true,
-            ),
+    return InkWell(
+      onTap: () => Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text("Task not implemnted yet."))),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        shape: BeveledRectangleBorder(
+          side: BorderSide(color: Colors.black),
+          borderRadius: BorderRadius.all(
+            Radius.circular(8.0),
           ),
-          ListTile(
-            title: Text(task.taskTitle),
-            leading: CircleAvatar(
-              child: Text(
-                "${task.allocatedPoints}",
+        ),
+        key: Key(task.taskTitle),
+        child: Column(
+          children: <Widget>[
+            Container(
+              child: DefParameterNetworkImage(
+                imageUrl: task.taskImage,
+                isCover: true,
               ),
             ),
-            trailing: Text(
-              "(${task.remainingChances})",
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.black,
-                fontSize: 20.0,
+            ListTile(
+              title: Text(task.taskTitle),
+              leading: CircleAvatar(
+                child: Text(
+                  "${task.allocatedPoints}",
+                ),
+              ),
+              trailing: Text(
+                "(${task.remainingChances})",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                  fontSize: 20.0,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

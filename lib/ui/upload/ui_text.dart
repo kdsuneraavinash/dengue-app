@@ -1,6 +1,6 @@
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
-import 'package:dengue_app/ui/upload_abstract_ui.dart';
+import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:flutter/material.dart';
 
 class UploadText extends UploadAbstract {
@@ -12,37 +12,27 @@ class UploadText extends UploadAbstract {
 
 class UploadTextState extends UploadAbstractState {
   @override
-  Widget buildImageButton(String userId) {
+  Widget buildMainControl(String userId) {
     return SizedBox(
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(32.0),
         child: TextField(
           maxLines: null,
-          controller: TextEditingController.fromValue(
-            TextEditingValue(
-              text: titleText,
-              selection: TextSelection.collapsed(offset: titleText.length),
-            ),
-          ),
-          textAlign: TextAlign.center,
+          controller: textEditingController,
           style: TextStyle(
             color: Colors.white,
             fontSize: 32.0,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 2.0
           ),
           decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: "Write Your Post Here",
-              hintStyle: TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.w400,
-              )),
-          onChanged: (text) {
-            if (text.length <= 500) {
-              setState(() {
-                titleText = text;
-              });
-            }
-          },
+            border: InputBorder.none,
+            hintText: "Write Your Post Here",
+            hintStyle: TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
           onSubmitted: (_) => handleSend(userId),
         ),
       ),
@@ -52,11 +42,11 @@ class UploadTextState extends UploadAbstractState {
 
   @override
   bool shouldEnableSendButton() {
-    return (titleText ?? "") != "" && !isUploading;
+    return (textEditingController.text ?? "") != "" && !isUploading;
   }
 
   @override
-  Widget buildTextArea(String userId) {
+  Widget buildBottomTextArea(String userId) {
     return Container();
   }
 
@@ -68,7 +58,7 @@ class UploadTextState extends UploadAbstractState {
     Post post = Post(
       type: PostType.Text,
       user: userId,
-      caption: titleText ?? "",
+      caption: textEditingController.text ?? "",
       approved: false,
       mediaLink: "",
     );
@@ -78,4 +68,12 @@ class UploadTextState extends UploadAbstractState {
     });
     Navigator.pop(context, true);
   }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
+  }
+
+  final TextEditingController textEditingController = TextEditingController();
 }

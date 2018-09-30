@@ -9,7 +9,7 @@ class IconText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: color ?? Theme.of(context).primaryColor,
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(2.0),
       child: Row(
         mainAxisAlignment: this.mainAxisAlignment,
         children: <Widget>[
@@ -17,15 +17,11 @@ class IconText extends StatelessWidget {
             this.icon,
             color: Colors.white,
           ),
-          SizedBox(
-            height: 8.0,
-            width: 8.0,
-          ),
+          SizedBox(width: 8.0),
           Text(
             this.text,
             textAlign: TextAlign.end,
-            style:
-                Theme.of(context).textTheme.button.apply(color: Colors.white),
+            style: TextStyle(color: Colors.white),
           ),
         ],
       ),

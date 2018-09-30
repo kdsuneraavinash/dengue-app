@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
-import 'package:dengue_app/main.dart';
-import 'package:dengue_app/ui/upload_abstract_ui.dart';
+import 'package:dengue_app/ui/upload/abs_upload.dart';
+import 'package:dengue_app/ui/upload/abs_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +19,7 @@ class UploadWeekly extends UploadAbstract {
   }
 }
 
-class UploadCameraState extends UploadAbstractState {
+class UploadCameraState extends UploadMediaAbstractState {
   static const platform =
       const MethodChannel('com.kdsuneraavinash.dengueapp/thumbnail');
   Chewie chewiePlayer;
@@ -55,9 +55,9 @@ class UploadCameraState extends UploadAbstractState {
 
     File thumbnailFileUpload = File(thumbnailFile);
 
-    Uri resImage = await cloudStorage.uploadFile(
+    Uri resImage = await cloudMedia.uploadFile(
         thumbnailFileUpload, thumbnail, "thumbnails");
-    Uri resVideo = await cloudStorage.uploadFile(mediaFile,
+    Uri resVideo = await cloudMedia.uploadFile(mediaFile,
         "$userId-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
 
     Post post = Post(
@@ -92,7 +92,7 @@ class UploadCameraState extends UploadAbstractState {
   }
 
   @override
-  Widget buildImageButton(String userId) {
+  Widget buildMainControl(String userId) {
     if (mediaFile == null) {
       return SizedBox(
         child: RaisedButton(
