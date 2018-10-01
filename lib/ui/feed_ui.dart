@@ -48,7 +48,7 @@ class FeedPageState extends State<FeedPage>
                           itemBuilder: (_, i) {
                             Key key = Key(snapshot.data[i].post.datePosted
                                     .toIso8601String() +
-                                snapshot.data[i].post.user);
+                                snapshot.data[i].post.userName);
                             switch (snapshot.data[i].post.type) {
                               case PostType.Image:
                                 return ImagePost(

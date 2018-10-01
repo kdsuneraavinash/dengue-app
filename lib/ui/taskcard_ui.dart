@@ -1,6 +1,7 @@
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/logic/task.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TaskCard extends StatelessWidget {
   @override
@@ -10,45 +11,47 @@ class TaskCard extends StatelessWidget {
 
   /// Flagged Item
   Widget _buildEventFlaggedItemButton(BuildContext context) {
-    return InkWell(
-      onTap: () => Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text("Task not implemnted yet."))),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: BeveledRectangleBorder(
-          side: BorderSide(color: Colors.black),
-          borderRadius: BorderRadius.all(
-            Radius.circular(8.0),
-          ),
-        ),
-        key: Key(task.taskTitle),
-        child: Column(
+    return ExpansionTile(
+      key: Key(task.taskTitle),
+      title: Text(task.taskTitle),
+      children: <Widget>[
+        Stack(
+          alignment: Alignment.bottomCenter,
           children: <Widget>[
-            Container(
-              child: DefParameterNetworkImage(
-                imageUrl: task.taskImage,
-                isCover: true,
-              ),
+            DefParameterNetworkImage(
+              imageUrl: task.taskImage,
+              isCover: true,
             ),
-            ListTile(
-              title: Text(task.taskTitle),
-              leading: CircleAvatar(
-                child: Text(
-                  "${task.allocatedPoints}",
-                ),
-              ),
-              trailing: Text(
-                "(${task.remainingChances})",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
-                  fontSize: 20.0,
+            Opacity(
+              opacity: 0.9,
+              child: Container(
+                color: Colors.black,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    FlatButton.icon(
+                      onPressed: null,
+                      icon: Icon(FontAwesomeIcons.coins, color: Colors.amber),
+                      label: Text(
+                        "+${task.allocatedPoints}",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    _buildActionButtonButton(
+                      icon: FontAwesomeIcons.play,
+                      context: context,
+                      label: "Complete",
+                      onPressed: () => Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text("Task not implemnted yet."))),
+                    )
+                  ],
                 ),
               ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -58,10 +61,10 @@ class TaskCard extends StatelessWidget {
       String label,
       VoidCallback onPressed,
       BuildContext context}) {
-    return Padding(
+    return Container(
+      color: Colors.white,
       padding: EdgeInsets.all(8.0),
-      child: OutlineButton.icon(
-        borderSide: BorderSide(color: Theme.of(context).primaryColor),
+      child: FlatButton.icon(
         icon: Icon(icon),
         label: Text(label),
         onPressed: onPressed,

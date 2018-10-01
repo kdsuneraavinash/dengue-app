@@ -11,10 +11,17 @@ abstract class MediaPost extends AbstractPost {
     if (processedPost.post.caption.length == 0) {
       return Container();
     } else {
-      return Container(
-        alignment: Alignment.centerLeft,
-        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Text(processedPost.post.caption),
+      return Opacity(
+        opacity: 0.7,
+        child: Container(
+          color: Colors.black,
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Text(
+            processedPost.post.caption,
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
       );
     }
   }

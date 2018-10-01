@@ -1,19 +1,21 @@
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
+import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_media.dart';
 import 'package:flutter/material.dart';
 
 abstract class UploadImageAbstractState extends UploadMediaAbstractState {
   @override
-  void handleSend(String userId) async {
+  void handleSend(User user) async {
     setState(() {
       isUploading = true;
     });
     Uri res = await cloudMedia.uploadFile(mediaFile,
-        "$userId-${DateTime.now().millisecondsSinceEpoch}.png", "images");
+        "${user.id}-${DateTime.now().millisecondsSinceEpoch}.png", "images");
     Post post = Post(
       type: PostType.Image,
-      user: userId,
+      userName: user.displayName,
+      userPhoto: user.photoUrl,
       caption: titleText ?? "",
       approved: false,
       mediaLink: res.toString(),
@@ -26,11 +28,11 @@ abstract class UploadImageAbstractState extends UploadMediaAbstractState {
   }
 
   @override
-  Widget buildMainControl(String userId) {
+  Widget buildMainControl(User user) {
     if (mediaFile == null) {
       return SizedBox(
         child: RaisedButton(
-          onPressed: () => handleBrowseImage(userId),
+          onPressed: () => handleBrowseImage(user),
           child: Icon(
             backgroundIcon,
             color: Colors.white,
@@ -53,7 +55,7 @@ abstract class UploadImageAbstractState extends UploadMediaAbstractState {
             children: <Widget>[
               Expanded(
                 child: FlatButton.icon(
-                  onPressed: () => handleBrowseImage(userId),
+                  onPressed: () => handleBrowseImage(user),
                   icon: Icon(Icons.image, color: Colors.white),
                   label: Text("Change", style: TextStyle(color: Colors.white)),
                 ),

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
+import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:dengue_app/ui/upload/abs_media.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class UploadCameraState extends UploadMediaAbstractState {
   Chewie chewiePlayer;
 
   @override
-  void handleBrowseImage(String userId) async {
+  void handleBrowseImage(User user) async {
     setState(() {
       mediaFile = null;
     });
@@ -42,12 +43,12 @@ class UploadCameraState extends UploadMediaAbstractState {
   }
 
   @override
-  void handleSend(String userId) async {
+  void handleSend(User user) async {
     setState(() {
       isUploading = true;
     });
     String thumbnail =
-        "THUMB-$userId-${DateTime.now().millisecondsSinceEpoch}.png";
+        "THUMB-${user.id}-${DateTime.now().millisecondsSinceEpoch}.png";
     String thumbnailFile =
         "${(await getApplicationDocumentsDirectory()).path}/$thumbnail";
 
@@ -58,12 +59,13 @@ class UploadCameraState extends UploadMediaAbstractState {
     Uri resImage = await cloudMedia.uploadFile(
         thumbnailFileUpload, thumbnail, "thumbnails");
     Uri resVideo = await cloudMedia.uploadFile(mediaFile,
-        "$userId-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
+        "${user.id}-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
 
     Post post = Post(
       videoLink: resVideo.toString(),
       type: PostType.WeeklyPost,
-      user: userId,
+      userName: user.displayName,
+      userPhoto: user.photoUrl,
       caption: titleText ?? "",
       approved: false,
       mediaLink: resImage.toString(),
@@ -92,11 +94,11 @@ class UploadCameraState extends UploadMediaAbstractState {
   }
 
   @override
-  Widget buildMainControl(String userId) {
+  Widget buildMainControl(User user) {
     if (mediaFile == null) {
       return SizedBox(
         child: RaisedButton(
-          onPressed: () => handleBrowseImage(userId),
+          onPressed: () => handleBrowseImage(user),
           child: Icon(
             backgroundIcon,
             color: Colors.white,
@@ -118,7 +120,7 @@ class UploadCameraState extends UploadMediaAbstractState {
             children: <Widget>[
               Expanded(
                 child: FlatButton.icon(
-                  onPressed: () => handleBrowseImage(userId),
+                  onPressed: () => handleBrowseImage(user),
                   icon: Icon(Icons.image, color: Colors.white),
                   label: Text("Change", style: TextStyle(color: Colors.white)),
                 ),

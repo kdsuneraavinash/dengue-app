@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ abstract class UploadMediaAbstractState extends UploadAbstractState {
   }
 
   @override
-  Widget buildBottomTextArea(String userId) {
+  Widget buildBottomTextArea(User user) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -26,7 +27,7 @@ abstract class UploadMediaAbstractState extends UploadAbstractState {
               controller: TextEditingController.fromValue(TextEditingValue(
                   text: titleText,
                   selection:
-                  TextSelection.collapsed(offset: titleText.length))),
+                      TextSelection.collapsed(offset: titleText.length))),
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                   hintText: "Type your thoughts here",
@@ -39,7 +40,7 @@ abstract class UploadMediaAbstractState extends UploadAbstractState {
                   titleText = text;
                 });
               },
-              onSubmitted: (_) => handleSend(userId),
+              onSubmitted: (_) => handleSend(user),
             ),
           ),
         )
@@ -47,10 +48,9 @@ abstract class UploadMediaAbstractState extends UploadAbstractState {
     );
   }
 
-  void handleBrowseImage(String userId);
+  void handleBrowseImage(User user);
 
   String titleText = "";
   File mediaFile;
   IconData backgroundIcon;
 }
-

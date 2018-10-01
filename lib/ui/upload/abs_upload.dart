@@ -42,7 +42,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
                   FloatingActionButtonLocation.endFloat,
               floatingActionButton: shouldEnableSendButton()
                   ? FloatingActionButton(
-                      onPressed: () => handleSend(snapshot.data?.id),
+                      onPressed: () => handleSend(snapshot.data),
                       child: Icon(Icons.send),
                     )
                   : null,
@@ -57,7 +57,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
         Expanded(
           child: Container(
             child: Center(
-              child: _buildCenterPage(user?.id),
+              child: _buildCenterPage(user),
             ),
             decoration: BoxDecoration(
               color: Colors.black,
@@ -65,7 +65,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
           ),
         ),
         Container(
-          child: buildBottomTextArea(user?.id),
+          child: buildBottomTextArea(user),
           color: Colors.black,
         )
       ],
@@ -92,11 +92,11 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
   }
 
   /// Builds CachedNetworkImage as Banner.
-  Widget _buildCenterPage(String userName) {
+  Widget _buildCenterPage(User user) {
     return Row(
       children: <Widget>[
         Expanded(
-          child: buildMainControl(userName),
+          child: buildMainControl(user),
         ),
       ],
     );
@@ -104,9 +104,9 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
 
   bool shouldEnableSendButton();
 
-  Widget buildMainControl(String userId);
+  Widget buildMainControl(User user);
 
-  Widget buildBottomTextArea(String userId);
+  Widget buildBottomTextArea(User user);
 
-  void handleSend(String userId);
+  void handleSend(User user);
 }

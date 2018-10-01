@@ -75,6 +75,7 @@ class HomePageState extends State<HomePage> {
 
   Widget _buildFloatingActionButton() {
     return UnicornDialer(
+      hasBackground: true,
       backgroundColor: Color.fromRGBO(0, 0, 0, 0.6),
       parentButtonBackground: Theme.of(context).accentColor,
       orientation: UnicornOrientation.VERTICAL,
@@ -89,7 +90,7 @@ class HomePageState extends State<HomePage> {
       actions: <Widget>[
         FlatButton.icon(
           onPressed: null,
-          icon: Icon(FontAwesomeIcons.fire, color: Colors.white),
+          icon: Icon(FontAwesomeIcons.coins, color: Colors.amber),
           label: Text(
             "${(user == null) ? '--' : user.points}",
             style: TextStyle(color: Colors.white),

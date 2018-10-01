@@ -25,13 +25,11 @@ class GiftsPageState extends State<GiftsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: (docs != null)
-          ? _buildPages()
-          : Center(
+    return (docs != null)
+        ? _buildPages()
+        : Container(
+      color: Colors.white,
+          child: Center(
               child: HeartbeatProgressIndicator(
                 child: Icon(
                   loadingIcon,
@@ -39,7 +37,7 @@ class GiftsPageState extends State<GiftsPage> {
                 ),
               ),
             ),
-    );
+        );
   }
 
   Future<void> _loadGiftData() async {
@@ -61,6 +59,8 @@ class GiftsPageState extends State<GiftsPage> {
   Widget _buildPages() {
     return IntroViewsFlutter(
       [page1, page2, page3],
+      columnMainAxisAlignment: MainAxisAlignment.spaceBetween,
+      doneButtonPersist: true,
       onTapDoneButton: () {
         Navigator.pop(context);
       },

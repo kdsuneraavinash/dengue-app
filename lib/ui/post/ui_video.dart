@@ -33,13 +33,12 @@ class VideoPost extends MediaPost {
             icon: Icons.verified_user,
             text: "Rating : ${'★' * processedPost.post.rating}",
             mainAxisAlignment: MainAxisAlignment.center,
-            color: Colors.red[900],
           )
         : IconText(
             icon: FontAwesomeIcons.clock,
             text: "Approval Pending",
             mainAxisAlignment: MainAxisAlignment.center,
-            color: Colors.red[400],
+            color: Colors.red[900],
           );
   }
 

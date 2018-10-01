@@ -75,18 +75,12 @@ class FeedBLoC extends BLoC {
 
 class ProcessedPost {
   final Post post;
-  final String username;
-  final String displayImage;
 
-  ProcessedPost(this.post, this.username, this.displayImage);
+  ProcessedPost(this.post);
 
   static Future<ProcessedPost> processedPostFromDoc(
       Map<String, dynamic> data) async {
     Post post = Post.fromMap(data);
-    DocumentSnapshot userDocSnap =
-        await FireStoreController.getUserDocumentOf(post.user);
-    String username = userDocSnap?.data["displayName"];
-    String displayImage = userDocSnap?.data["photoUrl"];
-    return ProcessedPost(post, username, displayImage);
+    return ProcessedPost(post);
   }
 }

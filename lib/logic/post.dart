@@ -2,7 +2,8 @@ enum PostType { WeeklyPost, Image, Text }
 
 class Post {
   PostType _type;
-  String _user;
+  String _userName;
+  String _userPhoto;
   String _caption;
   String _mediaLink;
   bool _approved;
@@ -13,7 +14,8 @@ class Post {
 
   Post({
     PostType type,
-    String user,
+    String userName,
+    String userPhoto,
     String caption,
     String mediaLink,
     bool approved = false,
@@ -24,7 +26,8 @@ class Post {
     String videoLink,
   }) {
     this._type = type ?? PostType.Image;
-    this._user = user;
+    this._userName = userName;
+    this._userPhoto = userPhoto;
     this._mediaLink = mediaLink;
     this._caption = caption;
     this._approved = approved;
@@ -57,7 +60,8 @@ class Post {
 
     return Post(
       type: postType,
-      user: data["user"],
+      userName: data["userName"],
+      userPhoto: data["userPhoto"],
       mediaLink: data["mediaLink"],
       caption: data["caption"],
       approved: data["approved"],
@@ -85,7 +89,8 @@ class Post {
 
     return {
       "type": postType,
-      "user": this.user,
+      "userName": this.userName,
+      "userPhoto": this.userPhoto,
       "mediaLink": this.mediaLink,
       "caption": this.caption,
       "approved": this.approved,
@@ -96,7 +101,9 @@ class Post {
     };
   }
 
-  String get user => _user;
+  String get userName => _userName;
+
+  String get userPhoto => _userPhoto;
 
   String get caption => _caption;
 
@@ -132,7 +139,7 @@ class Post {
       'Dec'
     ];
     str += '${datePosted.year} ${months[datePosted.month - 1]} ${datePosted.day} ' +
-        'at ${(datePosted.hour % 12 == 0) ? 12 : (datePosted.hour % 12)}:${datePosted.minute.toString().padRight(2, '0')} ${datePosted.hour / 12 == 0 ? "AM" : "PM"}';
+        'at ${(datePosted.hour % 12 == 0) ? 12 : (datePosted.hour % 12)}:${datePosted.minute.toString().padLeft(2, '0')} ${datePosted.hour / 12 == 0 ? "AM" : "PM"}';
     return str;
   }
 }

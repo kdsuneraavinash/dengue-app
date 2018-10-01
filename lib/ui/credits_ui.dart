@@ -71,9 +71,9 @@ class CreditsBody extends StatelessWidget {
         ),
         _buildCreditsTile(
             "100013401603485", "K. D. Sunera Avinash Chandrasiri"),
-        _buildCreditsTile("100002491783271", "Ruchin Amarathunga"),
         _buildCreditsTile("100004130706471", "Anju Chamantha"),
         _buildCreditsTile("100005312113806", "Deepana Ishtaweera"),
+        _buildCreditsTile("100002491783271", "Ruchin Amarathunga"),
         _buildCreditsTile("100013403053394", "Uvindu Avishka"),
       ],
     );

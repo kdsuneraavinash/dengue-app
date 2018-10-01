@@ -45,11 +45,7 @@ class TextPost extends AbstractPost {
 
   @override
   Widget buildBottomStrip() {
-    return IconText(
-      icon: Icons.sms,
-      text: "Text Post",
-      mainAxisAlignment: MainAxisAlignment.center,
-    );
+    return Container();
   }
 
   @override

@@ -16,17 +16,22 @@ abstract class AbstractPost extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          GestureDetector(
-            child: buildPostMedia(context),
-            onTap: () => handlePostTapped(context),
-          ),
-          buildCaptionText(),
-          _buildUserInfoStrip(context),
-          buildBottomStrip(),
-        ],
+      child: InkWell(
+        onTap: () => handlePostTapped(context),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: <Widget>[
+                buildPostMedia(context),
+                buildCaptionText(),
+              ],
+            ),
+            _buildUserInfoStrip(context),
+            buildBottomStrip(),
+          ],
+        ),
       ),
     );
   }
@@ -39,13 +44,13 @@ abstract class AbstractPost extends StatelessWidget {
           child: DefParameterNetworkImage(
             needProgress: false,
             isCover: true,
-            imageUrl: processedPost.displayImage,
+            imageUrl: processedPost.post.userPhoto,
             width: 40.0,
             height: 40.0,
           ),
         ),
       ),
-      title: Text(processedPost.username),
+      title: Text(processedPost.post.userName),
       subtitle: Text(processedPost.post.formattedDatePosted),
       trailing: processedPost.post.approved
           ? IconButton(

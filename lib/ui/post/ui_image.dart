@@ -10,11 +10,7 @@ class ImagePost extends MediaPost {
 
   @override
   Widget buildBottomStrip() {
-    return IconText(
-      icon: Icons.image,
-      text: "Image Post",
-      mainAxisAlignment: MainAxisAlignment.center,
-    );
+    return Container();
   }
 
   @override

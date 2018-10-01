@@ -12,18 +12,14 @@ class ImageView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(backgroundColor: Colors.black,title: Text("Content"),),
-      body: Stack(
-        children: <Widget>[
-          (type == MediaType.Image) ? _buildImageBox() : _buildVideoBox(),
-        ],
-      ),
+      body: (type == MediaType.Image) ? _buildImageBox() : _buildVideoBox(),
     );
   }
 
   /// Build Page View with Image
   Widget _buildImageBox() {
     return Center(
-      child: DefParameterNetworkImage(imageUrl: this.media, isCover: false),
+      child: DefParameterNetworkImage(imageUrl: this.media, isCover: true),
     );
   }
 
