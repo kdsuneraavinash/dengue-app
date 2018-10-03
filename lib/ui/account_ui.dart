@@ -107,8 +107,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                       userBLoC.firestoreAuthCommandSink
                           .add(LogInCommand.LOGOUT);
                       TransitionMaker.fadeTransition(
-                          destinationPageCall: () =>
-                              LoginBLoCProvider(child: SignUpPage()))
+                          destinationPageCall: () => LoginPage())
                         ..startPopAllAndPush(context);
                     }
                   },

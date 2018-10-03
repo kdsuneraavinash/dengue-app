@@ -6,14 +6,14 @@ import 'package:dengue_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class LeaderBoard extends StatefulWidget {
+class LeaderBoardPage extends StatefulWidget {
   @override
-  LeaderBoardState createState() {
-    return new LeaderBoardState();
+  LeaderBoardPageState createState() {
+    return new LeaderBoardPageState();
   }
 }
 
-class LeaderBoardState extends State<LeaderBoard> {
+class LeaderBoardPageState extends State<LeaderBoardPage> {
   UserBLoC userBLoC;
 
   @override

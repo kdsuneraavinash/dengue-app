@@ -28,8 +28,6 @@ dependencies:
   image_picker: ^0.4.10
   # Speed dial type Floating action button
   unicorndial: ^1.1.4
-  # Progress indication animations
-  progress_indicators: ^0.1.2
   # Facebook Login
   flutter_facebook_login: ^1.1.1
   # Google Login
@@ -46,6 +44,8 @@ dependencies:
   intro_views_flutter: ^2.2.4
   # Intro View
   intro_slider: ^1.0.6
+  # Lottie Animations
+  fluttie: ^0.2.3
 firebase_analytics: ^0.3.3
 
 dev_dependencies:
@@ -66,13 +66,15 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/data.png
-    - images/gifts.png
-    - images/clean.png
-    - images/mosquito.png
-    - logo.jpg
-    - mobile.png
+    - assets/images/data.png
+    - assets/images/gifts.png
+    - assets/images/clean.png
+    - assets/images/mosquito.png
+    - assets/logo.jpg
+    - assets/mobile.png
 
+    - assets/animations/material_loading.json
+    - assets/animations/glow_loading.json
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
 

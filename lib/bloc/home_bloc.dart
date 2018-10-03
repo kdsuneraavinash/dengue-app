@@ -4,42 +4,27 @@ import 'package:dengue_app/bloc/bloc.dart';
 import 'package:rxdart/subjects.dart';
 
 class HomePageBLoC extends BLoC {
-  // Streams and Sinks
-
-  /// Current Page Index which is needed to
-  /// update selected bottom navigation bar item
   final BehaviorSubject<int> _currentPageIndex = BehaviorSubject(seedValue: 1);
+  Stream<int> get currentPageIndex => _currentPageIndex.stream;
 
-  /// Issues the command to change Tab Page.
   final PublishSubject<int> _changeTabPageAnimate = PublishSubject();
+  Stream<int> get goToTabPageAnimate => _changeTabPageAnimate.stream;
+
   final PublishSubject<int> _changeTabPageJump = PublishSubject();
+  Stream<int> get goToTabPageJump => _changeTabPageJump.stream;
 
   /// Change current page: using swiping page view
   final StreamController<int> _changeCurrentPage = StreamController();
+  Sink<int> get changeCurrentPage => _changeCurrentPage.sink;
 
   /// Change current page: using tapping bottom navigation bar
   final StreamController<int> _changeCurrentPageByNavigationBar =
       StreamController();
-
-  /// Defining Outputs from stream
-  /// Stream ------------> Widgets
-  Stream<int> get currentPageIndex => _currentPageIndex.stream;
-
-  Stream<int> get goToTabPageAnimate => _changeTabPageAnimate.stream;
-
-  Stream<int> get goToTabPageJump => _changeTabPageJump.stream;
-
-  /// Defining Outputs to stream
-  /// Stream <------------ Widgets
-  Sink<int> get changeCurrentPage => _changeCurrentPage.sink;
-
   Sink<int> get changeCurrentPageByNavigationBar =>
       _changeCurrentPageByNavigationBar.sink;
 
   // Current page of page controller
   int _currentPage = 1;
-
-  HomePageBLoC() : super();
 
   @override
   void streamConnect() {

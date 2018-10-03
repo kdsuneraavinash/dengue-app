@@ -8,37 +8,22 @@ enum LogInState { SIGNED_UP, NOT_LOGGED, WAITING, LOGGED }
 class LoginBLoC extends BLoC {
   /// Issues the command to change Tab Page.
   final PublishSubject<int> _currentTabPageStream = PublishSubject();
-
-  /// Issues the command to navigate to home page.
-  /// Sends boolean to be used by [HomePage].
-  /// null if no need to change page.
-  /// *Remember to set to false after logging out.*
-  final PublishSubject<Null> _shouldNavigateToHomePageStream = PublishSubject();
-
-  final PublishSubject<Map<String, dynamic>> _signUpStatusUpdateStream =
-      PublishSubject();
-
-  /// Further details Text Submit Methods
-  final StreamController<int> _submitStreamController = StreamController();
-
-  /// Login Status Changed
-  final StreamController<LogInState> _loginStatusChangedStreamController =
-      StreamController();
-
-  /// Defining Outputs from stream
-  /// Stream ------------> Widgets
   Stream<int> get goToTabPageStream => _currentTabPageStream.stream;
 
+  final PublishSubject<Null> _shouldNavigateToHomePageStream = PublishSubject();
   Stream<Null> get navigateToHomePageStream =>
       _shouldNavigateToHomePageStream.stream;
 
+  final PublishSubject<Map<String, dynamic>> _signUpStatusUpdateStream =
+      PublishSubject();
   Stream<Map<String, dynamic>> get signUpStatusUpdateStream =>
       _signUpStatusUpdateStream.stream;
 
-  /// Defining Outputs to stream
-  /// Stream <------------ Widgets
+  final StreamController<int> _submitStreamController = StreamController();
   Sink<int> get submitSink => _submitStreamController.sink;
 
+  final StreamController<LogInState> _loginStatusChangedStreamController =
+      StreamController();
   Sink<LogInState> get loginStatusChangedSink =>
       _loginStatusChangedStreamController.sink;
 

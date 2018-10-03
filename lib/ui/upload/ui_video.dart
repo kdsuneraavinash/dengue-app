@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chewie/chewie.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
+import 'package:dengue_app/logic/firebase/storage.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_upload.dart';
@@ -56,9 +57,9 @@ class UploadCameraState extends UploadMediaAbstractState {
 
     File thumbnailFileUpload = File(thumbnailFile);
 
-    Uri resImage = await cloudMedia.uploadFile(
+    Uri resImage = await CloudStorage.uploadFile(
         thumbnailFileUpload, thumbnail, "thumbnails");
-    Uri resVideo = await cloudMedia.uploadFile(mediaFile,
+    Uri resVideo = await CloudStorage.uploadFile(mediaFile,
         "${user.id}-${DateTime.now().millisecondsSinceEpoch}.mp4", "videos");
 
     Post post = Post(

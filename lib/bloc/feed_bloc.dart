@@ -8,17 +8,15 @@ import 'package:rxdart/rxdart.dart';
 
 class FeedBLoC extends BLoC {
   BehaviorSubject<List<ProcessedPost>> _postsFeed = BehaviorSubject();
-  PublishSubject<bool> _refreshAvailable = PublishSubject();
-  PublishSubject<bool> _refreshFinished = PublishSubject();
-
-  StreamController<Null> _refreshCommandIssued = StreamController();
-
   Stream<List<ProcessedPost>> get postsFeed => _postsFeed.stream;
 
+  PublishSubject<bool> _refreshAvailable = PublishSubject();
   Stream<bool> get refreshAvailable => _refreshAvailable.stream;
 
+  PublishSubject<bool> _refreshFinished = PublishSubject();
   Stream<bool> get refreshFinished => _refreshFinished.stream;
 
+  StreamController<Null> _refreshCommandIssued = StreamController();
   Sink<Null> get refreshCommandIssued => _refreshCommandIssued;
 
   Stream<QuerySnapshot> feedQuery = FireStoreController.postDocuments

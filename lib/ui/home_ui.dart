@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dengue_app/bloc/home_bloc.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
-import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/home_provider.dart';
@@ -24,21 +23,29 @@ import 'package:url_launcher/url_launcher.dart';
 
 enum UploadType { Text, Camera, Gallery, WeeklyPost }
 
-class HomePage extends StatefulWidget {
-  final PageController _pageController = PageController(initialPage: 1);
-  static const routeName = "/home";
-
-  HomePage();
-
+class HomePage extends StatelessWidget {
   @override
-  HomePageState createState() {
-    return HomePageState();
+  Widget build(BuildContext context) {
+    return HomePageBLoCProvider(
+      child: HomePageContent(),
+    );
   }
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageContent extends StatefulWidget {
+  final PageController _pageController = PageController(initialPage: 1);
+  static const routeName = "/home";
+
+  @override
+  HomePageContentState createState() {
+    return HomePageContentState();
+  }
+}
+
+class HomePageContentState extends State<HomePageContent> {
   HomePageBLoC homeBLoC;
   UserBLoC userBLoC;
+  List<Widget> pages;
 
   @override
   void didChangeDependencies() {
@@ -50,20 +57,91 @@ class HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    homeBLoC.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    pages = [
+      TaskFeedPage(),
+      FeedPage(),
+      LeaderBoardPage(),
+    ];
+
+    childButtons = List<UnicornButton>();
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Weekly Post",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "weeklyPost",
+            backgroundColor: Colors.red,
+            mini: true,
+            child: Icon(Icons.play_arrow),
+            onPressed: () => _handleNavigateToUploadPage(UploadType.WeeklyPost),
+          )),
+    );
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Gallery",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "gallery",
+            backgroundColor: Colors.green,
+            mini: true,
+            child: Icon(Icons.image),
+            onPressed: () => _handleNavigateToUploadPage(UploadType.Gallery),
+          )),
+    );
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Camera",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "camera",
+            backgroundColor: Colors.blue,
+            mini: true,
+            child: Icon(Icons.camera_alt),
+            onPressed: () => _handleNavigateToUploadPage(UploadType.Camera),
+          )),
+    );
+
+    childButtons.add(
+      UnicornButton(
+          hasLabel: true,
+          labelText: "Text",
+          labelColor: Colors.black,
+          currentButton: FloatingActionButton(
+            heroTag: "text",
+            backgroundColor: Colors.deepPurple,
+            mini: true,
+            child: Icon(Icons.title),
+            onPressed: () => _handleNavigateToUploadPage(UploadType.Text),
+          )),
+    );
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<User>(
       stream: userBLoC.userStream,
-      builder: (_, snapshotUser) => Scaffold(
-            drawer: _buildDrawer(snapshotUser.data),
-            appBar: _buildAppBar(snapshotUser.data),
+      builder: (_, userSnapshot) => Scaffold(
+            drawer: _buildDrawer(userSnapshot.data),
+            appBar: _buildAppBar(userSnapshot.data),
             body: PageView(
               controller: widget._pageController,
               onPageChanged: homeBLoC.changeCurrentPage.add,
-              children: <Widget>[
-                TaskFeedPage(),
-                FeedPage(),
-                (snapshotUser.data == null) ? ErrorViewWidget() : LeaderBoard(),
-              ],
+              children: pages,
             ),
             bottomNavigationBar: _buildBottomNavigationBar(),
             floatingActionButton: _buildFloatingActionButton(),
@@ -211,10 +289,10 @@ class HomePageState extends State<HomePage> {
     return StreamBuilder<int>(
       initialData: 1,
       stream: homeBLoC.currentPageIndex,
-      builder: (_, snapshot) => BottomNavigationBar(
+      builder: (_, currentPageSnapshot) => BottomNavigationBar(
             type: BottomNavigationBarType.shifting,
             onTap: homeBLoC.changeCurrentPageByNavigationBar.add,
-            currentIndex: snapshot.data ?? 1,
+            currentIndex: currentPageSnapshot.data ?? 1,
             items: <BottomNavigationBarItem>[
               _buildBottomNavigationBarItem(
                 icon: FontAwesomeIcons.tasks,
@@ -317,69 +395,6 @@ class HomePageState extends State<HomePage> {
       TransitionMaker.slideTransition(destinationPageCall: () => WinnersPage())
         ..start(context);
     }
-  }
-
-  @override
-  void initState() {
-    childButtons = List<UnicornButton>();
-
-    childButtons.add(
-      UnicornButton(
-          hasLabel: true,
-          labelText: "Weekly Post",
-          labelColor: Colors.black,
-          currentButton: FloatingActionButton(
-            heroTag: "weeklyPost",
-            backgroundColor: Colors.red,
-            mini: true,
-            child: Icon(Icons.play_arrow),
-            onPressed: () => _handleNavigateToUploadPage(UploadType.WeeklyPost),
-          )),
-    );
-
-    childButtons.add(
-      UnicornButton(
-          hasLabel: true,
-          labelText: "Gallery",
-          labelColor: Colors.black,
-          currentButton: FloatingActionButton(
-            heroTag: "gallery",
-            backgroundColor: Colors.green,
-            mini: true,
-            child: Icon(Icons.image),
-            onPressed: () => _handleNavigateToUploadPage(UploadType.Gallery),
-          )),
-    );
-
-    childButtons.add(
-      UnicornButton(
-          hasLabel: true,
-          labelText: "Camera",
-          labelColor: Colors.black,
-          currentButton: FloatingActionButton(
-            heroTag: "camera",
-            backgroundColor: Colors.blue,
-            mini: true,
-            child: Icon(Icons.camera_alt),
-            onPressed: () => _handleNavigateToUploadPage(UploadType.Camera),
-          )),
-    );
-
-    childButtons.add(
-      UnicornButton(
-          hasLabel: true,
-          labelText: "Text",
-          labelColor: Colors.black,
-          currentButton: FloatingActionButton(
-            heroTag: "text",
-            backgroundColor: Colors.deepPurple,
-            mini: true,
-            child: Icon(Icons.title),
-            onPressed: () => _handleNavigateToUploadPage(UploadType.Text),
-          )),
-    );
-
-    super.initState();
   }
 
   void _launchUrl(String url) async {

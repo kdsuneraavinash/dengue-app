@@ -19,7 +19,7 @@ class ImageView extends StatelessWidget {
   /// Build Page View with Image
   Widget _buildImageBox() {
     return Center(
-      child: DefParameterNetworkImage(imageUrl: this.media, isCover: true),
+      child: DefParameterNetworkImage(imageUrl: this.media, isCover: false),
     );
   }
 

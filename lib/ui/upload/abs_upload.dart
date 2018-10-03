@@ -1,12 +1,9 @@
 import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
-import 'package:dengue_app/logic/firebase/storage.dart';
+import 'package:dengue_app/custom_widgets/loading_screen.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_indicators/progress_indicators.dart';
-import '../../main.dart';
 
 abstract class UploadAbstract extends StatefulWidget {
   @override
@@ -16,7 +13,6 @@ abstract class UploadAbstract extends StatefulWidget {
 abstract class UploadAbstractState extends State<UploadAbstract> {
   UserBLoC userBLoC;
   bool isUploading = false;
-  CloudStorage cloudMedia = cloudStorage;
 
   @override
   void didChangeDependencies() {
@@ -80,12 +76,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
           child: ModalBarrier(dismissible: false, color: Colors.black),
         ),
         Center(
-          child: HeartbeatProgressIndicator(
-            child: Icon(
-              FontAwesomeIcons.upload,
-              color: Colors.white,
-            ),
-          ),
+          child: AnimatedLoadingScreen(AnimationFile.GlowLoading),
         )
       ],
     );

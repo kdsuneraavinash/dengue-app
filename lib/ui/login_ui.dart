@@ -1,42 +1,58 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/errorwidget.dart';
+import 'package:dengue_app/custom_widgets/loading_screen.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
-import 'package:dengue_app/providers/feed_provider.dart';
-import 'package:dengue_app/providers/home_provider.dart';
 import 'package:dengue_app/providers/login_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
+import 'package:dengue_app/ui/error_handler_ui.dart';
 import 'package:dengue_app/ui/home_ui.dart';
 import 'package:dengue_app/ui/userdata_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intro_slider/intro_slider.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 
-class SignUpPage extends StatefulWidget {
-  SignUpPage();
+class LoginPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LoginBLoCProvider(
+      child: LoginPageContent(),
+    );
+  }
+}
 
+class LoginPageContent extends StatefulWidget {
   static const routeName = "/login";
 
   @override
-  SignUpPageState createState() {
-    return SignUpPageState();
+  LoginPageContentState createState() {
+    return LoginPageContentState();
   }
 
   final PageController _pageController = PageController(initialPage: 0);
 }
 
-class SignUpPageState extends State<SignUpPage> {
+class LoginPageContentState extends State<LoginPageContent> {
   LoginBLoC loginBLoC;
   UserBLoC userBLoC;
+  StreamSubscription goToTabPageStreamSubscription,
+      navigateToHomePageStreamSubscription;
+  StreamSubscription signUpFinishedSubscription, loginStatusSubscription;
 
   @override
   void dispose() {
-    widget._pageController.dispose();
     super.dispose();
+    navigateToHomePageStreamSubscription.cancel();
+    goToTabPageStreamSubscription.cancel();
+    signUpFinishedSubscription.cancel();
+    loginStatusSubscription.cancel();
+    loginBLoC.dispose();
+    widget._pageController.dispose();
   }
 
   @override
@@ -45,72 +61,38 @@ class SignUpPageState extends State<SignUpPage> {
     if (mounted) {
       loginBLoC = LoginBLoCProvider.of(context);
       userBLoC = UserBLoCProvider.of(context);
-      loginBLoC.signUpStatusUpdateStream
+      signUpFinishedSubscription = loginBLoC.signUpStatusUpdateStream
           .listen(userBLoC.signUpFinishedSink.add);
-      userBLoC.logInStateStream.listen(loginBLoC.loginStatusChangedSink.add);
-      loginBLoC.goToTabPageStream.listen(_handleChangeTabPage);
-      loginBLoC.navigateToHomePageStream.listen(_handleNavigateToHomePage);
-      //userBLoC.loginIfAlreadyLoggedIn();
+      loginStatusSubscription = userBLoC.logInStateStream
+          .listen(loginBLoC.loginStatusChangedSink.add);
+      goToTabPageStreamSubscription =
+          loginBLoC.goToTabPageStream.listen(_handleChangeTabPage);
+      navigateToHomePageStreamSubscription =
+          loginBLoC.navigateToHomePageStream.listen(_handleNavigateToHomePage);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Object>(
-      stream: userBLoC.issueExceptionStream,
-      initialData: null,
-      builder: (_, snapshotError) => StreamBuilder<LogInState>(
-          stream: userBLoC.logInStateStream,
-          initialData: LogInState.WAITING,
-          builder: (_, snapshotIsLoggingIn) {
-            List<Widget> children;
-            if (snapshotError.data != null) {
-              children = [
-                _buildPagedView(),
-                _buildErrorView(snapshotError.data)
-              ];
-            } else if (snapshotIsLoggingIn.data == LogInState.WAITING) {
-              children = [_buildPagedView(), _buildLoadingView()];
-            } else {
-              children = [_buildPagedView()];
-            }
-            return Stack(children: children);
-          }),
-    );
-  }
-
-  Widget _buildErrorView(Object e) {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.9,
-          child: ModalBarrier(
-              dismissible: false, color: Theme.of(context).accentColor),
-        ),
-        Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(24.0),
-                child: Text(
-                  e.toString(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0,
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-              RaisedButton(
-                onPressed: () => userBLoC.issueExceptionSink.add(null),
-                color: Colors.white,
-                child: Text("Dismiss"),
+      stream: userBLoC.exceptionStream,
+      builder: (_, snapshotException) {
+        return snapshotException?.data == null
+            ? StreamBuilder<LogInState>(
+                stream: userBLoC.logInStateStream,
+                initialData: LogInState.WAITING,
+                builder: (_, snapshotIsLoggingIn) {
+                  List<Widget> children;
+                  if (snapshotIsLoggingIn.data == LogInState.WAITING) {
+                    children = [_buildPagedView(), _buildLoadingView()];
+                  } else {
+                    children = [_buildPagedView()];
+                  }
+                  return Stack(children: children);
+                },
               )
-            ],
-          ),
-        ),
-      ],
+            : ErrorViewer(snapshotException.data, userBLoC.exceptionStream.add);
+      },
     );
   }
 
@@ -140,12 +122,7 @@ class SignUpPageState extends State<SignUpPage> {
               dismissible: false, color: Theme.of(context).primaryColor),
         ),
         Center(
-          child: HeartbeatProgressIndicator(
-            child: Icon(
-              FontAwesomeIcons.globe,
-              color: Colors.white,
-            ),
-          ),
+          child: AnimatedLoadingScreen(AnimationFile.MaterialLoading),
         ),
       ],
     );
@@ -269,9 +246,7 @@ class SignUpPageState extends State<SignUpPage> {
 
   void _handleNavigateToHomePage(_) {
     if (mounted) {
-      TransitionMaker.fadeTransition(
-          destinationPageCall: () =>
-              HomePageBLoCProvider(child: FeedBLoCProvider(child: HomePage())))
+      TransitionMaker.fadeTransition(destinationPageCall: () => HomePage())
         ..startReplace(context);
     }
   }

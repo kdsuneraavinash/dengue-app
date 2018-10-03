@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dengue_app/bloc/feed_bloc.dart';
+import 'package:dengue_app/custom_widgets/loading_screen.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/providers/feed_provider.dart';
 import 'package:dengue_app/ui/post/ui_image.dart';
@@ -8,23 +9,44 @@ import 'package:dengue_app/ui/post/ui_text.dart';
 import 'package:dengue_app/ui/post/ui_video.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 
-class FeedPage extends StatefulWidget {
+class FeedPage extends StatelessWidget {
   @override
-  FeedPageState createState() {
-    return new FeedPageState();
+  Widget build(BuildContext context) {
+    return FeedPageBLoCProvider(child: FeedPageContent());
   }
 }
 
-class FeedPageState extends State<FeedPage>
+class FeedPageContent extends StatefulWidget {
+  @override
+  FeedPageContentState createState() {
+    return new FeedPageContentState();
+  }
+}
+
+class FeedPageContentState extends State<FeedPageContent>
     with SingleTickerProviderStateMixin {
   FeedBLoC feedBLoC;
 
   @override
+  void initState() {
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    newPostAnimation = Tween(begin: 0.0, end: 1.0).animate(controller);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    feedBLoC.dispose();
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    feedBLoC = FeedBLoCProvider.of(context);
+    feedBLoC = FeedPageBLoCProvider.of(context);
     feedBLoC.refreshAvailable.listen((available) {
       if (mounted && available ?? false) {
         setState(() {
@@ -37,39 +59,39 @@ class FeedPageState extends State<FeedPage>
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
       stream: feedBLoC.refreshAvailable,
-      builder: (_, refreshSnapshot) => RefreshIndicator(
-            onRefresh: () => _handleRefreshPage(refreshSnapshot.data ?? false),
+      builder: (_, refreshAvailableSnapshot) => RefreshIndicator(
+            onRefresh: () =>
+                _handleRefreshPage(refreshAvailableSnapshot.data ?? false),
             child: Stack(
               children: <Widget>[
                 StreamBuilder<List<ProcessedPost>>(
                   stream: feedBLoC.postsFeed,
-                  builder: (_, snapshot) => snapshot.hasData
+                  builder: (_, postsFeedSnapshot) => postsFeedSnapshot.hasData
                       ? ListView.builder(
                           itemBuilder: (_, i) {
-                            Key key = Key(snapshot.data[i].post.datePosted
+                            Key key = Key(postsFeedSnapshot
+                                    .data[i].post.datePosted
                                     .toIso8601String() +
-                                snapshot.data[i].post.userName);
-                            switch (snapshot.data[i].post.type) {
+                                postsFeedSnapshot.data[i].post.userName);
+                            switch (postsFeedSnapshot.data[i].post.type) {
                               case PostType.Image:
                                 return ImagePost(
-                                    key: key, processedPost: snapshot.data[i]);
+                                    key: key,
+                                    processedPost: postsFeedSnapshot.data[i]);
                               case PostType.Text:
                                 return TextPost(
-                                    key: key, processedPost: snapshot.data[i]);
+                                    key: key,
+                                    processedPost: postsFeedSnapshot.data[i]);
                               case PostType.WeeklyPost:
                                 return VideoPost(
-                                    key: key, processedPost: snapshot.data[i]);
+                                    key: key,
+                                    processedPost: postsFeedSnapshot.data[i]);
                             }
                           },
-                          itemCount: snapshot.data.length,
+                          itemCount: postsFeedSnapshot.data.length,
                         )
                       : Center(
-                          child: HeartbeatProgressIndicator(
-                            child: Icon(
-                              FontAwesomeIcons.newspaper,
-                              color: Colors.black,
-                            ),
-                          ),
+                          child: AnimatedLoadingScreen(AnimationFile.GlowLoading),
                         ),
                 ),
                 FadeTransition(
@@ -122,20 +144,6 @@ class FeedPageState extends State<FeedPage>
           .then((_) => waitForFinish.complete());
     }
     return waitForFinish.future;
-  }
-
-  @override
-  void initState() {
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-    newPostAnimation = Tween(begin: 0.0, end: 1.0).animate(controller);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 
   AnimationController controller;

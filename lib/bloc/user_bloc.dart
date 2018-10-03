@@ -12,52 +12,35 @@ import 'package:rxdart/rxdart.dart';
 enum LogInCommand { GOOGLE_LOGIN, FACEBOOK_LOGIN, LOGOUT }
 
 class UserBLoC extends BLoC {
-  /// Stream which sends the last logged in [User].
-  /// null if no one is logged in.
   final BehaviorSubject<User> _userStream = BehaviorSubject();
+  Stream<User> get userStream => _userStream.stream;
 
-  final BehaviorSubject<Object> _issueExceptionStream = BehaviorSubject();
-
-  /// [LogInState] updater.
-  /// Changes when login state changes.
   final BehaviorSubject<LogInState> _logInStateStream = BehaviorSubject();
+  Stream<LogInState> get logInStateStream => _logInStateStream.stream;
 
-  /// Listens for commands to Social Media Controller such as Login, Logout.
   final StreamController<LogInCommand> _firestoreAuthCommandStreamController =
       StreamController();
+  Sink<LogInCommand> get firestoreAuthCommandSink =>
+      _firestoreAuthCommandStreamController.sink;
 
   final StreamController<Map<String, dynamic>> _signUpFinishedStreamController =
       StreamController();
-
-  /// Defining Outputs from stream
-  /// Stream ------------> Widgets
-  Stream<LogInState> get logInStateStream => _logInStateStream.stream;
-
-  Stream<User> get userStream => _userStream.stream;
+  Sink<Map<String, dynamic>> get signUpFinishedSink =>
+      _signUpFinishedStreamController.sink;
 
   Stream<QuerySnapshot> get leaderBoardStream =>
       _firestoreAuthController.leaderBoard;
 
-  Stream<Object> get issueExceptionStream => _issueExceptionStream.stream;
+  final BehaviorSubject<Object> _exceptionStream = BehaviorSubject();
+  BehaviorSubject<Object> get exceptionStream => _exceptionStream;
 
-  /// Defining Outputs to stream
-  /// Stream <------------ Widgets
-  Sink<LogInCommand> get firestoreAuthCommandSink =>
-      _firestoreAuthCommandStreamController.sink;
-
-  Sink<Map<String, dynamic>> get signUpFinishedSink =>
-      _signUpFinishedStreamController.sink;
-
-  Sink<Object> get issueExceptionSink => _issueExceptionStream.sink;
-
-  /// Firestore Controller
   final FirebaseAuthController _firestoreAuthController =
       FirebaseAuthController();
   User _loggedInUser;
 
   @override
   void dispose() {
-    _issueExceptionStream.close();
+    _exceptionStream.close();
     _signUpFinishedStreamController.close();
     _userStream.close();
     _firestoreAuthCommandStreamController.close();
@@ -121,8 +104,8 @@ class UserBLoC extends BLoC {
         }
       }
     } catch (e) {
+      _exceptionStream.sink.add(e);
       _logInStateStream.add(LogInState.NOT_LOGGED);
-      _issueExceptionStream.add(e);
     }
   }
 
@@ -148,7 +131,7 @@ class UserBLoC extends BLoC {
           return;
         }
       } catch (e) {
-        _issueExceptionStream.add(e);
+        _exceptionStream.sink.add(e);
       }
     }
     _logInStateStream.add(LogInState.NOT_LOGGED);
@@ -165,6 +148,4 @@ class UserBLoC extends BLoC {
     }
     _loggedInUser = user;
   }
-
-  UserBLoC() : super();
 }

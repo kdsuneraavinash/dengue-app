@@ -1,4 +1,5 @@
 import 'package:dengue_app/logic/firebase/firestore.dart';
+import 'package:dengue_app/logic/firebase/storage.dart';
 import 'package:dengue_app/logic/post.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_media.dart';
@@ -10,7 +11,7 @@ abstract class UploadImageAbstractState extends UploadMediaAbstractState {
     setState(() {
       isUploading = true;
     });
-    Uri res = await cloudMedia.uploadFile(mediaFile,
+    Uri res = await CloudStorage.uploadFile(mediaFile,
         "${user.id}-${DateTime.now().millisecondsSinceEpoch}.png", "images");
     Post post = Post(
       type: PostType.Image,

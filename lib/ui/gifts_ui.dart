@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dengue_app/custom_widgets/loading_screen.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 
 class GiftsPage extends StatefulWidget {
   @override
@@ -28,16 +28,11 @@ class GiftsPageState extends State<GiftsPage> {
     return (docs != null)
         ? _buildPages()
         : Container(
-      color: Colors.white,
-          child: Center(
-              child: HeartbeatProgressIndicator(
-                child: Icon(
-                  loadingIcon,
-                  color: Colors.black,
-                ),
-              ),
+            color: Colors.white,
+            child: Center(
+              child: AnimatedLoadingScreen(AnimationFile.GlowLoading),
             ),
-        );
+          );
   }
 
   Future<void> _loadGiftData() async {
