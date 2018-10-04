@@ -30,13 +30,13 @@ class UserInfoPageState extends State<UserInfoPage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return StreamBuilder<User>(
+      stream: userBLoC.userStream,
+      builder: (_, userSnapshot) => Scaffold(
       appBar: AppBar(
         title: Text("Account"),
       ),
-      body: StreamBuilder<User>(
-        stream: userBLoC.userStream,
-        builder: (_, snapshot) => ListView(
+      body: ListView(
               children: <Widget>[
                 Center(
                   child: SizedBox(
@@ -46,7 +46,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                       padding: EdgeInsets.all(16.0),
                       child: ClipOval(
                         child: DefParameterNetworkImage(
-                          imageUrl: snapshot.data?.photoUrl ?? User.BLANK_PHOTO,
+                          imageUrl: userSnapshot.data?.photoUrl ?? User.BLANK_PHOTO,
                           isCover: true,
                         ),
                       ),
@@ -54,37 +54,36 @@ class UserInfoPageState extends State<UserInfoPage> {
                   ),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.displayName ?? ""),
+                  title: Text(userSnapshot.data?.displayName ?? ""),
                   subtitle: Text("Display Name"),
                   leading: Icon(Icons.person),
                 ),
                 ListTile(
-                  title: Text("Points : ${snapshot.data?.points ?? ""}"),
+                  title: Text("Points : ${userSnapshot.data?.points ?? ""}"),
                   subtitle: Text("Points"),
                   leading: Icon(FontAwesomeIcons.fire),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.fullName ?? ""),
+                  title: Text(userSnapshot.data?.fullName ?? ""),
                   subtitle: Text("Name"),
                   leading: Icon(Icons.title),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.address ?? ""),
+                  title: Text(userSnapshot.data?.address ?? ""),
                   subtitle: Text("Address"),
                   leading: Icon(Icons.location_city),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.telephone ?? ""),
+                  title: Text(userSnapshot.data?.telephone ?? ""),
                   subtitle: Text("Phone Number"),
                   leading: Icon(Icons.phone),
                 ),
                 ListTile(
-                  title: Text(snapshot.data?.email ?? ""),
+                  title: Text(userSnapshot.data?.email ?? ""),
                   subtitle: Text("E Mail"),
                   leading: Icon(Icons.email),
                 ),
               ],
-            ),
       ),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
@@ -119,8 +118,9 @@ class UserInfoPageState extends State<UserInfoPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () => null,
+        onPressed: () => print(userSnapshot.data.stats.toMap()),
         child: Icon(FontAwesomeIcons.edit),
+      ),
       ),
     );
   }

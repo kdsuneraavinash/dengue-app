@@ -1,14 +1,18 @@
+import 'package:dengue_app/logic/stats.dart';
+
 class Task {
   String _taskTitle = "[Task Title]";
   int _allocatedPoints = 0;
   int _remainingChances = 0;
   String _taskImage;
+  StatisticAction _action;
 
-  Task({taskTitle, allocatedPoints, remainingChances, taskImage}) {
+  Task({taskTitle, allocatedPoints, remainingChances, taskImage, action}) {
     _taskTitle = taskTitle;
     _allocatedPoints = allocatedPoints;
     _remainingChances = remainingChances;
     _taskImage = taskImage;
+    _action = action;
   }
 
   String get taskImage => _taskImage;
@@ -28,4 +32,6 @@ class Task {
   int get allocatedPoints => _allocatedPoints;
 
   String get taskTitle => _taskTitle;
+
+  StatisticAction get action => _action;
 }

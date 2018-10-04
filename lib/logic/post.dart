@@ -2,6 +2,7 @@ enum PostType { WeeklyPost, Image, Text }
 
 class Post {
   PostType _type;
+  String _userId;
   String _userName;
   String _userPhoto;
   String _caption;
@@ -14,6 +15,7 @@ class Post {
 
   Post({
     PostType type,
+    String userId,
     String userName,
     String userPhoto,
     String caption,
@@ -26,6 +28,7 @@ class Post {
     String videoLink,
   }) {
     this._type = type ?? PostType.Image;
+    this._userId = userId;
     this._userName = userName;
     this._userPhoto = userPhoto;
     this._mediaLink = mediaLink;
@@ -60,6 +63,7 @@ class Post {
 
     return Post(
       type: postType,
+      userId: data["userId"] ?? "",
       userName: data["userName"],
       userPhoto: data["userPhoto"],
       mediaLink: data["mediaLink"],
@@ -89,6 +93,7 @@ class Post {
 
     return {
       "type": postType,
+      "userId": userId,
       "userName": this.userName,
       "userPhoto": this.userPhoto,
       "mediaLink": this.mediaLink,
@@ -100,6 +105,8 @@ class Post {
       "videoLink": this.videoLink,
     };
   }
+
+  String get userId => _userId;
 
   String get userName => _userName;
 

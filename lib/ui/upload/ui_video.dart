@@ -100,11 +100,18 @@ class UploadCameraState extends UploadMediaAbstractState {
       return SizedBox(
         child: RaisedButton(
           onPressed: () => handleBrowseImage(user),
-          child: Icon(
-            backgroundIcon,
-            color: Colors.white,
-            size: MediaQuery.of(context).size.width / 3,
-          ),
+          child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Icon(
+              backgroundIcon,
+              color: Colors.white,
+              size: MediaQuery.of(context).size.width / 3,
+            ),
+            Text("Tap to Select Video File", style: TextStyle(color: Colors.white),)
+          ],
+        ),
           color: Color(0xff263238),
         ),
         height: MediaQuery.of(context).size.height,

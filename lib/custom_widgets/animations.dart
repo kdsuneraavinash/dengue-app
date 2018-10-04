@@ -12,6 +12,9 @@ class FluttieAnimations {
   int _materialLoadingComposition;
   FluttieAnimationController materialLoadingAnimation;
 
+  int _hourglassComposition;
+  FluttieAnimationController hourglassAnimation;
+
   BehaviorSubject<bool> _isReady = BehaviorSubject(seedValue: false);
   Stream<bool> get isReady => _isReady.stream;
 
@@ -24,10 +27,14 @@ class FluttieAnimations {
         .loadAnimationFromAsset("assets/animations/glow_loading.json");
     _materialLoadingComposition = await _fluttieInstance
         .loadAnimationFromAsset("assets/animations/material_loading.json");
+    _hourglassComposition = await _fluttieInstance
+        .loadAnimationFromAsset("assets/animations/hourglass.json");
 
-    glowLoadingAnimation = await _prepareLoopingAnimation(_glowLoadingComposition);
+    glowLoadingAnimation =
+        await _prepareLoopingAnimation(_glowLoadingComposition);
     materialLoadingAnimation =
         await _prepareLoopingAnimation(_materialLoadingComposition);
+    hourglassAnimation = await _prepareLoopingAnimation(_hourglassComposition);
 
     _isReady.add(true);
   }

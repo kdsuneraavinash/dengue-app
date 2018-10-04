@@ -1,3 +1,4 @@
+import 'package:dengue_app/logic/stats.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class User {
@@ -11,16 +12,18 @@ class User {
   String _address;
   String _telephone;
   String _id;
-  int _points = 0;
+  Statistics _stats;
 
-  void setUser(
-      {String id,
-      String displayName,
-      String email,
-      String photoUrl,
-      String fullName,
-      String address,
-      String telephone}) {
+  void setUser({
+    String id,
+    String displayName,
+    String email,
+    String photoUrl,
+    String fullName,
+    String address,
+    String telephone,
+    Statistics stats,
+  }) {
     _id = id ?? _id;
     _displayName = displayName ?? _displayName;
     _email = email ?? _email;
@@ -28,17 +31,14 @@ class User {
     _fullName = fullName ?? _fullName;
     _address = address ?? _address;
     _telephone = telephone ?? _telephone;
+    _stats = stats ?? _stats;
   }
 
-  set points(p) {
-    _points = p;
-  }
+  Statistics get stats => _stats;
 
   String get fullName => _fullName;
 
   String get displayName => _displayName;
-
-  int get points => _points;
 
   String get id => _id;
 
@@ -50,6 +50,8 @@ class User {
 
   String get email => _email;
 
+  int get points => _stats.calculatePoints();
+
   User.fromMap(String id, Map<String, dynamic> map) {
     _id = id;
     _displayName = map['displayName'] ?? "[ERR]";
@@ -58,7 +60,7 @@ class User {
     _telephone = map['telephone'] ?? "[NOT SET]";
     _fullName = map['fullName'] ?? "[NOT SET]";
     _address = map['address'] ?? "[NOT SET]";
-    _points = map['points'] ?? 0;
+    _stats = Statistics.fromMap(Map<String, dynamic>.from(map['stats'] ?? {}));
   }
 
   User.fromFirebaseUser(FirebaseUser firebaseUser) {
@@ -69,7 +71,7 @@ class User {
     _telephone = "[NOT SET]";
     _fullName = "[NOT SET]";
     _address = "[NOT SET]";
-    _points = 0;
+    _stats = Statistics();
   }
 
   Map<String, dynamic> toMap() {
@@ -80,7 +82,8 @@ class User {
       'fullName': _fullName,
       'address': _address,
       'telephone': _telephone,
-      'points': _points,
+      'stats': _stats.toMap(),
+      'points': points,
     };
   }
 
@@ -100,12 +103,16 @@ class User {
     if (otherUser == null) {
       return false;
     }
-    return (_points == otherUser.points) &&
-        (_displayName == otherUser.displayName) &&
+    return (_displayName == otherUser.displayName) &&
         (_email == otherUser.email) &&
         (_photoUrl == otherUser.photoUrl) &&
         (_fullName == otherUser.fullName) &&
         (_address == otherUser.address) &&
-        (_telephone == otherUser.telephone);
+        (_telephone == otherUser.telephone) &&
+        (stats.toMap() == otherUser.stats.toMap());
+  }
+
+  void doTask(StatisticAction action) {
+    stats.doAction(action);
   }
 }

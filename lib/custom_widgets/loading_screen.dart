@@ -3,7 +3,7 @@ import 'package:dengue_app/providers/fluttie_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttie/fluttie.dart';
 
-enum AnimationFile { GlowLoading, MaterialLoading }
+enum AnimationFile { GlowLoading, MaterialLoading, HourGlass }
 
 class AnimatedLoadingScreen extends StatefulWidget {
   final AnimationFile animationType;
@@ -46,6 +46,8 @@ class _AnimatedLoadingScreenState extends State<AnimatedLoadingScreen> {
         return fluttieAnimations.glowLoadingAnimation;
       case AnimationFile.MaterialLoading:
         return fluttieAnimations.materialLoadingAnimation;
+      case AnimationFile.HourGlass:
+        return fluttieAnimations.hourglassAnimation;
     }
     return null;
   }

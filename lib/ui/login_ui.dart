@@ -166,34 +166,14 @@ class LoginPageContentState extends State<LoginPageContent> {
                 children: <Widget>[
                   SizedBox(
                     width: screenSize.width / 1.5,
-                    child: RaisedButton.icon(
-                      icon: Icon(
-                        FontAwesomeIcons.google,
-                        color: Colors.white,
-                      ),
+                    child: RaisedButton(
                       onPressed: () => userBLoC.firestoreAuthCommandSink
                           .add(LogInCommand.GOOGLE_LOGIN),
-                      label: Text(
-                        "Google Login",
+                      child: Text(
+                        "Get Started",
                         style: TextStyle(color: Colors.white),
                       ),
                       color: Colors.red[800],
-                    ),
-                  ),
-                  SizedBox(
-                    width: screenSize.width / 1.5,
-                    child: RaisedButton.icon(
-                      icon: Icon(
-                        FontAwesomeIcons.facebookSquare,
-                        color: Colors.white,
-                      ),
-                      onPressed: () => userBLoC.firestoreAuthCommandSink
-                          .add(LogInCommand.FACEBOOK_LOGIN),
-                      label: Text(
-                        "Facebook Login",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Color(0xff3B5998),
                     ),
                   ),
                 ],

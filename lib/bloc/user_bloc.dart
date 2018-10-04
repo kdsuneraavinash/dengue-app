@@ -5,6 +5,7 @@ import 'package:dengue_app/bloc/bloc.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:dengue_app/logic/firebase/auth.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
+import 'package:dengue_app/logic/stats.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
@@ -34,6 +35,13 @@ class UserBLoC extends BLoC {
   final BehaviorSubject<Object> _exceptionStream = BehaviorSubject();
   BehaviorSubject<Object> get exceptionStream => _exceptionStream;
 
+  BehaviorSubject<int> _achievements = BehaviorSubject();
+  Stream<int> get achievementsStream => _achievements.stream;
+
+  StreamController<StatisticAction> _addStatsStreamController =
+      StreamController();
+  Sink<StatisticAction> get addStatsSink => _addStatsStreamController.sink;
+
   final FirebaseAuthController _firestoreAuthController =
       FirebaseAuthController();
   User _loggedInUser;
@@ -44,6 +52,8 @@ class UserBLoC extends BLoC {
     _signUpFinishedStreamController.close();
     _userStream.close();
     _firestoreAuthCommandStreamController.close();
+    _achievements.close();
+    _addStatsStreamController.close();
   }
 
   @override
@@ -52,7 +62,13 @@ class UserBLoC extends BLoC {
         .listen(_handleSocialMediaCommand);
     _signUpFinishedStreamController.stream.listen(_handleSignUpFinished);
     _userStream.stream.listen(_handleUserAddedToStream);
+    _addStatsStreamController.stream.listen(_handleAddStats);
     loginIfAlreadyLoggedIn();
+  }
+
+  void _handleAddStats(StatisticAction stat) {
+    _loggedInUser.doTask(stat);
+    _firestoreAuthController.setFurtherData(_loggedInUser, {});
   }
 
   void _usersChanged(DocumentSnapshot doc) {

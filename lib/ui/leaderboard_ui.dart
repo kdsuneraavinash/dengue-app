@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
+import 'package:dengue_app/custom_widgets/loading_screen.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/user_provider.dart';
@@ -68,7 +69,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> {
                               stream: userBLoC.leaderBoardStream,
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData)
-                                  return CircularProgressIndicator();
+                                  return AnimatedLoadingScreen(AnimationFile.GlowLoading);
                                 for (int i = 0;
                                     i < snapshot.data.documents.length;
                                     i++) {

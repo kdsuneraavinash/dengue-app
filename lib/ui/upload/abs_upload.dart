@@ -73,10 +73,10 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
       children: <Widget>[
         Opacity(
           opacity: 0.9,
-          child: ModalBarrier(dismissible: false, color: Colors.black),
+          child: ModalBarrier(dismissible: false, color: Colors.white),
         ),
         Center(
-          child: AnimatedLoadingScreen(AnimationFile.GlowLoading),
+          child: AnimatedLoadingScreen(AnimationFile.HourGlass),
         )
       ],
     );
