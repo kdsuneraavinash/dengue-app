@@ -2,7 +2,6 @@ import 'package:dengue_app/bloc/user_bloc.dart';
 import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
-import 'package:dengue_app/providers/login_provider.dart';
 import 'package:dengue_app/providers/user_provider.dart';
 import 'package:dengue_app/ui/credits_ui.dart';
 import 'package:dengue_app/ui/login_ui.dart';
@@ -33,10 +32,10 @@ class UserInfoPageState extends State<UserInfoPage> {
     return StreamBuilder<User>(
       stream: userBLoC.userStream,
       builder: (_, userSnapshot) => Scaffold(
-      appBar: AppBar(
-        title: Text("Account"),
-      ),
-      body: ListView(
+            appBar: AppBar(
+              title: Text("Account"),
+            ),
+            body: ListView(
               children: <Widget>[
                 Center(
                   child: SizedBox(
@@ -46,7 +45,8 @@ class UserInfoPageState extends State<UserInfoPage> {
                       padding: EdgeInsets.all(16.0),
                       child: ClipOval(
                         child: DefParameterNetworkImage(
-                          imageUrl: userSnapshot.data?.photoUrl ?? User.BLANK_PHOTO,
+                          imageUrl:
+                              userSnapshot.data?.photoUrl ?? User.BLANK_PHOTO,
                           isCover: true,
                         ),
                       ),
@@ -84,44 +84,41 @@ class UserInfoPageState extends State<UserInfoPage> {
                   leading: Icon(Icons.email),
                 ),
               ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            FlatButton.icon(
-                onPressed: () {
-                  TransitionMaker.fadeTransition(
-                      destinationPageCall: () => CreditsPage())
-                    ..start(context);
-                },
-                icon: Icon(Icons.developer_board),
-                label: Text("About")),
-            StreamBuilder<User>(
-              stream: userBLoC.userStream,
-              builder: (_, snapshot) => FlatButton.icon(
-                  onPressed: () {
-                    if (snapshot.data != null) {
-                      userBLoC.firestoreAuthCommandSink
-                          .add(LogInCommand.LOGOUT);
-                      TransitionMaker.fadeTransition(
-                          destinationPageCall: () => LoginPage())
-                        ..startPopAllAndPush(context);
-                    }
-                  },
-                  icon: Icon(Icons.exit_to_app),
-                  label: Text("Log Out")),
             ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => print(userSnapshot.data.stats.toMap()),
-        child: Icon(FontAwesomeIcons.edit),
-      ),
-      ),
+            bottomNavigationBar: BottomAppBar(
+              shape: CircularNotchedRectangle(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  FlatButton.icon(
+                      onPressed: () {
+                        TransitionMaker.fadeTransition(
+                            destinationPageCall: () => CreditsPage())
+                          ..start(context);
+                      },
+                      icon: Icon(Icons.developer_board),
+                      label: Text("About")),
+                ],
+              ),
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.endDocked,
+            floatingActionButton: StreamBuilder<User>(
+              stream: userBLoC.userStream,
+              builder: (_, snapshot) => FloatingActionButton(
+                    onPressed: () {
+                      if (snapshot.data != null) {
+                        userBLoC.firestoreAuthCommandSink
+                            .add(LogInCommand.LOGOUT);
+                        TransitionMaker.fadeTransition(
+                            destinationPageCall: () => LoginPage())
+                          ..startPopAllAndPush(context);
+                      }
+                    },
+                    child: Icon(FontAwesomeIcons.signOutAlt),
+                  ),
+            ),
+          ),
     );
   }
 }

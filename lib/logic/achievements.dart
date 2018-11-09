@@ -75,7 +75,7 @@ class Achievement {
       ..timesTaken = 1,
     Achievement.divider(),
     Achievement.dailyVisit(1, 0, 1),
-    Achievement.dailyVisit(2, 2, 1),
+    Achievement.dailyVisit(2, 2),
     Achievement.dailyVisit(3, 3),
     Achievement.dailyVisit(4, 6),
     Achievement.dailyVisit(5, 8),

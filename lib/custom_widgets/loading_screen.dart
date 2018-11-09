@@ -53,8 +53,12 @@ class _AnimatedLoadingScreenState extends State<AnimatedLoadingScreen> {
   }
 
   void _handlePlayAnimation(bool b) {
-    if (b) {
-      _getCorrectController().start();
+    if (mounted) {
+      setState(() {
+        if (b) {
+          _getCorrectController().start();
+        }
+      });
     }
   }
 }

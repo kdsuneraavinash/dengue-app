@@ -1,4 +1,3 @@
-import 'package:dengue_app/custom_widgets/icontext.dart';
 import 'package:dengue_app/ui/post/abs_post.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +27,7 @@ class TextPost extends AbstractPost {
         textAlign: TextAlign.center,
         style: TextStyle(
             color: Colors.white,
-            fontSize: 32.0,
+            fontSize: 24.0,
             fontWeight: FontWeight.w300,
             letterSpacing: 1.0),
       ),

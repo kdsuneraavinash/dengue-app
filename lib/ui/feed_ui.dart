@@ -8,7 +8,6 @@ import 'package:dengue_app/ui/post/ui_image.dart';
 import 'package:dengue_app/ui/post/ui_text.dart';
 import 'package:dengue_app/ui/post/ui_video.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class FeedPage extends StatelessWidget {
   @override

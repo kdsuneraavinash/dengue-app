@@ -1,5 +1,4 @@
 import 'package:dengue_app/bloc/user_bloc.dart';
-import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/loading_screen.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/user_provider.dart';
@@ -24,8 +23,7 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
   Widget build(BuildContext context) {
     return StreamBuilder<User>(
       stream: userBLoC.userStream,
-      builder: (_, snapshot) => snapshot.data != null
-          ? Scaffold(
+      builder: (_, snapshot) => Scaffold(
               appBar: AppBar(
                 title: Text("Upload"),
               ),
@@ -43,7 +41,6 @@ abstract class UploadAbstractState extends State<UploadAbstract> {
                     )
                   : null,
             )
-          : ErrorViewWidget(),
     );
   }
 

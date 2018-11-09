@@ -1,4 +1,3 @@
-import 'package:dengue_app/custom_widgets/icontext.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/ui/image_view_ui.dart';
 import 'package:dengue_app/ui/post/abs_media.dart';

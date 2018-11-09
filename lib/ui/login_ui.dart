@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dengue_app/bloc/login_bloc.dart';
 import 'package:dengue_app/bloc/user_bloc.dart';
-import 'package:dengue_app/custom_widgets/errorwidget.dart';
 import 'package:dengue_app/custom_widgets/loading_screen.dart';
-import 'package:dengue_app/custom_widgets/network_image.dart';
 import 'package:dengue_app/custom_widgets/transition_maker.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/providers/login_provider.dart';
@@ -14,7 +11,6 @@ import 'package:dengue_app/ui/error_handler_ui.dart';
 import 'package:dengue_app/ui/home_ui.dart';
 import 'package:dengue_app/ui/userdata_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intro_slider/intro_slider.dart';
 
 class LoginPage extends StatelessWidget {
@@ -77,21 +73,27 @@ class LoginPageContentState extends State<LoginPageContent> {
     return StreamBuilder<Object>(
       stream: userBLoC.exceptionStream,
       builder: (_, snapshotException) {
-        return snapshotException?.data == null
-            ? StreamBuilder<LogInState>(
-                stream: userBLoC.logInStateStream,
-                initialData: LogInState.WAITING,
-                builder: (_, snapshotIsLoggingIn) {
-                  List<Widget> children;
-                  if (snapshotIsLoggingIn.data == LogInState.WAITING) {
-                    children = [_buildPagedView(), _buildLoadingView()];
-                  } else {
-                    children = [_buildPagedView()];
-                  }
-                  return Stack(children: children);
-                },
-              )
-            : ErrorViewer(snapshotException.data, userBLoC.exceptionStream.add);
+        return Stack(
+          children: <Widget>[
+            StreamBuilder<LogInState>(
+              stream: userBLoC.logInStateStream,
+              initialData: LogInState.WAITING,
+              builder: (_, snapshotIsLoggingIn) {
+                List<Widget> children;
+                if (snapshotIsLoggingIn.data == LogInState.WAITING) {
+                  children = [_buildPagedView(), _buildLoadingView()];
+                } else {
+                  children = [_buildPagedView()];
+                }
+                return Stack(children: children);
+              },
+            ),
+            snapshotException?.data == null
+                ? Container()
+                : ErrorViewer(
+                    snapshotException.data, userBLoC.exceptionStream.add)
+          ],
+        );
       },
     );
   }
@@ -135,8 +137,7 @@ class LoginPageContentState extends State<LoginPageContent> {
       decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(
-              "http://www.mobileswall.com/wp-content/uploads/2015/12/640-Quiet-Environment-l.jpg"),
+          image: AssetImage("assets/images/back.jpg"),
         ),
       ),
       child: Opacity(
@@ -149,10 +150,9 @@ class LoginPageContentState extends State<LoginPageContent> {
                 color: Theme.of(context).primaryColor,
                 alignment: Alignment.center,
                 padding: EdgeInsets.all(8.0),
-                child: DefParameterNetworkImage(
-                  imageUrl: "http://www.logodust.com/img/free/logo26.png",
-                  isCover: false,
-                  needProgress: false,
+                child: Image.asset(
+                  "assets/images/logo.png",
+                  fit: BoxFit.contain,
                   width: screenSize.width / 1.5,
                   height: screenSize.width / 1.5,
                 ),
@@ -190,16 +190,12 @@ class LoginPageContentState extends State<LoginPageContent> {
         initialData: null,
         stream: userBLoC.userStream,
         builder: (_, snapshotUser) {
-          if (snapshotUser != null) {
-            return UserDataEditView(
-              photo: snapshotUser.data?.photoUrl == null
-                  ? User.BLANK_PHOTO
-                  : snapshotUser.data.photoUrl,
-              afterSubmit: _handleSubmitPressed,
-            );
-          } else {
-            return ErrorViewWidget();
-          }
+          return UserDataEditView(
+            photo: snapshotUser.data?.photoUrl == null
+                ? User.BLANK_PHOTO
+                : snapshotUser.data.photoUrl,
+            afterSubmit: _handleSubmitPressed,
+          );
         });
   }
 
@@ -275,7 +271,7 @@ class _IntroductionViewState extends State<IntroductionView> {
         title: "FREE DATA",
         description:
             "Earn free data.... We gift free data to 100 each week and you can easily be one of them.",
-        pathImage: "images/data.png",
+        pathImage: "assets/images/data.png",
         backgroundColor: 0xffb71c1c,
         widthImage: width,
         heightImage: height,
@@ -286,7 +282,7 @@ class _IntroductionViewState extends State<IntroductionView> {
         title: "FREE GIFTS",
         description:
             "We present gifts for three users each week. Be one of them and earn amazing gifts.",
-        pathImage: "images/gifts.png",
+        pathImage: "assets/images/gifts.png",
         backgroundColor: 0xff203152,
         widthImage: width,
         heightImage: height,
@@ -297,7 +293,7 @@ class _IntroductionViewState extends State<IntroductionView> {
         title: "CLEAN",
         description:
             "The only task you have to do is to clean your environment and update us with your progress.",
-        pathImage: "images/clean.png",
+        pathImage: "assets/images/clean.png",
         backgroundColor: 0xff4A148C,
         widthImage: width,
         heightImage: height,
@@ -308,7 +304,7 @@ class _IntroductionViewState extends State<IntroductionView> {
         title: "DEFEND AGAINST DENGUE",
         description:
             "Defend yourself against dengue. Why not join us and earn free gifts while cleaning your own garden?",
-        pathImage: "images/mosquito.png",
+        pathImage: "assets/images/mosquito.png",
         backgroundColor: 0xff004D40,
         widthImage: width,
         heightImage: height,

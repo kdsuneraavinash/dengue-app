@@ -6,13 +6,24 @@ class Task {
   int _remainingChances = 0;
   String _taskImage;
   StatisticAction _action;
+  Function _function;
+  bool _enabled;
 
-  Task({taskTitle, allocatedPoints, remainingChances, taskImage, action}) {
+  Task(
+      {taskTitle,
+      allocatedPoints,
+      remainingChances,
+      taskImage,
+      action,
+      function,
+        enabled}) {
     _taskTitle = taskTitle;
     _allocatedPoints = allocatedPoints;
     _remainingChances = remainingChances;
     _taskImage = taskImage;
     _action = action;
+    _function = function;
+    _enabled = enabled ?? false;
   }
 
   String get taskImage => _taskImage;
@@ -34,4 +45,12 @@ class Task {
   String get taskTitle => _taskTitle;
 
   StatisticAction get action => _action;
+
+  bool get enabled => _enabled;
+
+  void doTask() {
+    if (_function != null) {
+      _function();
+    }
+  }
 }

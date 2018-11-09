@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:dengue_app/logic/user.dart';
-import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:dengue_app/ui/upload/abs_image.dart';
+import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

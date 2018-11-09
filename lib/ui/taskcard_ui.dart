@@ -35,14 +35,39 @@ class TaskCardState extends State<TaskCard> {
   Widget _buildEventFlaggedItemButton(BuildContext context) {
     return ExpansionTile(
       key: Key(widget.task.taskTitle),
-      title: Text(widget.task.taskTitle),
+      title: Text(
+        widget.task.taskTitle,
+        style:
+            TextStyle(color: widget.task.enabled ? Colors.black : Colors.grey),
+      ),
       children: <Widget>[
-        Stack(
-          alignment: Alignment.bottomCenter,
+        Column(
           children: <Widget>[
-            DefParameterNetworkImage(
-              imageUrl: widget.task.taskImage,
-              isCover: true,
+            Stack(
+              children: <Widget>[
+                DefParameterNetworkImage(
+                  imageUrl: widget.task.taskImage,
+                  isCover: true,
+                ),
+                Opacity(
+                  opacity: widget.task.enabled ? 0.0 : 0.8,
+                  child: Container(
+                    height: MediaQuery.of(context).size.width / (16 / 9),
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.black,
+                    child: Center(
+                      child: Text(
+                        "This task is unavailable right now",
+                        style: TextStyle(
+                            color: Colors.white,
+                            letterSpacing: 1.0,
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             Opacity(
               opacity: 0.9,
@@ -64,7 +89,9 @@ class TaskCardState extends State<TaskCard> {
                       icon: FontAwesomeIcons.play,
                       context: context,
                       label: "Complete",
-                      onPressed: () => _handleViewPressed(),
+                      onPressed: widget.task.enabled
+                          ? () => _handleViewPressed()
+                          : null,
                     )
                   ],
                 ),
@@ -95,6 +122,7 @@ class TaskCardState extends State<TaskCard> {
 
   /// Will show EventImageView
   void _handleViewPressed() {
-    userBLoC.addStatsSink.add(widget.task.action);
+    widget.task.doTask();
+//    userBLoC.addStatsSink.add(widget.task.action);
   }
 }

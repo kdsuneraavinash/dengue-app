@@ -146,7 +146,7 @@ class Post {
       'Dec'
     ];
     str += '${datePosted.year} ${months[datePosted.month - 1]} ${datePosted.day} ' +
-        'at ${(datePosted.hour % 12 == 0) ? 12 : (datePosted.hour % 12)}:${datePosted.minute.toString().padLeft(2, '0')} ${datePosted.hour / 12 == 0 ? "AM" : "PM"}';
+        'at ${(datePosted.hour % 12 == 0) ? 12 : (datePosted.hour % 12)}:${datePosted.minute.toString().padLeft(2, '0')} ${datePosted.hour < 12 ? "AM" : "PM"}';
     return str;
   }
 }

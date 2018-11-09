@@ -10,9 +10,12 @@ class ErrorViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        ModalBarrier(
-          dismissible: false,
-          color: Colors.red[600],
+        Opacity(
+          opacity: 0.8,
+          child: ModalBarrier(
+            dismissible: false,
+            color: Colors.black,
+          ),
         ),
         Center(
           child: Column(
@@ -21,7 +24,7 @@ class ErrorViewer extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(24.0),
                 child: Text(
-                  error.toString(),
+                  _formatString(error.toString()),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16.0,
@@ -39,5 +42,9 @@ class ErrorViewer extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _formatString(String error) {
+    return "Network Error Occured. Please Check your internet connection.\n\nIf the problem persists, contact developers.";
   }
 }

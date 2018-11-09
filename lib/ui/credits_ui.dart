@@ -60,9 +60,9 @@ class CreditsBody extends StatelessWidget {
           padding: EdgeInsets.only(top: 32.0, bottom: 8.0),
           child: SizedBox(
             child: ClipOval(
-              child: DefParameterNetworkImage(
-                imageUrl: "http://www.logodust.com/img/free/logo26.png",
-                isCover: false,
+              child: Image.asset(
+                 "assets/images/logo.png",
+                fit: BoxFit.contain,
               ),
             ),
             width: 100.0,

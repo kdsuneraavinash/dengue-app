@@ -75,10 +75,10 @@ class Statistics {
   }
 
   int calculatePoints() {
-    return postsShared * 25 +
+    return postsShared * 5 +
         readArticles * 30 +
         sharedArticles * 150 +
-        weeklyPost * 300 +
+        weeklyPost * 250 +
         adsWatched * 15;
   }
 }

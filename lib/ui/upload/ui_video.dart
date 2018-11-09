@@ -5,9 +5,10 @@ import 'package:chewie/chewie.dart';
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/firebase/storage.dart';
 import 'package:dengue_app/logic/post.dart';
+import 'package:dengue_app/logic/stats.dart';
 import 'package:dengue_app/logic/user.dart';
-import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:dengue_app/ui/upload/abs_media.dart';
+import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -75,6 +76,7 @@ class UploadCameraState extends UploadMediaAbstractState {
     setState(() {
       isUploading = false;
     });
+    userBLoC.addStatsSink.add(StatisticAction.WeeklyPost);
     Navigator.pop(context, true);
   }
 
@@ -101,17 +103,20 @@ class UploadCameraState extends UploadMediaAbstractState {
         child: RaisedButton(
           onPressed: () => handleBrowseImage(user),
           child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Icon(
-              backgroundIcon,
-              color: Colors.white,
-              size: MediaQuery.of(context).size.width / 3,
-            ),
-            Text("Tap to Select Video File", style: TextStyle(color: Colors.white),)
-          ],
-        ),
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Icon(
+                backgroundIcon,
+                color: Colors.white,
+                size: MediaQuery.of(context).size.width / 3,
+              ),
+              Text(
+                "Tap to Select Video File",
+                style: TextStyle(color: Colors.white),
+              )
+            ],
+          ),
           color: Color(0xff263238),
         ),
         height: MediaQuery.of(context).size.height,

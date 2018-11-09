@@ -10,6 +10,7 @@ class DefParameterNetworkImage extends StatelessWidget {
       imageUrl: this.imageUrl,
       fit: isCover ? BoxFit.cover : BoxFit.contain,
       width: width ?? MediaQuery.of(context).size.width,
+      fadeInDuration: Duration(milliseconds: 400),
       height:
           isCover ? MediaQuery.of(context).size.width / aspectRatio : height,
       placeholder: (needProgress ?? true)

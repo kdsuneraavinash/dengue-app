@@ -15,7 +15,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="dengue_app"
+        android:label="Dengue Free Zone"
         android:icon="@mipmap/ic_launcher"
         tools:ignore="GoogleAppIndexingWarning"
         android:allowBackup="false">

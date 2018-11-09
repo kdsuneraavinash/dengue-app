@@ -1,5 +1,6 @@
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/post.dart';
+import 'package:dengue_app/logic/stats.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_upload.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,7 @@ class UploadTextState extends UploadAbstractState {
     setState(() {
       isUploading = false;
     });
+    userBLoC.addStatsSink.add(StatisticAction.SharedPost);
     Navigator.pop(context, true);
   }
 

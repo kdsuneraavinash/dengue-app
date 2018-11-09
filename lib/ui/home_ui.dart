@@ -11,6 +11,7 @@ import 'package:dengue_app/ui/credits_ui.dart';
 import 'package:dengue_app/ui/feed_ui.dart';
 import 'package:dengue_app/ui/gifts_ui.dart';
 import 'package:dengue_app/ui/leaderboard_ui.dart';
+import 'package:dengue_app/ui/login_ui.dart';
 import 'package:dengue_app/ui/taskfeed_ui.dart';
 import 'package:dengue_app/ui/upload/ui_camera.dart';
 import 'package:dengue_app/ui/upload/ui_gallery.dart';
@@ -167,7 +168,7 @@ class HomePageContentState extends State<HomePageContent> {
       title: Text("Dengue Free Zone"),
       actions: <Widget>[
         FlatButton.icon(
-          onPressed: null,
+          onPressed: _handleNavigateToAchievementsPage,
           icon: Icon(FontAwesomeIcons.coins, color: Colors.amber),
           label: Text(
             "${(user == null) ? '--' : user.points}",
@@ -258,16 +259,6 @@ class HomePageContentState extends State<HomePageContent> {
                     leading: Icon(FontAwesomeIcons.envelope),
                     title: Text("Send Feedback"),
                   ),
-                  Divider(),
-                  ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      _launchUrl(
-                          "https://github.com/kdsuneraavinash/dengue_app");
-                    },
-                    leading: Icon(FontAwesomeIcons.listAlt),
-                    title: Text("What's New"),
-                  ),
                   ListTile(
                     onTap: () {
                       Navigator.pop(context);
@@ -275,6 +266,15 @@ class HomePageContentState extends State<HomePageContent> {
                     },
                     leading: Icon(FontAwesomeIcons.questionCircle),
                     title: Text("About"),
+                  ),
+                  Divider(),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleLogOut(user);
+                    },
+                    leading: Icon(FontAwesomeIcons.signOutAlt),
+                    title: Text("Sign Out"),
                   ),
                 ],
               ),
@@ -394,6 +394,16 @@ class HomePageContentState extends State<HomePageContent> {
     if (mounted) {
       TransitionMaker.slideTransition(destinationPageCall: () => WinnersPage())
         ..start(context);
+    }
+  }
+
+  void _handleLogOut(User user) {
+    if (user != null) {
+      userBLoC.firestoreAuthCommandSink
+          .add(LogInCommand.LOGOUT);
+      TransitionMaker.fadeTransition(
+          destinationPageCall: () => LoginPage())
+        ..startPopAllAndPush(context);
     }
   }
 

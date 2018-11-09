@@ -1,6 +1,7 @@
 import 'package:dengue_app/logic/firebase/firestore.dart';
 import 'package:dengue_app/logic/firebase/storage.dart';
 import 'package:dengue_app/logic/post.dart';
+import 'package:dengue_app/logic/stats.dart';
 import 'package:dengue_app/logic/user.dart';
 import 'package:dengue_app/ui/upload/abs_media.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ abstract class UploadImageAbstractState extends UploadMediaAbstractState {
     setState(() {
       isUploading = false;
     });
+    userBLoC.addStatsSink.add(StatisticAction.SharedPost);
     Navigator.pop(context, true);
   }
 
@@ -43,7 +45,10 @@ abstract class UploadImageAbstractState extends UploadMediaAbstractState {
                 color: Colors.white,
                 size: MediaQuery.of(context).size.width / 3,
               ),
-              Text("Tap to Select File", style: TextStyle(color: Colors.white),)
+              Text(
+                "Tap to Select File",
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
           color: Color(0xff263238),
